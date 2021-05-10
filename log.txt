@@ -1,0 +1,18 @@
+
+ ---------------- 
+  DONKEY KONG II  
+ ---------------- 
+2021-05-10 19:57:30 [ERROR] log error con nivel 1
+
+ ---------------- 
+  DONKEY KONG II  
+ ---------------- 
+2021-05-10 19:57:30 [ERROR] log error con nivel 2
+2021-05-10 19:57:30 [INFO] log info con nivel 2
+
+ ---------------- 
+  DONKEY KONG II  
+ ---------------- 
+2021-05-10 19:57:30 [ERROR] log error con nivel 3
+2021-05-10 19:57:30 [INFO] log info con nivel 3
+2021-05-10 19:57:30 [DEBUG] log debug con nivel 3
