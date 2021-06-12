@@ -7,6 +7,7 @@ const int ESCALERA_1_X1 = 184;
 const int ESCALERA_1_Y0 = 232;
 const int ESCALERA_1_Y1 = 203;
 
+const int MAX_BARRILES = 20;
 Nivel2::Nivel2() : Nivel() {}
 
 void Nivel2::update() {
@@ -19,11 +20,11 @@ void Nivel2::update() {
 
 void Nivel2::addBarrel() {
     int x = rand() % (ANCHO_NIVEL - ANCHO_BARRIL);
-    this->barriles.push_front(new Barril(x, N2_POS_Y_BARRIL));
+    this->barriles.push_back(new Barril(x, N2_POS_Y_BARRIL));
 }
 
 void Nivel2::updateBarrels() {
-    std::list<Barril*>::iterator it;
+    std::vector<Barril*>::iterator it;
     for (it = barriles.begin(); it != barriles.end();) {
         (*it)->mover();
         if (!(*it)->estaEnNivel()) {
@@ -55,19 +56,19 @@ Escalera* Nivel2::getEscalera(punto_t p) {
 }
 
 estadoNivel_t* Nivel2::getEstado() {
-    estadoNivel->barrels.clear();
-    for (Barril *barril : this->barriles) {
-        estadoNivel->barrels.push_back(barril->getPos());
+    
+    for (unsigned int i = 0; i < MAX_BARRILES; i++) {
+        if(barriles.size() < i)
+            estadoNivel->barrels[i] = barriles.at(i)->getPos();
     }
-    estadoNivel->players.clear();
-    for (Mario *player : this->jugadores) {
-        estadoNivel->players.push_back(player->getEstado());
-    }
+    
+    estadoNivel->players[0] = this->jugadores.front()->getEstado(); //TODO: Agregar todos los jugadores
+
     return estadoNivel;
 }
 
 Nivel2::~Nivel2() {
-    std::list<Barril*>::iterator it;
+    std::vector<Barril*>::iterator it;
     for (it = barriles.begin(); it != barriles.end(); ++it) delete (*it);
 
     barriles.clear();

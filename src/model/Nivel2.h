@@ -14,7 +14,7 @@ class Nivel2 : public Nivel {
         Escalera* getEscalera(punto_t p);
 
     private:
-        std::list<Barril*> barriles;
+        std::vector<Barril*> barriles;
         unsigned int tick = 0;
 
         void addBarrel();

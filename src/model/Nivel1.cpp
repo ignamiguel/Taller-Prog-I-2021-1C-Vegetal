@@ -75,31 +75,28 @@ void Nivel1::update() {
 }
 
 void Nivel1::updatePlatforms() {
-    std::list<PlataformaMovil*>::iterator it;
+    std::vector<PlataformaMovil*>::iterator it;
     for (it = plataformasMoviles.begin(); it != plataformasMoviles.end(); ++it) {
         (*it)->mover();
     }
 }
 
 estadoNivel_t* Nivel1::getEstado() {
+    
+    for (unsigned int i = 0; i < this->enemies.size(); i++) {
+        estadoNivel->enemies[i] = enemies.at(i)->getPos();
+    }
+    for (unsigned int i = 0; i < this->plataformasMoviles.size(); i++) {
+        estadoNivel->platforms[i] = plataformasMoviles.at(i)->getPos();
+    }
+    
+    estadoNivel->players[0] = this->jugadores.front()->getEstado(); //TODO: Agregar todos los jugadores
 
-    estadoNivel->enemies.clear();
-    for (EnemigoFuego *enemy : this->enemies) {
-        estadoNivel->enemies.push_back(enemy->getPos());
-    }
-    estadoNivel->platforms.clear();
-    for (PlataformaMovil *plataforma : this->plataformasMoviles) {
-        estadoNivel->platforms.push_back(plataforma->getPos());
-    }
-    estadoNivel->players.clear();
-    for (Mario *player : this->jugadores) {
-        estadoNivel->players.push_back(player->getEstado());
-    }
     return estadoNivel;
 }
 
 Nivel1::~Nivel1() {
-    std::list<PlataformaMovil*>::iterator it;
+    std::vector<PlataformaMovil*>::iterator it;
     for (it = plataformasMoviles.begin(); it != plataformasMoviles.end(); ++it) delete (*it);
 
     plataformasMoviles.clear();

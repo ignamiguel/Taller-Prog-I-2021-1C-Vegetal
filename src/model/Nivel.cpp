@@ -34,7 +34,7 @@ void Nivel::updatePlayers() {
 }
 
 void Nivel::updateEnemies() {
-    std::list<EnemigoFuego*>::iterator it;
+    std::vector<EnemigoFuego*>::iterator it;
     for (it = enemies.begin(); it != enemies.end(); ++it) {
         (*it)->mover();
     }
@@ -53,7 +53,7 @@ Nivel::~Nivel() {
 
     plataformas.clear();
 
-    std::list<EnemigoFuego*>::iterator it2;
+    std::vector<EnemigoFuego*>::iterator it2;
     for (it2 = enemies.begin(); it2 != enemies.end(); ++it2) delete (*it2);
 
     enemies.clear();

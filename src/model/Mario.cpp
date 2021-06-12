@@ -40,7 +40,6 @@ void Mario::mover() {
 void Mario::setEstado(char controls) {
     this->state = this->state->handleInput(controls, this);
     this->state->perform();
-    std::cout << "ESTADO -> " << this->state->getName() << std::endl;
 }
 
 void Mario::setPos(float x, float y) {

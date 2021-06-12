@@ -27,7 +27,7 @@ void Nivel2Vista::update(estadoNivel_t *estadoNivel) {
         vista->mostrar();
     }
 
-    barrilVista->setTotal(estadoNivel->barrels.size());
+    barrilVista->setTotal(sizeof(estadoNivel->barrels));
     for (punto_t pos : estadoNivel->barrels) {
         barrilVista->mover(pos);
         barrilVista->mostrar();

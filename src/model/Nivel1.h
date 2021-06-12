@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <vector>
 #include "PlataformaMovil.h"
 #include "Nivel.h"
 #include "nivel/Escalera.h"
@@ -15,7 +16,7 @@ class Nivel1 : public Nivel
         Escalera* getEscalera(punto_t p);
 
     private:
-        std::list<PlataformaMovil*> plataformasMoviles;
+        std::vector<PlataformaMovil*> plataformasMoviles;
 
         void initPlataformas();
         void updatePlatforms();

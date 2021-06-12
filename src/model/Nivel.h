@@ -24,7 +24,7 @@ class Nivel
 
     protected:
         std::vector<Plataforma*> plataformas;
-        std::list<EnemigoFuego*> enemies;
+        std::vector<EnemigoFuego*> enemies;
         std::list<Mario*> jugadores;
         std::map<int, Escalera*> escaleras;
         estadoNivel_t *estadoNivel;
