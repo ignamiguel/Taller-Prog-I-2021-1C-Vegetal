@@ -7,7 +7,6 @@ namespace utils
 {
     TCPConnection::TCPConnection(int fd) : sockfd(fd)
     {
-
     }
 
     TCPConnection::~TCPConnection()
