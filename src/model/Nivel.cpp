@@ -41,10 +41,6 @@ void Nivel::updateEnemies() {
 }
 
 Nivel::~Nivel() {
-    estadoNivel->barrels.clear();
-    estadoNivel->enemies.clear();
-    estadoNivel->platforms.clear();
-    estadoNivel->players.clear();
     delete estadoNivel;
     jugadores.clear();
 
