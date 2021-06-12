@@ -5,15 +5,15 @@ namespace utils
     template<class T>
     SafeQueue<T>::SafeQueue(void)
     {
-        pthread_mutex_init(&m_mutex, nullptr);
-        pthread_cond_init(&m_condv, nullptr);
+        pthread_mutex_init(&mutex, nullptr);
+        pthread_cond_init(&condition_variable, nullptr);
     }
 
     template<class T>
     SafeQueue<T>::~SafeQueue(void)
     {
-        pthread_mutex_destroy(&m_mutex);
-        pthread_cond_destroy(&m_condv);
+        pthread_mutex_destroy(&mutex);
+        pthread_cond_destroy(&condition_variable);
     }
 
     template<class T>
