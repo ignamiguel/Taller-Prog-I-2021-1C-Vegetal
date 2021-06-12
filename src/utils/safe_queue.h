@@ -5,7 +5,8 @@
 
 namespace utils
 {
-    template <typename T> class SafeQueue
+    template <typename T>
+    class SafeQueue
     {
     public:
         SafeQueue(void);
