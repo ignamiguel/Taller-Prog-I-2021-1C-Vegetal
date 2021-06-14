@@ -15,6 +15,7 @@ Mario::Mario() : Entidad(0, 0, ANCHO_MARIO, ALTO_MARIO) {
 void Mario::setNivel(Nivel* nivel) {
     this->nivel = nivel;
     this->plataformaActual = this->nivel->getPlataformaInicial();
+    this->state = ReposoState::getInstance();
 }
 
 Nivel* Mario::getNivel() {

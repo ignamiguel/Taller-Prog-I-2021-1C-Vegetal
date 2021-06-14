@@ -12,7 +12,6 @@
 CorriendoState* CorriendoState::instance;
 
 CorriendoState::CorriendoState() {
-    //std::cout << "CREANDO CorriendoState " << std::endl;
     this->name = "Corriendo";
 }
 
