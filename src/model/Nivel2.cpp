@@ -7,19 +7,26 @@ const int ESCALERA_1_X1 = 192;
 const int ESCALERA_1_Y0 = 248;
 const int ESCALERA_1_Y1 = 219;
 
-Nivel2::Nivel2() : Nivel() {}
+Nivel2::Nivel2() : Nivel() {
+    this->inicializarPlataformas();
+    this->inicializarEscaleras();
+}
 
 void Nivel2::update() {
     if (++tick % 128 == 0) addBarrel();
 
     this->updateBarrels();
     this->updatePlayers();
-    this->inicializarEscaleras();
 }
 
 void Nivel2::addBarrel() {
     int x = rand() % (ANCHO_NIVEL - ANCHO_BARRIL);
     this->barriles.push_front(new Barril(x, N2_POS_Y_BARRIL));
+}
+
+void Nivel2::inicializarPlataformas() {
+    this->plataformas.push_back(new Plataforma(0, 248, 223, 248));
+    this->plataformas.push_back(new Plataforma(0, 219, 208, 219));
 }
 
 void Nivel2::updateBarrels() {
@@ -40,8 +47,7 @@ void Nivel2::inicializarEscaleras() {
                                 ESCALERA_1_X1,
                                 ESCALERA_1_Y0,
                                 ESCALERA_1_Y1);
-    
-    this->escaleras[0] = e1;
+
     this->escaleras_2.push_back(e1);
 }
 
@@ -65,6 +71,5 @@ Nivel2::~Nivel2() {
 }
 
 Plataforma* Nivel2::getPlataformaInicial() {
-    this->plataformas.push_back(new Plataforma(0, 248, 48, 248));
     return this->plataformas[0];
 }

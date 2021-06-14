@@ -7,7 +7,6 @@
 #include "Plataforma.h"
 #include "../utils/estadoNivel.h"
 #include "nivel/Escalera.h"
-#include <map>
 
 class Mario;
 
@@ -28,7 +27,6 @@ class Nivel
         std::vector<Plataforma*> plataformas;
         std::list<EnemigoFuego*> enemies;
         std::list<Mario*> jugadores;
-        std::map<int, Escalera*> escaleras;
         std::list<Escalera*> escaleras_2;
         estadoNivel_t *estadoNivel;
 

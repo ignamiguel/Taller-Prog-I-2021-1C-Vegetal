@@ -20,4 +20,5 @@ class Nivel2 : public Nivel {
         void addBarrel();
         void updateBarrels();
         void inicializarEscaleras();
+        void inicializarPlataformas();
 };
