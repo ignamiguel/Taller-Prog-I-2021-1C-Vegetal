@@ -4,9 +4,6 @@
 #include "Nivel.h"
 #include "Plataforma.h"
 
-#include <stdio.h>
-#include <iostream>
-
 #define MAX_DESPLAZAMIENTO_X 228
 #define MAX_DESPLAZAMIENTO_Y 232
 #define MIN_DESPLAZAMIENTO_X -4
@@ -42,7 +39,6 @@ void Mario::mover() {
 void Mario::setEstado(char controls) {
     this->state = this->state->handleInput(controls, this);
     this->state->perform();
-    // std::cout << "ESTADO -> " << this->state->getName() << std::endl;
 }
 
 void Mario::setPos(float x, float y) {

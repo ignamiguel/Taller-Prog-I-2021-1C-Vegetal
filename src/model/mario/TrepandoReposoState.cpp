@@ -52,20 +52,6 @@ MarioState* TrepandoReposoState::handleInput(char controls, Mario* mario) {
     char up = (controls & UP) != 0;
     char down = (controls & DOWN) != 0;
 
-    // // Mario esta al principio de la escalera ?
-    // if (mario->getPos().y > (this->e->getY0() - ALTO_MARIO)) {
-    //     mario->setPos(mario->getPos().x, (this->e->getY0() - ALTO_MARIO));
-    //     //this->clear();
-    //     return TrepandoFinalState::getInstance();
-    // }
-
-    // // Mario esta al final de la escalera ?
-    // if (mario->getPos().y < (this->e->getY1() - ALTO_MARIO)) {
-    //     mario->setPos(mario->getPos().x, (this->e->getY1() - ALTO_MARIO));
-    //     //this->clear();
-    //     return TrepandoFinalState::getInstance();
-    // }
-
     if (up != down) {
         TrepandoState* trepandoState = TrepandoState::getInstance();
         trepandoState->setDir(up, down);
