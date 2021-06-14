@@ -42,7 +42,7 @@ void Mario::mover() {
 void Mario::setEstado(char controls) {
     this->state = this->state->handleInput(controls, this);
     this->state->perform();
-    std::cout << "ESTADO -> " << this->state->getName() << std::endl;
+    // std::cout << "ESTADO -> " << this->state->getName() << std::endl;
 }
 
 void Mario::setPos(float x, float y) {
@@ -59,4 +59,8 @@ estadoMario_t Mario::getEstado() {
 
 Plataforma* Mario::getPlataformaActual() {
     return this->plataformaActual;
+}
+
+void Mario::setPlataformaActual(Plataforma* p) {
+    this->plataformaActual = p;
 }

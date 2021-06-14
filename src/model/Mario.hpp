@@ -26,6 +26,7 @@ class Mario : public Entidad
         void setNivel(Nivel* nivel);
         Nivel* getNivel();
         Plataforma* getPlataformaActual();
+        void setPlataformaActual(Plataforma* p);
 
     private:
         MarioState* state;

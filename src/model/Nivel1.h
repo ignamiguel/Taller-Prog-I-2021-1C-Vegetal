@@ -14,7 +14,6 @@ class Nivel1 : public Nivel
         estadoNivel_t* getEstado();
         ~Nivel1();
         Plataforma* getPlataformaInicial();
-        Plataforma* getPlataforma(punto_t p);
 
     private:
         std::list<PlataformaMovil*> plataformasMoviles;

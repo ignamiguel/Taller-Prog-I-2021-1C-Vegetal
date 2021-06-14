@@ -76,3 +76,21 @@ Escalera* Nivel::getEscalera(punto_t p) {
     }
     return NULL;
 }
+
+Plataforma* Nivel::getPlataforma(punto_t p) {
+    std::vector<Plataforma*>::iterator it;
+    for (it = this->plataformas.begin(); it != this->plataformas.end(); ++it) {
+        Plataforma* plataforma = (*it);
+        punto_t inicio = plataforma->getInicio();
+        punto_t final = plataforma->getFinal();
+
+        float x = p.x < 0 ? 0 : p.x;
+
+        if (x >= inicio.x
+        && x <= final.x
+        && p.y == (inicio.y - ALTO_MARIO) ) {
+            return plataforma;
+        }
+    }
+    return NULL;
+}

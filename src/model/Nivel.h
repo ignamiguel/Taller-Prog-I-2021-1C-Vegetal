@@ -22,6 +22,7 @@ class Nivel
         virtual ~Nivel();
         Escalera* getEscalera(punto_t p);
         virtual Plataforma* getPlataformaInicial() = 0;
+        Plataforma* getPlataforma(punto_t p);
 
     protected:
         std::vector<Plataforma*> plataformas;

@@ -55,6 +55,7 @@ MarioState* TrepandoState::handleInput(char controls, Mario* mario) {
     if (mario->getPos().y > (this->e->getY0() - ALTO_MARIO)) {
         mario->setPos(mario->getPos().x, (this->e->getY0() - ALTO_MARIO));
         this->clear();
+        this->actualizarPlataforma(mario);
         return TrepandoFinalState::getInstance();
     }
 
@@ -62,6 +63,7 @@ MarioState* TrepandoState::handleInput(char controls, Mario* mario) {
     if (mario->getPos().y < (this->e->getY1() - ALTO_MARIO)) {
         mario->setPos(mario->getPos().x, (this->e->getY1() - ALTO_MARIO));
         this->clear();
+        this->actualizarPlataforma(mario);
         return TrepandoFinalState::getInstance();
     }
 

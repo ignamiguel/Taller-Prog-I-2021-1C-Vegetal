@@ -27,4 +27,5 @@ class MarioState {
         std::string name;
         float velX;
         float velY;
+        void actualizarPlataforma(Mario* mario);
 };
