@@ -4,6 +4,7 @@
 #include "PlataformaMovil.h"
 #include "Nivel.h"
 #include "nivel/Escalera.h"
+#include "../utils/Constants.hpp"
 
 class Nivel1 : public Nivel
 {
@@ -12,7 +13,8 @@ class Nivel1 : public Nivel
         void update();
         estadoNivel_t* getEstado();
         ~Nivel1();
-        Escalera* getEscalera(punto_t p);
+        Plataforma* getPlataformaInicial();
+        Plataforma* getPlataforma(punto_t p);
 
     private:
         std::list<PlataformaMovil*> plataformasMoviles;

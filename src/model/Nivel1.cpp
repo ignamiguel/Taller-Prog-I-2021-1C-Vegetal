@@ -1,30 +1,31 @@
 #include "Nivel1.h"
 #include "nivel/Escalera.h"
+#include "Plataforma.h"
 
-const int ESCALERA_1_X0 = 24;
-const int ESCALERA_1_X1 = 32;
-const int ESCALERA_1_Y0 = 232;
-const int ESCALERA_1_Y1 = 184;
+const int ESCALERA_1_X0 = 32;
+const int ESCALERA_1_X1 = 40;
+const int ESCALERA_1_Y0 = 248;
+const int ESCALERA_1_Y1 = 200;
 
-const int ESCALERA_2_X0 = 208;
-const int ESCALERA_2_X1 = 216;
-const int ESCALERA_2_Y0 = 184;
-const int ESCALERA_2_Y1 = 144;
+const int ESCALERA_2_X0 = 216;
+const int ESCALERA_2_X1 = 224;
+const int ESCALERA_2_Y0 = 200;
+const int ESCALERA_2_Y1 = 160;
 
-const int ESCALERA_3_X0 = -8;
-const int ESCALERA_3_X1 = 0;
-const int ESCALERA_3_Y0 = 144;
-const int ESCALERA_3_Y1 = 104;
+const int ESCALERA_3_X0 = 0;
+const int ESCALERA_3_X1 = 8;
+const int ESCALERA_3_Y0 = 160;
+const int ESCALERA_3_Y1 = 120;
 
-const int ESCALERA_4_X0 = 208;
-const int ESCALERA_4_X1 = 216;
-const int ESCALERA_4_Y0 = 104;
-const int ESCALERA_4_Y1 = 72;
+const int ESCALERA_4_X0 = 216;
+const int ESCALERA_4_X1 = 224;
+const int ESCALERA_4_Y0 = 120;
+const int ESCALERA_4_Y1 = 88;
 
-const int ESCALERA_5_X0 = 120;
-const int ESCALERA_5_X1 = 128;
-const int ESCALERA_5_Y0 = 72;
-const int ESCALERA_5_Y1 = 40;
+const int ESCALERA_5_X0 = 128;
+const int ESCALERA_5_X1 = 136;
+const int ESCALERA_5_Y0 = 88;
+const int ESCALERA_5_Y1 = 56;
 
 Nivel1::Nivel1() : Nivel() {
     this->initPlataformas();
@@ -107,69 +108,76 @@ Nivel1::~Nivel1() {
 
 void Nivel1::inicializarEscaleras() {
     Escalera * e1 = new Escalera("E1",
-                                ESCALERA_1_X1 -4,
+                                ESCALERA_1_X1 -12,
                                 ESCALERA_1_X0,
                                 ESCALERA_1_X1,
                                 ESCALERA_1_Y0,
                                 ESCALERA_1_Y1);
     Escalera * e2 = new Escalera("E2",
-                                ESCALERA_2_X1 -4,
+                                ESCALERA_2_X1 -12,
                                 ESCALERA_2_X0,
                                 ESCALERA_2_X1,
                                 ESCALERA_2_Y0,
                                 ESCALERA_2_Y1);
     Escalera * e3 = new Escalera("E3",
-                                ESCALERA_3_X1 -4,
+                                ESCALERA_3_X1 -12,
                                 ESCALERA_3_X0,
                                 ESCALERA_3_X1,
                                 ESCALERA_3_Y0,
                                 ESCALERA_3_Y1);
     Escalera * e4 = new Escalera("E4",
-                                ESCALERA_4_X1 -4,
+                                ESCALERA_4_X1 -12,
                                 ESCALERA_4_X0,
                                 ESCALERA_4_X1,
                                 ESCALERA_4_Y0,
                                 ESCALERA_4_Y1);
     Escalera * e5 = new Escalera("E5",
-                                ESCALERA_5_X1 -4,
+                                ESCALERA_5_X1 -12,
                                 ESCALERA_5_X0,
                                 ESCALERA_5_X1,
                                 ESCALERA_5_Y0,
                                 ESCALERA_5_Y1);
-    
-    this->escaleras[0] = e1;
-    this->escaleras[1] = e2;
-    this->escaleras[2] = e3;
-    this->escaleras[3] = e4;
-    this->escaleras[4] = e5;
+
+    this->escaleras_2.push_back(e1);
+    this->escaleras_2.push_back(e2);
+    this->escaleras_2.push_back(e3);
+    this->escaleras_2.push_back(e4);
+    this->escaleras_2.push_back(e5);
 }
 
-Escalera* Nivel1::getEscalera(punto_t p) {
-    if (p.x >= ESCALERA_1_X0 
-        && p.x <= ESCALERA_1_X1 
-        && p.y <= ESCALERA_1_Y0
-        && p.y >= ESCALERA_1_Y1) {
-            return this->escaleras[0];
-    } else if (p.x >= ESCALERA_2_X0 
-        && p.x <= ESCALERA_2_X1 
-        && p.y <= ESCALERA_2_Y0
-        && p.y >= ESCALERA_2_Y1) {
-            return this->escaleras[1];
-    } else if (p.x >= ESCALERA_3_X0 
-        && p.x <= ESCALERA_3_X1 
-        && p.y <= ESCALERA_3_Y0
-        && p.y >= ESCALERA_3_Y1) {
-            return this->escaleras[2];
-    } else if (p.x >= ESCALERA_4_X0 
-        && p.x <= ESCALERA_4_X1 
-        && p.y <= ESCALERA_4_Y0
-        && p.y >= ESCALERA_4_Y1) {
-            return this->escaleras[3];
-    } else if (p.x >= ESCALERA_5_X0 
-        && p.x <= ESCALERA_5_X1 
-        && p.y <= ESCALERA_5_Y0
-        && p.y >= ESCALERA_5_Y1) {
-            return this->escaleras[4];
-    }
+// Escalera* Nivel1::getEscalera(punto_t p) {
+//     std::list<Escalera*>::iterator it;
+//     for (it = this->escaleras_2.begin(); it != this->escaleras_2.end(); ++it) {
+//         Escalera* e = (*it);
+        
+//         // Considero que si Mario tiene la mitad del cuerpo
+//         // en el rango de la escalera
+//         // ya puedo subirla
+//         if (p.x >= (e->getX0() - ANCHO_MARIO / 2)
+//         && p.x <= (e->getX1() - ANCHO_MARIO / 2) 
+//         && p.y <= (e->getY0() - ALTO_MARIO)
+//         && p.y >= (e->getY1() - ALTO_MARIO)) {
+//             return e;
+//         }
+//     }
+//     return NULL;
+// }
+
+Plataforma* Nivel1::getPlataformaInicial() {
+    return this->plataformas[0];
+}
+
+Plataforma* Nivel1::getPlataforma(punto_t p) {
+    // std::vector<Plataforma*>::iterator it;
+    // for (it = this->plataformas.begin(); it != this->plataformas.end(); ++it) {
+    //     punto_t inicio = (*it)->getInicio();
+    //     punto_t final = (*it)->getFinal();
+
+    //     if (p.x >= inicio.x 
+    //     && p.x <= final.x
+    //     && p.y <= ESCALERA_1_Y0
+    //     && p.y >= ESCALERA_1_Y1) {
+    //         return this->escaleras[0];
+    // }
     return NULL;
 }

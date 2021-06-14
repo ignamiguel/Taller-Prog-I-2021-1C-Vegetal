@@ -7,6 +7,8 @@ class Plataforma {
         punto_t getPosicionAleatoria(int anchoEntidad);
         void getLimites(float *min, float *max);
         virtual ~Plataforma() = default;
+        punto_t getInicio();
+        punto_t getFinal();
 
     protected:
         punto_t extremo1;

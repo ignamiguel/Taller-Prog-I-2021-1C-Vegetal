@@ -23,3 +23,11 @@ void Plataforma::getLimites(float *min, float *max) {
     *min = extremo1.x;
     *max = extremo2.x;
 }
+
+punto_t Plataforma::getInicio() {
+    return this->extremo1;
+}
+
+punto_t Plataforma::getFinal() {
+    return this->extremo2;
+}

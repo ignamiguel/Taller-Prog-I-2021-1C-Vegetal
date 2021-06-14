@@ -3,6 +3,7 @@
 #include "../Mario.hpp"
 #include <string>
 #include "../nivel/Escalera.h"
+#include "../../utils/Constants.hpp"
 
 class Mario;
 

@@ -20,13 +20,15 @@ class Nivel
         virtual void update() = 0;
         virtual estadoNivel_t* getEstado() = 0;
         virtual ~Nivel();
-        virtual Escalera* getEscalera(punto_t p) = 0;
+        Escalera* getEscalera(punto_t p);
+        virtual Plataforma* getPlataformaInicial() = 0;
 
     protected:
         std::vector<Plataforma*> plataformas;
         std::list<EnemigoFuego*> enemies;
         std::list<Mario*> jugadores;
         std::map<int, Escalera*> escaleras;
+        std::list<Escalera*> escaleras_2;
         estadoNivel_t *estadoNivel;
 
         void updatePlayers();

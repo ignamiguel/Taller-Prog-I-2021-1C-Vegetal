@@ -4,6 +4,7 @@
 #include "../utils/estadoMario.h"
 #include "mario/MarioState.h"
 #include "Nivel.h"
+#include "Plataforma.h"
 
 #define SPACE 128
 #define UP 8
@@ -24,8 +25,10 @@ class Mario : public Entidad
         estadoMario_t getEstado();
         void setNivel(Nivel* nivel);
         Nivel* getNivel();
+        Plataforma* getPlataformaActual();
 
     private:
         MarioState* state;
         Nivel* nivel;
+        Plataforma* plataformaActual;
 };

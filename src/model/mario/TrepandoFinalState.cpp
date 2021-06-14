@@ -58,13 +58,15 @@ MarioState* TrepandoFinalState::handleInput(char controls, Mario* mario) {
 
         // Si Mario esta en el extremo inferior de la escalera
         // y presiona para abajo, no cambia el estado
-        if( mario->getPos().y == e->getY0() && down) {
+        if( mario->getPos().y == (e->getY0() - ALTO_MARIO)
+            && down) {
              return TrepandoFinalState::getInstance();
         }
 
         // Si Mario esta en el extremo superior de la escalera
         // y presiona para arriba, no cambia el estado
-        if( mario->getPos().y == e->getY1() && up) {
+        if( mario->getPos().y == (e->getY1() - ALTO_MARIO)
+            && up) {
              return TrepandoFinalState::getInstance();
         }
 

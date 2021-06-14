@@ -11,7 +11,7 @@ class Nivel2 : public Nivel {
         void update();
         estadoNivel_t* getEstado();
         ~Nivel2();
-        Escalera* getEscalera(punto_t p);
+        Plataforma* getPlataformaInicial();
 
     private:
         std::list<Barril*> barriles;

@@ -35,9 +35,11 @@ MarioState* AireState::handleInput(char controls, Mario* mario) {
     char left = (controls & LEFT) != 0;
     char right = (controls & RIGHT) != 0;
 
+    float base = mario->getPlataformaActual()->getFinal().y - ALTO_MARIO;
+
     // Mario esta en una plataforma?
-    if (mario->getPos().y > 232) {
-        mario->setPos(mario->getPos().x, 232);
+    if (mario->getPos().y > base) {
+        mario->setPos(mario->getPos().x, base);
         return ReposoState::getInstance();
     }
 

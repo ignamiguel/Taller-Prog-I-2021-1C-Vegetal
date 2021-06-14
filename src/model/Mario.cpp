@@ -2,6 +2,7 @@
 #include "../utils/Constants.hpp"
 #include "mario/ReposoState.h"
 #include "Nivel.h"
+#include "Plataforma.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -16,6 +17,7 @@ Mario::Mario() : Entidad(0, 0, ANCHO_MARIO, ALTO_MARIO) {
 
 void Mario::setNivel(Nivel* nivel) {
     this->nivel = nivel;
+    this->plataformaActual = this->nivel->getPlataformaInicial();
 }
 
 Nivel* Mario::getNivel() {
@@ -53,4 +55,8 @@ estadoMario_t Mario::getEstado() {
     estadoMario.pos = getPos();
     estadoMario.estado = this->state->getEstado();
     return estadoMario;
+}
+
+Plataforma* Mario::getPlataformaActual() {
+    return this->plataformaActual;
 }

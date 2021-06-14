@@ -8,7 +8,6 @@
 #include <string>
 #include <stdio.h>
 #include <iostream>
-#include "../../utils/Constants.hpp"
 
 #define MARIO_VELOCIDAD 0.5
 
@@ -53,15 +52,15 @@ MarioState* TrepandoState::handleInput(char controls, Mario* mario) {
     char down = (controls & DOWN) != 0;
 
     // Mario esta al principio de la escalera ?
-    if (mario->getPos().y > this->e->getY0()) {
-        mario->setPos(mario->getPos().x, this->e->getY0());
+    if (mario->getPos().y > (this->e->getY0() - ALTO_MARIO)) {
+        mario->setPos(mario->getPos().x, (this->e->getY0() - ALTO_MARIO));
         this->clear();
         return TrepandoFinalState::getInstance();
     }
 
     // Mario esta al final de la escalera ?
-    if (mario->getPos().y < this->e->getY1()) {
-        mario->setPos(mario->getPos().x, this->e->getY1());
+    if (mario->getPos().y < (this->e->getY1() - ALTO_MARIO)) {
+        mario->setPos(mario->getPos().x, (this->e->getY1() - ALTO_MARIO));
         this->clear();
         return TrepandoFinalState::getInstance();
     }

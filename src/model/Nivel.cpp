@@ -58,3 +58,21 @@ Nivel::~Nivel() {
 
     enemies.clear();
 }
+
+Escalera* Nivel::getEscalera(punto_t p) {
+    std::list<Escalera*>::iterator it;
+    for (it = this->escaleras_2.begin(); it != this->escaleras_2.end(); ++it) {
+        Escalera* e = (*it);
+        
+        // Considero que si Mario tiene la mitad del cuerpo
+        // en el rango de la escalera
+        // ya puedo subirla
+        if (p.x >= (e->getX0() - ANCHO_MARIO / 2)
+        && p.x <= (e->getX1() - ANCHO_MARIO / 2) 
+        && p.y <= (e->getY0() - ALTO_MARIO)
+        && p.y >= (e->getY1() - ALTO_MARIO)) {
+            return e;
+        }
+    }
+    return NULL;
+}
