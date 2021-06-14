@@ -7,6 +7,46 @@ const int ESCALERA_1_X1 = 192;
 const int ESCALERA_1_Y0 = 248;
 const int ESCALERA_1_Y1 = 219;
 
+const int ESCALERA_2_X0 = 96;
+const int ESCALERA_2_X1 = 104;
+const int ESCALERA_2_Y0 = 219;
+const int ESCALERA_2_Y1 = 182;
+
+const int ESCALERA_3_X0 = 32;
+const int ESCALERA_3_X1 = 40;
+const int ESCALERA_3_Y0 = 219;
+const int ESCALERA_3_Y1 = 182;
+
+const int ESCALERA_4_X0 = 112;
+const int ESCALERA_4_X1 = 120;
+const int ESCALERA_4_Y0 = 182;
+const int ESCALERA_4_Y1 = 149;
+
+const int ESCALERA_5_X0 = 184;
+const int ESCALERA_5_X1 = 192;
+const int ESCALERA_5_Y0 = 182;
+const int ESCALERA_5_Y1 = 149;
+
+const int ESCALERA_6_X0 = 72;
+const int ESCALERA_6_X1 = 80;
+const int ESCALERA_6_Y0 = 149;
+const int ESCALERA_6_Y1 = 118;
+
+const int ESCALERA_7_X0 = 32;
+const int ESCALERA_7_X1 = 40;
+const int ESCALERA_7_Y0 = 149;
+const int ESCALERA_7_Y1 = 118;
+
+const int ESCALERA_8_X0 = 184;
+const int ESCALERA_8_X1 = 192;
+const int ESCALERA_8_Y0 = 118;
+const int ESCALERA_8_Y1 = 87;
+
+const int ESCALERA_9_X0 = 128;
+const int ESCALERA_9_X1 = 136;
+const int ESCALERA_9_Y0 = 87;
+const int ESCALERA_9_Y1 = 56;
+
 Nivel2::Nivel2() : Nivel() {
     this->inicializarPlataformas();
     this->inicializarEscaleras();
@@ -47,8 +87,73 @@ void Nivel2::inicializarEscaleras() {
                                 ESCALERA_1_X1,
                                 ESCALERA_1_Y0,
                                 ESCALERA_1_Y1);
+    
+    Escalera * e2 = new Escalera("E2",
+                                ESCALERA_2_X1 - 12,
+                                ESCALERA_2_X0,
+                                ESCALERA_2_X1,
+                                ESCALERA_2_Y0,
+                                ESCALERA_2_Y1);
+
+    Escalera * e3 = new Escalera("E3",
+                                ESCALERA_3_X1 - 12,
+                                ESCALERA_3_X0,
+                                ESCALERA_3_X1,
+                                ESCALERA_3_Y0,
+                                ESCALERA_3_Y1);
+    
+    Escalera * e4 = new Escalera("E4",
+                                ESCALERA_4_X1 - 12,
+                                ESCALERA_4_X0,
+                                ESCALERA_4_X1,
+                                ESCALERA_4_Y0,
+                                ESCALERA_4_Y1);
+
+    Escalera * e5 = new Escalera("E5",
+                                ESCALERA_5_X1 - 12,
+                                ESCALERA_5_X0,
+                                ESCALERA_5_X1,
+                                ESCALERA_5_Y0,
+                                ESCALERA_5_Y1);
+    
+    Escalera * e6 = new Escalera("E5",
+                                ESCALERA_6_X1 - 12,
+                                ESCALERA_6_X0,
+                                ESCALERA_6_X1,
+                                ESCALERA_6_Y0,
+                                ESCALERA_6_Y1);
+    
+    Escalera * e7 = new Escalera("E5",
+                                ESCALERA_7_X1 - 12,
+                                ESCALERA_7_X0,
+                                ESCALERA_7_X1,
+                                ESCALERA_7_Y0,
+                                ESCALERA_7_Y1);
+
+    
+    Escalera * e8 = new Escalera("E5",
+                                ESCALERA_8_X1 - 12,
+                                ESCALERA_8_X0,
+                                ESCALERA_8_X1,
+                                ESCALERA_8_Y0,
+                                ESCALERA_8_Y1);
+
+    Escalera * e9 = new Escalera("E5",
+                                ESCALERA_9_X1 - 12,
+                                ESCALERA_9_X0,
+                                ESCALERA_9_X1,
+                                ESCALERA_9_Y0,
+                                ESCALERA_9_Y1);
 
     this->escaleras_2.push_back(e1);
+    this->escaleras_2.push_back(e2);
+    this->escaleras_2.push_back(e3);
+    this->escaleras_2.push_back(e4);
+    this->escaleras_2.push_back(e5);
+    this->escaleras_2.push_back(e6);
+    this->escaleras_2.push_back(e7);
+    this->escaleras_2.push_back(e8);
+    this->escaleras_2.push_back(e9);
 }
 
 estadoNivel_t* Nivel2::getEstado() {
