@@ -1,5 +1,4 @@
 #pragma once
-
 #include "EntidadEstaticaVista.h"
 
 class PaulineVista : public EntidadEstaticaVista {
@@ -12,5 +11,7 @@ class PaulineVista : public EntidadEstaticaVista {
 
     private:
         static SDL_Texture* texture;
-        SDL_Rect rect;
+        SDL_Rect srcRect, dstRect;
+        unsigned char counter = 0;
+        bool fin = false;
 };
