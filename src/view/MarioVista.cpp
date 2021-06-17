@@ -16,7 +16,6 @@ const std::string IMG_MARIO = "res/Mario.png";
 
 SDL_Renderer *MarioVista::renderer = NULL;
 SDL_Texture *MarioVista::texture = NULL;
-SDL_Rect MarioVista::dstRect;
 int MarioVista::totalJugadores = 0;
 
 MarioVista::MarioVista(SDL_Renderer *renderer) {

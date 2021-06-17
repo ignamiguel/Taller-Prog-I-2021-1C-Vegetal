@@ -15,7 +15,7 @@ class MarioVista
         static SDL_Renderer *renderer;
         static SDL_Texture *texture;
         SDL_Rect srcRect;
-        static SDL_Rect dstRect;
+        SDL_Rect dstRect;
         SDL_RendererFlip flip;
         int tiempo;
         static int totalJugadores;
