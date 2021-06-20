@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
         Client* client = new Client();
         client->connectToServer(argv[2], argv[3]);
     } else {
-        std::cout << "ERROR" << std::endl;
+        std::cout << "ERROR: no es posible iniciar el programa" << std::endl;
     }
 
     return 0;
