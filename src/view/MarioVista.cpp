@@ -75,7 +75,7 @@ void MarioVista::mostrar(punto_t pos, char estado) {
 }
 
 void MarioVista::updateReposo(char estado) {
-    srcRect.x = MARIO_DE_ESPALDAS_INDEX * (estado == DE_ESPALDAS) * MARIO_SPRITE_SIZE;
+    srcRect.x = (estado == DE_ESPALDAS) * (MARIO_DE_ESPALDAS_INDEX * MARIO_SPRITE_SIZE);
 }
 
 void MarioVista::updateCorriendo(int nextX) {

@@ -1,5 +1,4 @@
 #include "MarioState.h"
-#include "../../utils/Constants.hpp"
 
 Stage *MarioState::stage = NULL;
 

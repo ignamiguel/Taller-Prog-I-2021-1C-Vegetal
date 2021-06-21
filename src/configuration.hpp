@@ -42,12 +42,14 @@ namespace configuration
             const std::string getLogLevel() const { return logLevel; };
             const std::vector<configuration::Enemy> getEnemies() const { return enemies; };
             const std::vector<configuration::Stage> getStages() const { return stages; };
+            int getMaxPlayers() const { return maxPlayers; };
             bool getDefaultConfigFlag();
 
         private:
             std::string logLevel;
             std::vector<Enemy> enemies;
             std::vector<Stage> stages;
+            int maxPlayers;
             bool useDefaultConfig;
 
             static const Json::Value getJsonValue(const Json::Value& root, const std::string& name);

@@ -2,6 +2,12 @@
 
 #include <string>
 
+//estadoNivel
+const int MAX_PLATFORMS = 12;
+const int MAX_ENEMIES = 3;
+const int MAX_BARRELS = 10;
+const int DEFAULT_MAX_PLAYERS = 2; //en caso de que la cant max de jugadores sea negativa en el json
+const int MAX_PLAYERS = 4; //se usa para el struct estadoNivel_t
 // Dimensiones
 #define ANCHO_NIVEL 224
 #define ALTO_NIVEL 256
@@ -44,7 +50,6 @@
 
 // Nivel 1
 #define MARIO_START_X 0
-#define MARIO_START_Y 232
 
 #define N1_POS_X_FUEGO1 48
 #define N1_POS_X_FUEGO2 88
@@ -60,17 +65,18 @@
 #define N1_POS_Y2_POLEA 168
 
 // Nive 2
-#define N2_MARIO_POS_X 40
+#define N2_MARIO_START_X 40
 
 #define N2_POS_X_FUEGO 16
 #define N2_POS_Y_FUEGO 216
 
-#define N2_POS_Y_BARRIL 30
+#define N2_START_Y_BARRIL 30
 
 #define POS_X_FIREBARREL 16
 #define POS_Y_FIREBARREL 232
 
 // Common
+#define MARIO_START_Y 232
 
 #define DONKEYKONG_POS_X 24
 #define DONKEYKONG_POS_Y 50

@@ -4,8 +4,7 @@
 class TrepandoState : public MarioState
 {
     public:
-        MarioState *handleInput(controls_t controls, float *xSpeed, float *ySpeed);
-        MarioState *update(float *, float *y, float *xSpeed, float *ySpeed, char *estado);
+        MarioState *update(float *, float *y, float *xSpeed, float *ySpeed, char *estado, controls_t controls);
         static TrepandoState *getInstance();
         void setLadder(Ladder *ladder);
 

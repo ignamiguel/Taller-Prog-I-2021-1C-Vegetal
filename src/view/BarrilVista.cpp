@@ -32,8 +32,8 @@ BarrilVista::BarrilVista(SDL_Renderer *renderer) {
     dstRect.h = round(ALTO_BARRIL * ALTO_PANTALLA / (float)ALTO_NIVEL);
 }
 
-void BarrilVista::setTotal(unsigned int n) {
-    totalBarriles = n;
+void BarrilVista::startRender() {
+    updated = 0;
 }
 
 void BarrilVista::mover(punto_t pos) {
@@ -42,10 +42,11 @@ void BarrilVista::mover(punto_t pos) {
 }
 
 void BarrilVista::mostrar() {
-    tiempo = (tiempo + (--totalBarriles == 0)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
+    tiempo = (tiempo + (updated == 0)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
     srcRect.x = (tiempo / TIEMPO_POR_FRAME) * SPRITE_INDEX_SIZE;
 
     SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+    updated = 1;
 }
 
 BarrilVista::~BarrilVista() {

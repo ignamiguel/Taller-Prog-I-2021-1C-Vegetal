@@ -4,6 +4,7 @@
 Nivel1::Nivel1() : Nivel() {
     this->initPlatforms();
     this->initLadders();
+    estadoNivel->level = 1;
 }
 
 void Nivel1::initPlatforms() {
@@ -34,11 +35,19 @@ void Nivel1::initPlatforms() {
 }
 
 void Nivel1::initLadders() {
-    stage->addLadder(new Ladder(32, 232, 184));
-    stage->addLadder(new Ladder(216, 184, 144));
-    stage->addLadder(new Ladder(0, 144, 104));
-    stage->addLadder(new Ladder(216, 104, 72));
-    stage->addLadder(new Ladder(128, 68, 40));
+    stage->addLadder(new Ladder(28, 232, 184));
+    stage->addLadder(new Ladder(212, 184, 144));
+    stage->addLadder(new Ladder(-4, 144, 104));
+    stage->addLadder(new Ladder(212, 104, 72));
+    stage->addLadder(new Ladder(124, 68, 40));
+}
+
+void Nivel1::addPlayers(std::vector<Mario *> *players) {
+    this->players = players;
+    for (Mario *player : *players) {
+        player->setStage(stage);
+        player->setPos(MARIO_START_X, MARIO_START_Y);
+    }
 }
 
 void Nivel1::addEnemies(unsigned int amount) {
@@ -58,24 +67,24 @@ void Nivel1::addEnemies(unsigned int amount) {
 
 void Nivel1::update() {
     for (MovingPlatform *platform : movingPlatforms) platform->move();
-    for (Mario *mario : jugadores) mario->mover();
+    for (Mario *mario : *players) mario->mover();
     for (EnemigoFuego *enemy : enemies) enemy->mover();
 }
 
 estadoNivel_t* Nivel1::getEstado() {
-
-    estadoNivel->enemies.clear();
-    for (EnemigoFuego *enemy : this->enemies) {
-        estadoNivel->enemies.push_back(enemy->getPos());
+    unsigned int i;
+    for (i = 0; i < 12; ++i) {
+        estadoNivel->platforms[i] = movingPlatforms[i]->getPos();
     }
-    estadoNivel->platforms.clear();
-    for (MovingPlatform *platform : this->movingPlatforms) {
-        estadoNivel->platforms.push_back(platform->getPos());
+    i = 0;
+    for (EnemigoFuego *enemy : enemies) {
+        estadoNivel->enemies[i++] = enemy->getPos();
     }
-    estadoNivel->players.clear();
-    for (Mario *player : this->jugadores) {
-        estadoNivel->players.push_back(player->getEstado());
+    i = 0;
+    for (Mario *player : *players) {
+        estadoNivel->players[i++] = player->getEstado();
     }
+    
     return estadoNivel;
 }
 

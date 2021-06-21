@@ -77,6 +77,9 @@ namespace configuration
         // Get log level
         this->logLevel = getJsonValue(log, "level").asString();
 
+        // Get max players
+        this->maxPlayers = getJsonValue(configuration, "players").asInt();
+
         // Get game
         auto game = getJsonValue(configuration, "game");
 

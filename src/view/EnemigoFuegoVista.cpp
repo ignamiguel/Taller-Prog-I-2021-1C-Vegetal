@@ -34,8 +34,8 @@ EnemigoFuegoVista::EnemigoFuegoVista(SDL_Renderer *renderer) {
     dstRect.h = round(ALTO_ENEMIGO_FUEGO * ALTO_PANTALLA / (float)ALTO_NIVEL);
 }
 
-void EnemigoFuegoVista::setTotal(unsigned int n) {
-    totalEnemigos = n;
+void EnemigoFuegoVista::startRender() {
+    updated = 0;
 }
 
 void EnemigoFuegoVista::mover(punto_t pos) {
@@ -44,10 +44,11 @@ void EnemigoFuegoVista::mover(punto_t pos) {
 }
 
 void EnemigoFuegoVista::mostrar() {
-    tiempo = (tiempo + (--totalEnemigos == 0)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
+    tiempo = (tiempo + (updated == 0)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
     srcRect.x = (tiempo / TIEMPO_POR_FRAME) * SPRITE_INDEX_SIZE;
 
     SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+    updated = 1;
 }
 
 EnemigoFuegoVista::~EnemigoFuegoVista() {

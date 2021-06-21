@@ -6,7 +6,7 @@
 class BarrilVista {
     public:
         BarrilVista(SDL_Renderer *renderer);
-        void setTotal(unsigned int n);
+        void startRender();
         void mover(punto_t pos);
         void mostrar();
         ~BarrilVista();
@@ -17,5 +17,5 @@ class BarrilVista {
         SDL_Rect srcRect;
         SDL_Rect dstRect;
         int tiempo;
-        int totalBarriles;
+        int updated;
 };

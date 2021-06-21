@@ -7,10 +7,10 @@ typedef struct estadoMario {
 } estadoMario_t;
 
 typedef struct controls {
-    unsigned int space : 1;
-    unsigned int up : 1;
-    unsigned int down : 1;
-    unsigned int left : 1;
-    unsigned int right : 1;
-    unsigned int : 3;
-}controls_t;
+    unsigned char space : 1;
+    unsigned char up : 1;
+    unsigned char down : 1;
+    unsigned char left : 1;
+    unsigned char right : 1;
+    unsigned char : 3;
+} controls_t;

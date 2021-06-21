@@ -6,7 +6,7 @@
 class EnemigoFuegoVista {
     public:
         EnemigoFuegoVista(SDL_Renderer *renderer);
-        void setTotal(unsigned int n);
+        void startRender();
         void mover(punto_t pos);
         void mostrar();
         ~EnemigoFuegoVista();
@@ -17,5 +17,5 @@ class EnemigoFuegoVista {
         static SDL_Rect srcRect;
         static SDL_Rect dstRect;
         int tiempo;
-        int totalEnemigos;
+        int updated;
 };
