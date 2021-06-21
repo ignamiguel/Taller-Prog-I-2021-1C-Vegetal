@@ -1,5 +1,11 @@
 #include <SDL2/SDL_image.h>
 #include "StartPageView.h"
+#include "configuration.hpp"
+#include "utils/Constants.hpp"
+#include <map>
+#include <string_view>
+
+#include <iostream>
 
 #define ANCHO_PANTALLA 448
 #define ALTO_PANTALLA 512
@@ -23,6 +29,9 @@ const char* FONT_IMG = "res/font.png";
 const char* USERNAME = "USERNAME";
 const char* PASSWORD = "PASSWORD";
 const char* DONE = "DONE";
+const char* INVALID_USER = "INVALID USER";
+const char* INVALID_PASS = "INVALID PASSWORD";
+const char* LOGIN_OK = "LOGIN OK";
 
 const SDL_Rect usernameRect = {(int)(TEXT_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
                                (int)(USER_BUTTON_Y * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f),
@@ -39,9 +48,22 @@ const SDL_Rect doneRect = {(int)(DONE_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_N
                            (int)(DONE_BUTTON_WIDTH * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
                            (int)(BUTTON_HEIGHT * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f)};
 
+const SDL_Rect errorRect = {(int)(TEXT_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
+                               (int)(USER_BUTTON_Y * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f),
+                               (int)(TEXT_BUTTON_WIDTH * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
+                               (int)(BUTTON_HEIGHT * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f)};
+
 StartPage::StartPage(SDL_Renderer *renderer) {
     this->renderer = renderer;
     this->textRenderer = new TextRenderer(renderer, FONT_IMG);
+    
+    // Load users
+    std::cout << "Loading users..." << std::endl;
+    auto config = configuration::GameConfiguration(CONFIG_FILE);
+    for (auto u: config.getUsers())
+    {
+        this->users[u.username] = u;
+    }
 }
 
 void StartPage::setFocusColor(int focus) {
@@ -75,6 +97,16 @@ void StartPage::show() {
     textRenderer->renderText(pos, DONE, RESIZE);
     setFocusColor(focus == 2);
     SDL_RenderDrawRect(renderer, &doneRect);
+
+    this->showError();
+}
+
+void StartPage::showError() {
+    punto_t pos;
+    pos.x = .0f;
+    pos.y = .0f;
+    textRenderer->renderText(pos, this->resultMsg.c_str(), RESIZE);
+    SDL_RenderDrawRect(renderer, &errorRect);
 }
 
 bool StartPage::mouseOnUsernameButton(int x, int y) {
@@ -100,19 +132,25 @@ bool StartPage::handle(SDL_Event event) {
         int x = event.button.x;
         int y = event.button.y;
 
-        if (mouseOnUsernameButton(x, y)) focus = 0;
-        else if (mouseOnPasswordButton(x, y)) focus = 1;
-        else if (mouseOnDoneButton(x, y)) return true;
+        if (mouseOnUsernameButton(x, y)) {
+            focus = 0;
+        } else if (mouseOnPasswordButton(x, y)) {
+            focus = 1;
+        } else if (mouseOnDoneButton(x, y)) {
+            return this->login(username, password);
+        }
     } else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_BACKSPACE:
-                if (focus == 0 && !username.empty()) username.pop_back();
-                else if (focus == 1 && !password.empty()) password.pop_back();
+                if (focus == 0 && !username.empty()){
+                    username.pop_back();
+                } else if (focus == 1 && !password.empty()) {
+                    password.pop_back();
+                }
                 break;
             case SDLK_KP_ENTER:
             case SDLK_RETURN:
-                if (focus) return true;
-                [[fallthrough]];
+                return this->login(username, password);
             case SDLK_TAB:
                 focus = (focus + 1) % 3;
                 break;
@@ -131,6 +169,24 @@ bool StartPage::handle(SDL_Event event) {
         }
     }
     return false;
+}
+
+bool StartPage::login(std::string name, std::string pass) {
+    std::cout << "login process..." << std::endl;
+    if (this->users.count(name) == 0) {
+        this->resultMsg = INVALID_USER;
+        return false;
+    } 
+    
+    auto user = this->users.at(name);
+
+    if (pass.compare("") == 0 || pass.compare(user.password) != 0) {
+        this->resultMsg = INVALID_PASS;
+        return false;
+    }
+
+    this->resultMsg = LOGIN_OK;
+    return true;
 }
 
 StartPage::~StartPage()  {

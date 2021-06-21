@@ -19,6 +19,24 @@
                     "fondo1": "res/Nivel2.png"
                 }
             ]
-        }
+        },
+        "users": [
+            {
+                "username": "nachoi",
+                "password": "nachoi"
+            },
+            {
+                "username": "kai",
+                "password": "kai"
+            },
+            {
+                "username": "ailin",
+                "password": "ailin"
+            },
+            {
+                "username": "nachod",
+                "password": "nachod"
+            }
+        ]
     }
 }

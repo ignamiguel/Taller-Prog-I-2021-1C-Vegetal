@@ -16,7 +16,7 @@ class Client {
     void startGame();
     static void *sendDataThread(void* args);
     static int sendCommand(int clientSocket, controls_t* command);
-    static void *recieveDataThread(void *args);
+    static void *receiveDataThread(void *args);
     static int receiveView(int clientSocket, estadoNivel_t* view);
     int clientSocket;
     struct sockaddr_in serverAddress;

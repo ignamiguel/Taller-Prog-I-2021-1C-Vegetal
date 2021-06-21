@@ -44,15 +44,15 @@ namespace configuration
 
         if (this->useDefaultConfig) 
         {
-            logger::Logger::getInstance().logInformation("Using defaul configuration");
+            logger::Logger::getInstance().logInformation("Using default configuration");
             configurationFileName = "default.json";
             bool valid = this->loadFromFile(configurationFileName);
             if (valid) {
-                logger::Logger::getInstance().logInformation("Succesfully loaded defaul configuration");
+                logger::Logger::getInstance().logInformation("Successfully loaded default configuration");
             }
             else
             {
-                logger::Logger::getInstance().logError("[FATAL] Unable to load defaul configuration");
+                logger::Logger::getInstance().logError("[FATAL] Unable to load default configuration");
             }
         }
     }
@@ -111,6 +111,18 @@ namespace configuration
             auto s = configuration::Stage(backgrounds);
             this->stages.emplace_back(s);
         }
+
+        // Get Users
+        auto users = getJsonValue(configuration, "users");
+        for (auto j: users)
+        {
+            user_t newUser;
+            newUser.username = getJsonValue(j, "username").asString();
+            newUser.password = getJsonValue(j, "password").asString();
+            
+            this->users.emplace_back(newUser);
+        }
+
 
         return true;
     }

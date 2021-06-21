@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <jsoncpp/json/json.h>
+#include "utils/user.h"
 
 namespace configuration
 {
@@ -44,11 +45,13 @@ namespace configuration
             const std::vector<configuration::Stage> getStages() const { return stages; };
             int getMaxPlayers() const { return maxPlayers; };
             bool getDefaultConfigFlag();
+            std::vector<user_t> getUsers() const {return users; };
 
         private:
             std::string logLevel;
             std::vector<Enemy> enemies;
             std::vector<Stage> stages;
+            std::vector<user_t> users;
             int maxPlayers;
             bool useDefaultConfig;
 

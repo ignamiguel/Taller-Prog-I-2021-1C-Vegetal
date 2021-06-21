@@ -8,6 +8,7 @@
 #include "Nivel2.h"
 #include "Mario.hpp"
 #include "../utils/Constants.hpp"
+#include "../utils/Messages.h"
 #include "../utils/window.hpp"
 #include "../utils/estadoNivel.h"
 #include "Server.h"
@@ -30,36 +31,47 @@ Server::Server(char* port) {
 }
 int Server::startServer() {
     auto config = configuration::GameConfiguration(CONFIG_FILE);
-    auto log_level = config.getLogLevel();
-    logger::Logger::getInstance().setLogLevel(log_level);
+    auto logLevel = config.getLogLevel();
+    logger::Logger::getInstance().setLogLevel(logLevel);
 
     this->maxPlayers = config.getMaxPlayers();
-    if(this->maxPlayers < 0) {
+    if(this->maxPlayers < 1) {
+        logger::Logger::getInstance().logDebug(CANTIDAD_DE_JUGADORES_INVALIDA);
         this->maxPlayers = DEFAULT_MAX_PLAYERS;
     }
 
     //socket
     int serverSocket = socket(AF_INET , SOCK_STREAM , 0);
-    if (serverSocket == -1)
+    if (serverSocket == -1) {
         return -1;
+    }
 
     //bind
     int serverBind = bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
-    if(serverBind < 0)
+    if(serverBind < 0) {
         return -1;
+    }
 
     //listen
-    if (listen(serverSocket , MAX_QUEUED_CONNECTIONS) < 0)
+    if (listen(serverSocket , MAX_QUEUED_CONNECTIONS) < 0) {
         return -1;
+    }
+
     printf("listen...\n");
+
     //Accept
     while(clientSockets.size() < (unsigned int)maxPlayers) {
         int client = accept(serverSocket, (struct sockaddr *)&clientAddress, (socklen_t*) &clientAddrLen);
         clientSockets.push_back(client);
         printf("Players: %d/%d\n", (int)clientSockets.size(), maxPlayers);
     }
-    if (clientSockets[0] < 0 || clientSockets[1] < 0) return -1;
-    printf("accept\n");
+
+    if (clientSockets[0] < 0 || clientSockets[1] < 0) {
+        return -1;
+    }
+
+    printf("Accept\n");
+
     startGame(config);
 
     for (int clientSocket : clientSockets) close(clientSocket);
@@ -131,12 +143,12 @@ void *Server::handleCommand(void *handleCommandArgs) {
     int clientSocket = ((handleCommandArgs_t *)handleCommandArgs)->clientSocket;
 
     controls_t controls;
-    int bytesRecieved;
+    int bytesReceived;
 
     bool quitRequested = false;
     while(!quitRequested) {
-        bytesRecieved = receiveCommand(clientSocket, &controls);
-        if (bytesRecieved == sizeof(controls_t)) player->setControls(controls);
+        bytesReceived = receiveCommand(clientSocket, &controls);
+        if (bytesReceived == sizeof(controls_t)) player->setControls(controls);
 
         quitRequested = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT) > 0;
     }

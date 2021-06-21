@@ -11,6 +11,7 @@
 #include "../utils/Constants.hpp"
 #include "../TextRenderer.h"
 #include "Client.h"
+#include "../StartPageView.h"
 
 typedef struct handleLevelStateArgs {
     int clientSocket;
@@ -18,7 +19,7 @@ typedef struct handleLevelStateArgs {
 } handleLevelStateArgs_t;
 
 pthread_mutex_t mutex;
-
+bool serverOpen = true;
 void getNextLevelView(NivelVista **vista, configuration::GameConfiguration *config, unsigned char currentLevel, SDL_Renderer *);
 
 Client::Client() {
@@ -33,22 +34,24 @@ int Client::connectToServer(char* serverIp, char* port) {
 
     //socket
     clientSocket = socket(AF_INET , SOCK_STREAM , 0);
-    if (clientSocket == -1)
+    if (clientSocket == -1) {
         return -1;
+    }
 
     serverAddress.sin_addr.s_addr = inet_addr(serverIp);
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons( atoi(port));
 
-    std::cout << "pre connect" << std::endl;
+    std::cout << "Conectado" << std::endl;
     //connect
     if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(struct sockaddr_in)) < 0) {
-        printf("error\n");
+        std::cout << "Error al conectarse con el servidor" << std::endl;
         return -1;
     }
-    std::cout << "post connect" << std::endl;
+    //std::cout << "post connect" << std::endl;
     startGame();  
-    
+    if(!serverOpen) 
+        std::cout << "Hubo un error en el servidor" << std::endl;
     return 1;
 }
 
@@ -73,11 +76,11 @@ void Client::startGame() {
     receiveArgs.clientSocket = clientSocket;
     receiveArgs.estado = &estadoNivel;
 
-    pthread_t recieveThread;
-    pthread_create(&recieveThread, NULL, recieveDataThread, &receiveArgs);
+    pthread_t receiveThread;
+    pthread_create(&receiveThread, NULL, receiveDataThread, &receiveArgs);
 
     bool quitRequested = false;
-    while(!quitRequested) {
+    while(!quitRequested && serverOpen) {
         if (estadoNivel != NULL) {
             pthread_mutex_lock(&mutex);
             if (currentLevel < estadoNivel->level) getNextLevelView(&vista, &configuration, ++currentLevel, renderer);
@@ -103,9 +106,13 @@ void* Client::sendDataThread(void *args) {
     controls_t controls = getControls();
 
     bool quitRequested = false;
-    while (!quitRequested) {
-        if (*reinterpret_cast<char *>(&controls) != *reinterpret_cast<char *>(&(controls = getControls())))
-            sendCommand(clientSocket, &controls);
+    while(!quitRequested && serverOpen) {
+        if (*reinterpret_cast<char *>(&controls) != *reinterpret_cast<char *>(&(controls = getControls()))) {
+            int bytesSent = sendCommand(clientSocket, &controls);
+            if(bytesSent <= 0) 
+                serverOpen = false;
+        }
+            
         quitRequested = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT) > 0;
     }
     return NULL;
@@ -133,15 +140,17 @@ int Client::sendCommand(int clientSocket, controls_t* controls) {
     return totalBytesSent;
 }
 
-void *Client::recieveDataThread(void *args) {
+void *Client::receiveDataThread(void *args) {
     int clientSocket = ((handleLevelStateArgs_t *)args)->clientSocket;
     estadoNivel_t **estado = ((handleLevelStateArgs_t *)args)->estado;
     estadoNivel_t view;
     int bytesReceived;
 
     bool quitRequested = false;
-    while(!quitRequested) {
+    while(!quitRequested && serverOpen) {
         bytesReceived = receiveView(clientSocket, &view);
+        if(bytesReceived == 0)
+            serverOpen = false;
         if (bytesReceived == sizeof(estadoNivel_t)) {
             pthread_mutex_lock(&mutex);
             *estado = &view;
@@ -208,6 +217,34 @@ const float TEXT_X = 10;
 const float TEXT_Y = 110;
 
 void Client::showWaitingView() {
+    SDL_StartTextInput();
+    StartPage *startPage = new StartPage(renderer);
+
+    SDL_Event event;
+
+    bool loginOk = false;
+    int inicio, fin;
+    while (!loginOk) {
+        inicio = SDL_GetTicks();
+
+        while (SDL_PollEvent(&event)) {
+            loginOk = (event.type == SDL_QUIT);
+            if (event.type != SDL_MOUSEMOTION) {
+                loginOk = startPage->handle(event);
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        startPage->show();
+        SDL_RenderPresent(renderer);
+
+        fin = SDL_GetTicks();
+        SDL_Delay(std::max(MS_PER_UPDATE - (fin - inicio), 0));
+    }
+
+    SDL_StopTextInput();
+
     SDL_RenderClear(renderer);
     TextRenderer* textRenderer = new TextRenderer(renderer, IMG_FONT);
     
