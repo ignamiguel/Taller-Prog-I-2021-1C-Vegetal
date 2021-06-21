@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <vector>
 #include "../utils/estadoNivel.h"
+#include "../utils/user.h"
 #include "../configuration.hpp"
 
 class Server {
@@ -13,6 +14,12 @@ class Server {
     private:
     int maxPlayers;
     std::vector<int> clientSockets;
+
+    int startLogin(int, configuration::GameConfiguration);
+    int receiveLogin (int,user_t*);
+    int sendLoginResponse (int,int*);
+    int checkUser(user_t, configuration::GameConfiguration);
+
     void startGame(configuration::GameConfiguration config);
     static int sendView(int clientSocket, estadoNivel_t* view);
     static int receiveCommand(int clientSocket, controls_t* controls);

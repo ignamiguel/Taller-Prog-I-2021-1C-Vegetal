@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "../utils/estadoNivel.h"
+#include "../utils/user.h"
 
 class Client {
     public:
@@ -13,6 +14,9 @@ class Client {
     private:
     SDL_Window* window;
     SDL_Renderer* renderer;
+    int startLogin();
+    int requireLogin (user_t*);
+    int receiveLoginResponse (int*); 
     void startGame();
     static void *sendDataThread(void* args);
     static int sendCommand(int clientSocket, controls_t* command);

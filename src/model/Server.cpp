@@ -62,7 +62,8 @@ int Server::startServer() {
     //Accept
     while(clientSockets.size() < (unsigned int)maxPlayers) {
         int client = accept(serverSocket, (struct sockaddr *)&clientAddress, (socklen_t*) &clientAddrLen);
-        clientSockets.push_back(client);
+        if (client < 0) return -1;
+        if (startLogin(client, config) == 0) clientSockets.push_back(client);
         printf("Players: %d/%d\n", (int)clientSockets.size(), maxPlayers);
     }
 
@@ -78,6 +79,76 @@ int Server::startServer() {
     close(serverSocket);
     return 0;
 }
+
+// LOGIN
+
+int Server::checkUser(user_t player, configuration::GameConfiguration config) {
+
+    int response = 1;
+    auto users = config.getUsers();
+    for (auto user: users) {
+            if ( strcmp(player.username ,user.username) == 0 && strcmp(player.password , user.password) == 0) response = 0;
+        }
+
+    return response;
+}
+
+int Server::startLogin(int client, configuration::GameConfiguration config) {
+ 
+    user_t player;
+    int bytesReceived = receiveLogin(client, &player);
+    cout << "bytes received: " << bytesReceived << endl;
+    
+    int response = checkUser(player, config);
+    sendLoginResponse(client, &response);
+    return response;
+}
+
+
+int Server::receiveLogin (int client, user_t* player) {
+    int totalBytesReceived = 0;
+    int bytesReceived = 0;
+    int dataSize = sizeof(user_t);
+    cout << "data size to receive: " << dataSize << endl;
+    bool clientSocketStillOpen = true;
+    
+    while((totalBytesReceived < dataSize) && clientSocketStillOpen) {
+        bytesReceived = recv(client, (player + totalBytesReceived), (dataSize - totalBytesReceived), MSG_NOSIGNAL);
+        if(bytesReceived < 0) {
+            return bytesReceived;
+        } 
+        else if(bytesReceived == 0) {
+            clientSocketStillOpen = false;
+        }
+        else {
+            totalBytesReceived += bytesReceived;
+        }
+    }
+    return totalBytesReceived;
+}
+
+int Server::sendLoginResponse (int client, int* response) {
+    int totalBytesSent = 0;
+    int bytesSent = 0;
+    int dataSize = sizeof(int);
+    bool clientSocketStillOpen = true;
+    
+    while((totalBytesSent < dataSize) && clientSocketStillOpen) {
+        bytesSent = send(client, (response + totalBytesSent), (dataSize - totalBytesSent), MSG_NOSIGNAL);
+        if(bytesSent < 0) {
+            return bytesSent;
+        } 
+        else if(bytesSent == 0) {
+            clientSocketStillOpen = false;
+        }
+        else {
+            totalBytesSent += bytesSent;
+        }
+    }
+    return totalBytesSent;
+}
+
+// GAME
 
 void Server::startGame(configuration::GameConfiguration config) {
     

@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <SDL2/SDL_image.h>
 #include "TextRenderer.h"
 
@@ -13,7 +14,9 @@
 #define LETTER_HEIGHT 7
 #define SPACING 2
 
-const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.- ";
+using namespace std;
+
+const string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.- ";
 
 SDL_Renderer *TextRenderer::renderer = NULL;
 SDL_Texture *TextRenderer::texture = NULL;
@@ -21,7 +24,11 @@ SDL_Texture *TextRenderer::texture = NULL;
 TextRenderer::TextRenderer(SDL_Renderer *renderer, const char *path) {
     this->renderer = renderer;
     SDL_Surface* surface = IMG_Load(path);
-
+    //if(surface == NULL) {
+        //logger::Logger::getInstance().logError("Font image not found: " + rutaImagen);
+        //logger::Logger::getInstance().logDebug("Loading Font default image: " + IMG_DEFAULT);
+        //surface = IMG_Load(IMG_DEFAULT.c_str());
+    //} 
     SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
     this->texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);

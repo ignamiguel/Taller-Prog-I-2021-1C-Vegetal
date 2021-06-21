@@ -9,9 +9,8 @@
 #include "../logger.h"
 #include "../utils/window.hpp"
 #include "../utils/Constants.hpp"
-#include "../TextRenderer.h"
 #include "Client.h"
-#include "../StartPageView.h"
+#include "../view/StartPageView.h"
 
 typedef struct handleLevelStateArgs {
     int clientSocket;
@@ -49,13 +48,104 @@ int Client::connectToServer(char* serverIp, char* port) {
         return -1;
     }
     //std::cout << "post connect" << std::endl;
-    startGame();  
+    if (startLogin() == LOGIN_OK) {
+        cout << "Empieza el juego" << endl;
+        startGame();  
+    }
+    else cout << "login fallo" << endl;
+
     if(!serverOpen) 
         std::cout << "Hubo un error en el servidor" << std::endl;
     return 1;
 }
 
+// LOGIN
+
+int Client::startLogin() {
+
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Window* window = SDL_CreateWindow("JUEGO", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ANCHO_PANTALLA, ALTO_PANTALLA, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    
+    cout << "show login page" << endl;
+    StartPage startPage = StartPage(renderer);
+    try {
+        user_t player = startPage.startLogin();
+
+        cout << "user: " << player.username << " pass: " << player.password << endl;
+
+        cout << "send login to server" << endl;
+        requireLogin (&player);
+        
+        int response;
+        int bytesReceived = receiveLoginResponse(&response);
+
+        if(bytesReceived == sizeof(int)) {
+            if (response == 0) startPage.connectedPage();
+            else startPage.connectionErrorPage();
+        }
+
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        IMG_Quit();
+        return response;
+    }
+    catch (exception& e) {
+        return LOGIN_ABORTED;
+    }
+}
+
+int Client::requireLogin (user_t* player) {
+    int totalBytesSent = 0;
+    int bytesSent = 0;
+    int dataSize = sizeof(user_t);
+    bool clientSocketStillOpen = true;
+    
+    while((totalBytesSent < dataSize) && clientSocketStillOpen) {
+        bytesSent = send(clientSocket, (player + totalBytesSent), (dataSize - totalBytesSent), MSG_NOSIGNAL);
+        if(bytesSent < 0) {
+            return bytesSent;
+        } 
+        else if(bytesSent == 0) {
+            clientSocketStillOpen = false;
+        }
+        else {
+            totalBytesSent += bytesSent;
+        }
+    }
+    return totalBytesSent;
+}
+
+int Client::receiveLoginResponse (int* response) {
+    int totalBytesReceived = 0;
+    int bytesReceived = 0;
+    int dataSize = sizeof(int);
+    bool clientSocketStillOpen = true;
+
+    while((totalBytesReceived < dataSize) && clientSocketStillOpen) {
+        bytesReceived = recv(clientSocket, (response + totalBytesReceived), (dataSize - totalBytesReceived), MSG_NOSIGNAL);
+        if(bytesReceived < 0) {
+            return bytesReceived;
+        } 
+        else if(bytesReceived == 0) {
+            clientSocketStillOpen = false;
+        }
+        else {
+            totalBytesReceived += bytesReceived;
+        }
+    }
+
+    return totalBytesReceived;
+}
+
+// GAME
+
 void Client::startGame() {
+
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Window* window = SDL_CreateWindow("JUEGO", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ANCHO_PANTALLA, ALTO_PANTALLA, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    
     logger::Logger::getInstance().logNewGame();
 
     auto configuration = configuration::GameConfiguration(CONFIG_FILE);
@@ -209,49 +299,4 @@ void getNextLevelView(NivelVista **vista, configuration::GameConfiguration *conf
             (*vista)->setBackground(rutaImagen);
         }
     }
-}
-
-const float RESIZE = 1.2;
-const char* IMG_FONT = "res/font.png";
-const float TEXT_X = 10;
-const float TEXT_Y = 110;
-
-void Client::showWaitingView() {
-    SDL_StartTextInput();
-    StartPage *startPage = new StartPage(renderer);
-
-    SDL_Event event;
-
-    bool loginOk = false;
-    int inicio, fin;
-    while (!loginOk) {
-        inicio = SDL_GetTicks();
-
-        while (SDL_PollEvent(&event)) {
-            loginOk = (event.type == SDL_QUIT);
-            if (event.type != SDL_MOUSEMOTION) {
-                loginOk = startPage->handle(event);
-            }
-        }
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        startPage->show();
-        SDL_RenderPresent(renderer);
-
-        fin = SDL_GetTicks();
-        SDL_Delay(std::max(MS_PER_UPDATE - (fin - inicio), 0));
-    }
-
-    SDL_StopTextInput();
-
-    SDL_RenderClear(renderer);
-    TextRenderer* textRenderer = new TextRenderer(renderer, IMG_FONT);
-    
-    punto_t pos;
-    pos.x = (10 + 2 * RESIZE) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
-    pos.y = (110 + 2 * RESIZE)* ALTO_PANTALLA / (float)ALTO_NIVEL;
-    textRenderer->renderText(pos, "Esperando a jugadores...", RESIZE);
-
-    SDL_RenderPresent(renderer);
 }

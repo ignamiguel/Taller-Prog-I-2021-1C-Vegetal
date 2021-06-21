@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <cstring>
+#include <algorithm> 
 #include "configuration.hpp"
 #include "logger.h"
 
@@ -116,9 +118,19 @@ namespace configuration
         auto users = getJsonValue(configuration, "users");
         for (auto j: users)
         {
+            std::string name = getJsonValue(j, "username").asString();
+            std::for_each(name.begin(), name.end(), [](char & c){
+                c = std::toupper(c);
+            });
+
+            std::string pass = getJsonValue(j, "password").asString();
+            std::for_each(pass.begin(), pass.end(), [](char & c){
+                c = std::toupper(c);
+            });
+
             user_t newUser;
-            newUser.username = getJsonValue(j, "username").asString();
-            newUser.password = getJsonValue(j, "password").asString();
+            strcpy (newUser.username, name.c_str());
+            strcpy (newUser.password, pass.c_str());
             
             this->users.emplace_back(newUser);
         }
