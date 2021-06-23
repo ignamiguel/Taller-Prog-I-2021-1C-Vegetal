@@ -3,6 +3,7 @@
 #include "StartPageView.h"
 #include "../utils/user.h"
 #include "../utils/GameAbortedException.h"
+#include "../utils/Constants.hpp"
 
 using namespace std;
 
@@ -152,8 +153,9 @@ user_t StartPage::startLogin () {
         inicio = SDL_GetTicks();
 
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) 
-                throw GameAborted;
+            if (event.type == SDL_QUIT) {
+                std::cout << "aborted" << std::endl;
+                throw GameAborted;}
             else if (event.type != SDL_MOUSEMOTION)
                 loginDone = handle(event);
         }
@@ -168,7 +170,7 @@ user_t StartPage::startLogin () {
     }
 
     SDL_StopTextInput();
-    cout << " client login ended" << endl;
+    std::cout << "login done" << std::endl;
     user_t player;
     strcpy (player.username, username.c_str());
     strcpy (player.password, password.c_str());
@@ -186,17 +188,21 @@ void StartPage::connectedPage() {
     textRenderer->renderText(pos, "WELCOME", RESIZE);
      
     SDL_RenderPresent(renderer);
-    SDL_Delay(2000);
 }
 
-void StartPage::connectionErrorPage() {
+void StartPage::connectionErrorMessage(int error) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    string message;
+    if (error == INVALID_USER_PASS) message = "invalid name or password";
+    else if (error == USER_ALREADY_CONNECTED) message = "player already connected";
+    else if (error == LOGIN_MAX_USERS) message = "max game players";
     
     punto_t pos;
     pos.x = (10 + 2 * RESIZE) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
     pos.y = (110 + 2 * RESIZE)* ALTO_PANTALLA / (float)ALTO_NIVEL;
-    textRenderer->renderText(pos, "User password error", RESIZE);
+    textRenderer->renderText(pos, message.c_str(), RESIZE);
     
     SDL_RenderPresent(renderer);
     SDL_Delay(2000);

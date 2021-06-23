@@ -8,15 +8,16 @@
 class Client {
     public:
     Client();
-    void showWaitingView();
+    void startClient(char* serverIp, char* port);
     int connectToServer(char* serverIp, char* port);
 
     private:
     SDL_Window* window;
     SDL_Renderer* renderer;
-    int startLogin();
-    int requireLogin (user_t*);
-    int receiveLoginResponse (int*); 
+    int login();
+    int requireLogin (user_t* player);
+    int receiveLoginResponse (int* response);
+
     void startGame();
     static void *sendDataThread(void* args);
     static int sendCommand(int clientSocket, controls_t* command);
@@ -24,4 +25,5 @@ class Client {
     static int receiveView(int clientSocket, estadoNivel_t* view);
     int clientSocket;
     struct sockaddr_in serverAddress;
+    user_t user;
 };

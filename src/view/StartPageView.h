@@ -11,7 +11,7 @@ class StartPage
         bool handle(SDL_Event event);
         user_t startLogin ();
         void connectedPage();
-        void connectionErrorPage();
+        void connectionErrorMessage(int);
         void showWaitingView();
 
     private:

@@ -23,9 +23,20 @@ void getNextLevelView(NivelVista **vista, configuration::GameConfiguration *conf
 
 Client::Client() {
     std::cout << "Aplicación iniciada en modo cliente" << std::endl;
+}
+
+void Client::startClient(char* serverIp, char* port) {
     SDL_Init(SDL_INIT_EVERYTHING);
     window = SDL_CreateWindow(NOMBRE_JUEGO.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ANCHO_PANTALLA, ALTO_PANTALLA, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    
+    int connected = connectToServer(serverIp, port);
+    if ( connected == 0 && (login() == LOGIN_OK) ) startGame();
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    IMG_Quit();
+    SDL_Quit();
 }
 
 int Client::connectToServer(char* serverIp, char* port) {
@@ -47,52 +58,35 @@ int Client::connectToServer(char* serverIp, char* port) {
         std::cout << "Error al conectarse con el servidor" << std::endl;
         return -1;
     }
-    //std::cout << "post connect" << std::endl;
-    if (startLogin() == LOGIN_OK) {
-        cout << "Empieza el juego" << endl;
-        startGame();  
-    }
-    else cout << "login fallo" << endl;
-
-    if(!serverOpen) 
-        std::cout << "Hubo un error en el servidor" << std::endl;
-    return 1;
+    return 0;
 }
 
 // LOGIN
 
-int Client::startLogin() {
-
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window* window = SDL_CreateWindow("JUEGO", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ANCHO_PANTALLA, ALTO_PANTALLA, SDL_WINDOW_SHOWN);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-    
-    cout << "show login page" << endl;
-    StartPage startPage = StartPage(renderer);
+int Client::login() {
+    std::cout << "start page" << std::endl;
+    StartPage* startPage = new StartPage(renderer);
+    int response;
     try {
-        user_t player = startPage.startLogin();
-
-        cout << "user: " << player.username << " pass: " << player.password << endl;
-
-        cout << "send login to server" << endl;
-        requireLogin (&player);
-        
-        int response;
-        int bytesReceived = receiveLoginResponse(&response);
-
-        if(bytesReceived == sizeof(int)) {
-            if (response == 0) startPage.connectedPage();
-            else startPage.connectionErrorPage();
-        }
-
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        IMG_Quit();
-        return response;
+        do {
+            std::cout << "start login" << std::endl;
+            user_t player = startPage->startLogin();
+            std::cout << "player" << player.username << "-" << player.password << std::endl;
+            requireLogin (&player);
+            
+            int bytesReceived = receiveLoginResponse(&response);
+            std::cout << "received " << bytesReceived << std::endl;
+            if(bytesReceived == sizeof(int)) {
+                std::cout << "login response" << response << std::endl;
+                if (response == LOGIN_OK) startPage->connectedPage();
+                else startPage->connectionErrorMessage(response);
+            }
+        } while (response != LOGIN_OK);
     }
     catch (exception& e) {
         return LOGIN_ABORTED;
     }
+    return response;
 }
 
 int Client::requireLogin (user_t* player) {
@@ -142,10 +136,6 @@ int Client::receiveLoginResponse (int* response) {
 
 void Client::startGame() {
 
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window* window = SDL_CreateWindow("JUEGO", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ANCHO_PANTALLA, ALTO_PANTALLA, SDL_WINDOW_SHOWN);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-    
     logger::Logger::getInstance().logNewGame();
 
     auto configuration = configuration::GameConfiguration(CONFIG_FILE);
@@ -184,11 +174,6 @@ void Client::startGame() {
     }
 
     logger::Logger::getInstance().logInformation("Game over");
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    IMG_Quit();
-    SDL_Quit();
 }
 
 void* Client::sendDataThread(void *args) {

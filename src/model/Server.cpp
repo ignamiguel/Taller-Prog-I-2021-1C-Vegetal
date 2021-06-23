@@ -13,6 +13,15 @@
 #include "../utils/estadoNivel.h"
 #include "Server.h"
 
+typedef struct connectToClientArgs {
+    std::vector<int>* clientSockets;
+    int serverSocket;
+    std::vector<user_t> users; 
+    struct sockaddr_in* clientAddress;
+    int* clientAddrLen;
+    Server* server;
+} connectToClientArgs_t;
+
 typedef struct handleCommandArgs {
     int clientSocket;
     Mario* mario;
@@ -29,13 +38,14 @@ Server::Server(char* port) {
 
     std::cout << "Aplicación iniciada en modo servidor en el puerto: " << port << std::endl;
 }
+
 int Server::startServer() {
     auto config = configuration::GameConfiguration(CONFIG_FILE);
     auto logLevel = config.getLogLevel();
     logger::Logger::getInstance().setLogLevel(logLevel);
 
     this->maxPlayers = config.getMaxPlayers();
-    if(this->maxPlayers < 1) {
+    if(this->maxPlayers < 1 || this->maxPlayers > DEFAULT_MAX_PLAYERS) {
         logger::Logger::getInstance().logDebug(CANTIDAD_DE_JUGADORES_INVALIDA);
         this->maxPlayers = DEFAULT_MAX_PLAYERS;
     }
@@ -60,18 +70,34 @@ int Server::startServer() {
     printf("listen...\n");
 
     //Accept
-    while(clientSockets.size() < (unsigned int)maxPlayers) {
-        int client = accept(serverSocket, (struct sockaddr *)&clientAddress, (socklen_t*) &clientAddrLen);
-        if (client < 0) return -1;
-        if (startLogin(client, config) == 0) clientSockets.push_back(client);
-        printf("Players: %d/%d\n", (int)clientSockets.size(), maxPlayers);
+    
+    connectToClientArgs_t arguments;
+    arguments.clientSockets = &clientSockets;
+    arguments.serverSocket = serverSocket;
+    arguments.users = config.getUsers();
+    arguments.clientAddress = &clientAddress;
+    arguments.clientAddrLen = &clientAddrLen;
+    arguments.server = this;
+
+    std::cout << "players" << maxPlayers << " " << (int)maxPlayers << std::endl;
+    
+    for (int i =0; i < (int)maxPlayers; i++) {
+        pthread_t clientConnection;
+        std::cout << "thread creado" << std::endl;
+        pthread_create(&clientConnection, NULL, connectToClient, &arguments);
     }
 
-    if (clientSockets[0] < 0 || clientSockets[1] < 0) {
-        return -1;
-    }
+    std::cout << " waiting for players to connect" << std::endl;
+    // waiting for players to connect
+
+    while ((int)connectedUsers.size() != (int)maxPlayers) {};
 
     printf("Accept\n");
+    std::cout << "cliente " << clientSockets.size() << std::endl;
+    for (vector<int>::iterator it = clientSockets.begin(); it  != clientSockets.end(); it++) {
+        std::cout << "cliente " << *it << std::endl;
+    };
+    
 
     startGame(config);
 
@@ -81,26 +107,66 @@ int Server::startServer() {
 }
 
 // LOGIN
-
-int Server::checkUser(user_t player, configuration::GameConfiguration config) {
-
-    int response = 1;
-    auto users = config.getUsers();
-    for (auto user: users) {
-            if ( strcmp(player.username ,user.username) == 0 && strcmp(player.password , user.password) == 0) response = 0;
+void * Server::connectToClient (void* arguments) {
+    std::cout << "connecting" << std::endl;
+    int socket = ((connectToClientArgs_t*)arguments)->serverSocket;
+    std::vector<int>* clientSockets = ((connectToClientArgs_t*)arguments)->clientSockets;
+    std::vector<user_t> users = ((connectToClientArgs_t*)arguments)->users;
+    struct sockaddr_in* clientAddress = ((connectToClientArgs_t*)arguments)->clientAddress;
+    int* clientAddrLen = ((connectToClientArgs_t*)arguments)->clientAddrLen;
+    Server* server = ((connectToClientArgs_t*)arguments)->server;
+    int client;
+    accept:
+        do {
+            client = accept(socket, (struct sockaddr *)clientAddress, (socklen_t*) clientAddrLen);
+        } while(client < 0);
+    login:
+        int result = server->startLogin(client, users);
+        if (result == LOGIN_OK) goto connected;
+        else if (result == LOGIN_ABORTED) {
+            close(client);
+            goto accept;
         }
-
-    return response;
+        else goto login;
+    connected:
+        std::cout << "new player" << std::endl;
+        (*clientSockets).push_back(client);
+        return NULL;
 }
 
-int Server::startLogin(int client, configuration::GameConfiguration config) {
- 
+bool Server::userAlreadyConnected(user_t user) {
+    for (vector<user_t>::iterator it = connectedUsers.begin(); it  != connectedUsers.end(); it++) {
+        user_t connected_user = *it ;
+        if ( strcmp(connected_user.username ,user.username) == 0 && strcmp(connected_user.password , user.password) == 0) return true;
+    }
+    return false;
+}
+
+int Server::checkUser(user_t player, vector<user_t> users) {
+    for (vector<user_t>::iterator it = users.begin(); it  != users.end(); it++) {
+        user_t user = *it ;
+        if ( strcmp(player.username ,user.username) == 0 && strcmp(player.password , user.password) == 0) {
+            if(userAlreadyConnected(user)) {
+                return USER_ALREADY_CONNECTED;
+            }else {
+                connectedUsers.push_back(user);
+                return LOGIN_OK;
+            }
+        }
+    }
+
+    return INVALID_USER_PASS;
+}
+
+int Server::startLogin(int client, vector<user_t> users) {
+    std::cout << "login" << std::endl;
     user_t player;
     int bytesReceived = receiveLogin(client, &player);
-    cout << "bytes received: " << bytesReceived << endl;
+    std::cout << "bytes received: " << bytesReceived << std::endl;
     
-    int response = checkUser(player, config);
+    int response = checkUser(player, users);
     sendLoginResponse(client, &response);
+    std::cout << "checked: " << response << std::endl;
     return response;
 }
 
@@ -109,7 +175,7 @@ int Server::receiveLogin (int client, user_t* player) {
     int totalBytesReceived = 0;
     int bytesReceived = 0;
     int dataSize = sizeof(user_t);
-    cout << "data size to receive: " << dataSize << endl;
+    std::cout << "data size to receive: " << dataSize << std::endl;
     bool clientSocketStillOpen = true;
     
     while((totalBytesReceived < dataSize) && clientSocketStillOpen) {
