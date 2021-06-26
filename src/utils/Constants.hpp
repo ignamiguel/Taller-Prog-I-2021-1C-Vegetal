@@ -45,6 +45,14 @@ const int MAX_PLAYERS = 4; //se usa para el struct estadoNivel_t
 #define ANCHO_DEFAULT_CONFIG 108
 #define ALTO_DEFAULT_CONFIG 7
 
+// Login
+
+#define LOGIN_OK 0
+#define LOGIN_INVALID_USER 1
+#define LOGIN_INVALID_PASS 2
+#define LOGIN_USER_ALREADY_CONNECTED 3
+#define LOGIN_MAX_USERS 4
+
 // Nivel 1
 #define MARIO_START_X 0
 

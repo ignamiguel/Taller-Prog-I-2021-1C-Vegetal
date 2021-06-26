@@ -2,6 +2,7 @@
 #include <fstream>
 #include "configuration.hpp"
 #include "logger.h"
+#include <cstring>
 
 namespace configuration
 {
@@ -116,11 +117,12 @@ namespace configuration
         auto users = getJsonValue(configuration, "users");
         for (auto j: users)
         {
-            user_t newUser;
-            newUser.username = getJsonValue(j, "username").asString();
-            newUser.password = getJsonValue(j, "password").asString();
-            
-            this->users.emplace_back(newUser);
+            user_t user;
+
+            strcpy(user.username, getJsonValue(j, "username").asString().c_str());
+            strcpy(user.password, getJsonValue(j, "password").asString().c_str());
+
+            this->users.emplace_back(user);
         }
 
 

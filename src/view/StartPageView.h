@@ -2,16 +2,17 @@
 
 #include <string>
 #include "TextRenderer.h"
-#include "utils/user.h"
+#include "../utils/user.h"
 #include <map>
 
 class StartPage
 {
     public:
         StartPage(SDL_Renderer *);
+        user_t startLogin ();
         void show();
         bool handle(SDL_Event event);
-        user_t getCurrentUser() const {return currentUser;};
+        void connectionErrorResponse(int);
         ~StartPage();
 
     private:
@@ -30,5 +31,4 @@ class StartPage
         bool mouseOnPasswordButton(int, int);
         bool mouseOnDoneButton(int, int);
         void showError();
-        bool login(std::string username, std::string password);
 };

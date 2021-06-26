@@ -1,9 +1,10 @@
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include "StartPageView.h"
-#include "configuration.hpp"
-#include "utils/Constants.hpp"
-#include "utils/window.hpp"
+#include "../configuration.hpp"
+#include "../utils/Constants.hpp"
+#include "../utils/window.hpp"
+#include "../utils/GameAbortedException.h"
 
 #define TEXT_BUTTON_X 28
 #define USER_BUTTON_Y 78
@@ -24,8 +25,10 @@ const char* FONT_IMG = "res/font.png";
 const char* USERNAME = "USERNAME";
 const char* PASSWORD = "PASSWORD";
 const char* DONE = "DONE";
-const char* INVALID_USER = "INVALID USER";
-const char* INVALID_PASS = "INVALID PASSWORD";
+const char* INVALID_USER_MSG = "INVALID USER";
+const char* INVALID_PASS_MSG = "INVALID PASSWORD";
+const char* MAX_USERS_MSG = "MAX USERS CONNECTED";
+const char* USER_ALREADY_CONNECTED_MSG = "USER ALREADY CONNECTED";
 
 const SDL_Rect usernameRect = {(int)(TEXT_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
                                (int)(USER_BUTTON_Y * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f),
@@ -45,12 +48,6 @@ const SDL_Rect doneRect = {(int)(DONE_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_N
 StartPage::StartPage(SDL_Renderer *renderer) {
     this->renderer = renderer;
     this->textRenderer = new TextRenderer(renderer, FONT_IMG);
-    
-    auto config = configuration::GameConfiguration(CONFIG_FILE);
-    for (auto u: config.getUsers())
-    {
-        this->users[u.username] = u;
-    }
 }
 
 int StartPage::setFocusColor(int focus) {
@@ -125,7 +122,7 @@ bool StartPage::handle(SDL_Event event) {
         } else if (mouseOnPasswordButton(x, y)) {
             focus = 1;
         } else if (mouseOnDoneButton(x, y)) {
-            return this->login(username, password);
+            return true;
         }
     } else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
@@ -138,7 +135,7 @@ bool StartPage::handle(SDL_Event event) {
                 break;
             case SDLK_KP_ENTER:
             case SDLK_RETURN:
-                if (focus) return this->login(username, password);
+                if (focus) return true;
                 [[fallthrough]];
             case SDLK_TAB:
                 focus = (focus + 1) % 3;
@@ -160,22 +157,61 @@ bool StartPage::handle(SDL_Event event) {
     return false;
 }
 
-bool StartPage::login(std::string name, std::string pass) {
-    std::cout << "login process..." << std::endl;
-    if (this->users.count(name) == 0) {
-        this->resultMsg = INVALID_USER;
-        return false;
-    } 
-    
-    auto user = this->users.at(name);
+user_t StartPage::startLogin () {
 
-    if (pass.compare(user.password) != 0) {
-        this->resultMsg = INVALID_PASS;
-        return false;
+    SDL_StartTextInput();
+
+    bool loginDone = false;
+    SDL_Event event;
+
+    int inicio, fin;
+    
+    while (!loginDone) {
+        inicio = SDL_GetTicks();
+
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                std::cout << "aborted" << std::endl;
+                throw GameAborted;}
+            else if (event.type != SDL_MOUSEMOTION)
+                loginDone = handle(event);
+        }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        show();
+        SDL_RenderPresent(renderer);
+
+        fin = SDL_GetTicks();
+        SDL_Delay(std::max(MS_PER_UPDATE - (fin - inicio), 0));
     }
 
-    this->currentUser = user;
-    return true;
+    SDL_StopTextInput();
+    std::cout << "login done" << std::endl;
+    user_t player;
+    strcpy (player.username, username.c_str());
+    strcpy (player.password, password.c_str());
+    return player;
+}
+
+void StartPage::connectionErrorResponse(int error) {
+    switch(error) {
+        case LOGIN_INVALID_USER:
+            resultMsg = INVALID_USER_MSG;
+            break;
+        case LOGIN_INVALID_PASS:
+            resultMsg = INVALID_PASS_MSG;
+            break;
+        case LOGIN_MAX_USERS:
+            std::cout << "MAX USERS CONNECTED" << std::endl;
+            resultMsg = MAX_USERS_MSG;
+            break;
+        case LOGIN_USER_ALREADY_CONNECTED:
+            resultMsg = USER_ALREADY_CONNECTED_MSG;
+            break;
+        default:
+            break;
+    }
 }
 
 StartPage::~StartPage()  {

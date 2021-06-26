@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include "utils/punto.h"
+#include "../utils/punto.h"
 
 class TextRenderer
 {

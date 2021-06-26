@@ -1,8 +1,8 @@
 #include <string>
 #include <SDL2/SDL_image.h>
 #include "TextRenderer.h"
-#include "utils/Constants.hpp"
-#include "utils/window.hpp"
+#include "../utils/Constants.hpp"
+#include "../utils/window.hpp"
 
 #define LETTER_X 16
 #define LETTER_Y 8
