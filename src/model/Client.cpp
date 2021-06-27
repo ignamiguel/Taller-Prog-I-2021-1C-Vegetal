@@ -14,6 +14,7 @@
 #include "Client.h"
 #include "../StartPageView.h"
 #include "../view/DesconexionVista.h"
+#include "../view/ExcesoJugadoresVista.h"
 
 #define SERVER_CONNECTION_SUCCESS 0
 #define START_PAGE_SUCCESS 0
@@ -140,7 +141,7 @@ void Client::startGame()
     
     if(!serverOpen) {
         bool quitRequested = false;
-        DesconexionVista::mostrar(renderer);
+        DesconexionVista::show(renderer);
         while(!quitRequested) {
             quitRequested = SDL_QuitRequested();
         }
