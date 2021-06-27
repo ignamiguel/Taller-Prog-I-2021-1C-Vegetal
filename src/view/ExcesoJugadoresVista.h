@@ -1,11 +1,11 @@
 #pragma once
 #include <SDL2/SDL_image.h>
 
-class DesconexionVista {
+class ExcesoJugadoresVista {
     public:
     static void show(SDL_Renderer* renderer);
 
     private:
-    DesconexionVista() { }
+    ExcesoJugadoresVista() { }
 
 };

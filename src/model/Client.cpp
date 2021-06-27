@@ -13,6 +13,7 @@
 #include "Client.h"
 #include "../StartPageView.h"
 #include "../view/DesconexionVista.h"
+#include "../view/ExcesoJugadoresVista.h"
 
 const char* IMG_FONT = "res/font.png";
 
@@ -101,7 +102,7 @@ void Client::startGame() {
     
     if(!serverOpen) {
         bool quitRequested = false;
-        DesconexionVista::mostrar(renderer);
+        DesconexionVista::show(renderer);
         while(!quitRequested) {
             quitRequested = SDL_QuitRequested();
         }
