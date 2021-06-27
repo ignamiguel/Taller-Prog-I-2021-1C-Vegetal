@@ -12,6 +12,7 @@
 #include "../TextRenderer.h"
 #include "Client.h"
 #include "../StartPageView.h"
+#include "../view/DesconexionVista.h"
 
 const char* IMG_FONT = "res/font.png";
 
@@ -54,7 +55,7 @@ int Client::connectToServer(char* serverIp, char* port) {
     }
 
     startGame();  
-
+    
     if(!serverOpen) 
         std::cout << "Hubo un error en el servidor" << std::endl;
     return 1;
@@ -96,6 +97,14 @@ void Client::startGame() {
             SDL_RenderPresent(renderer);
         }
         quitRequested = SDL_QuitRequested();
+    }    
+    
+    if(!serverOpen) {
+        bool quitRequested = false;
+        DesconexionVista::mostrar(renderer);
+        while(!quitRequested) {
+            quitRequested = SDL_QuitRequested();
+        }
     }
 
     logger::Logger::getInstance().logInformation("Game over");
@@ -121,6 +130,7 @@ void* Client::sendDataThread(void *args) {
             
         quitRequested = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT) > 0;
     }
+    
     return NULL;
 }
 
