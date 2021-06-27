@@ -13,6 +13,7 @@
 #include "../TextRenderer.h"
 #include "Client.h"
 #include "../StartPageView.h"
+#include "../view/DesconexionVista.h"
 
 #define SERVER_CONNECTION_SUCCESS 0
 #define START_PAGE_SUCCESS 0
@@ -135,6 +136,14 @@ void Client::startGame()
             SDL_RenderPresent(renderer);
         }
         quitRequested = SDL_QuitRequested();
+    }    
+    
+    if(!serverOpen) {
+        bool quitRequested = false;
+        DesconexionVista::mostrar(renderer);
+        while(!quitRequested) {
+            quitRequested = SDL_QuitRequested();
+        }
     }
 
     logger::Logger::getInstance().logInformation("Game over");
@@ -163,6 +172,7 @@ void *Client::sendDataThread(void *args)
 
         quitRequested = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT) > 0;
     }
+    
     return NULL;
 }
 
