@@ -14,7 +14,6 @@
 #include "Client.h"
 #include "../StartPageView.h"
 #include "../view/DesconexionVista.h"
-#include "../view/ExcesoJugadoresVista.h"
 
 #define SERVER_CONNECTION_SUCCESS 0
 #define START_PAGE_SUCCESS 0
