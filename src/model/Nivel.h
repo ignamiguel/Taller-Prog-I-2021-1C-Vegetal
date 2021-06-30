@@ -10,18 +10,18 @@
 // contiene a Stage (elementos colisionables)
 class Nivel
 {
-    public:
-        Nivel();
-        virtual void addPlayers(std::vector<Mario *> *players) = 0;
-        virtual void update() = 0;
-        virtual estadoNivel_t* getEstado() = 0;
-        bool isComplete();
-        virtual ~Nivel();
+public:
+    Nivel();
+    virtual void addPlayers(std::vector<Mario *> *players) = 0;
+    virtual void update() = 0;
+    virtual estadoNivel_t *getEstado() = 0;
+    bool isComplete();
+    virtual ~Nivel();
 
-    protected:
-        Stage *stage;
-        std::vector<Platform *> platforms;
-        std::list<EnemigoFuego *> enemies;
-        std::vector<Mario *> *players;
-        estadoNivel_t *estadoNivel;
+protected:
+    Stage *stage;
+    std::vector<Platform *> platforms;
+    std::list<EnemigoFuego *> enemies;
+    std::vector<Mario *> *players;
+    estadoNivel_t *estadoNivel;
 };

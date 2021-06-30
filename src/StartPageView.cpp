@@ -1,17 +1,10 @@
+#include <iostream>
 #include <SDL2/SDL_image.h>
 #include "StartPageView.h"
-#include "configuration.hpp"
 #include "utils/Constants.hpp"
-#include <map>
-#include <string_view>
-
-#include <iostream>
-
-#define ANCHO_PANTALLA 448
-#define ALTO_PANTALLA 512
-
-#define ANCHO_NIVEL 224
-#define ALTO_NIVEL 256
+#include "utils/window.hpp"
+#include "model/Client.h"
+#include "utils/GameAbortedException.h"
 
 #define TEXT_BUTTON_X 28
 #define USER_BUTTON_Y 78
@@ -24,14 +17,19 @@
 #define TEXT_BUTTON_WIDTH (((7 + 2) * 10 + 2) * RESIZE)
 #define BUTTON_HEIGHT ((7 + 4) * RESIZE)
 
-const char* FONT_IMG = "res/font.png";
+#define ERROR_MSG_X 74
+#define ERROR_MSG_Y 138
 
 const char* USERNAME = "USERNAME";
 const char* PASSWORD = "PASSWORD";
 const char* DONE = "DONE";
-const char* INVALID_USER = "INVALID USER";
-const char* INVALID_PASS = "INVALID PASSWORD";
-const char* LOGIN_OK = "LOGIN OK";
+
+const char* MSG_OK = "OK";
+const char* MSG_ABORTED = "SERVER DISCONNECTED";
+const char* MSG_INVALID_USER = "INVALID USER";
+const char* MSG_INVALID_PASS = "INVALID PASSWORD";
+const char* MSG_USER_ALREADY_CONNECTED = "USER ALREADY CONNECTED";
+const char* MSG_MAX_USERS_CONNECTED = "MAX USERS CONNECTED";
 
 const SDL_Rect usernameRect = {(int)(TEXT_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
                                (int)(USER_BUTTON_Y * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f),
@@ -48,35 +46,59 @@ const SDL_Rect doneRect = {(int)(DONE_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_N
                            (int)(DONE_BUTTON_WIDTH * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
                            (int)(BUTTON_HEIGHT * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f)};
 
-const SDL_Rect errorRect = {(int)(TEXT_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
-                               (int)(USER_BUTTON_Y * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f),
-                               (int)(TEXT_BUTTON_WIDTH * ANCHO_PANTALLA / (float)ANCHO_NIVEL + 0.5f),
-                               (int)(BUTTON_HEIGHT * ALTO_PANTALLA / (float)ALTO_NIVEL + 0.5f)};
-
 StartPage::StartPage(SDL_Renderer *renderer) {
     this->renderer = renderer;
-    this->textRenderer = new TextRenderer(renderer, FONT_IMG);
-    
-    // Load users
-    std::cout << "Loading users..." << std::endl;
-    auto config = configuration::GameConfiguration(CONFIG_FILE);
-    for (auto u: config.getUsers())
-    {
-        this->users[u.username] = u;
-    }
+    this->textRenderer = TextRenderer::getInstance(renderer);
 }
 
-void StartPage::setFocusColor(int focus) {
-    SDL_SetRenderDrawColor(renderer, 128 + focus * 127, (1 - focus) * 128, (1 - focus) * 128, 255);
+user_t StartPage::getLoginUser() {
+    SDL_StartTextInput();
+
+    bool loginDone = false;
+    SDL_Event event;
+
+    int inicio, fin;
+    
+    while (!loginDone) {
+        inicio = SDL_GetTicks();
+
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                std::cout << "aborted" << std::endl;
+                throw GameAborted;
+            }
+            else if (event.type != SDL_MOUSEMOTION)
+                loginDone = handle(event);
+        }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        show();
+        SDL_RenderPresent(renderer);
+
+        fin = SDL_GetTicks();
+        SDL_Delay(std::max(MS_PER_UPDATE - (fin - inicio), 0));
+    }
+
+    SDL_StopTextInput();
+    user_t user;
+    strcpy (user.username, username.c_str());
+    strcpy (user.password, password.c_str());
+
+    std::cout << "capturing user [" << user.username << " " << user.password << "]" << std::endl;
+    return user;
+}
+
+int StartPage::setFocusColor(int focus) {
+    return SDL_SetRenderDrawColor(renderer, 128 + focus * 127, (1 - focus) * 128, (1 - focus) * 128, 255);
 }
 
 void StartPage::show() {
-
     SDL_RenderClear(renderer);
 
     punto_t pos;
     pos.x = (TEXT_BUTTON_X + 2 * RESIZE) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
-    pos.y = (58 + 2 * RESIZE)* ALTO_PANTALLA / (float)ALTO_NIVEL;
+    pos.y = (58 + 2 * RESIZE) * ALTO_PANTALLA / (float)ALTO_NIVEL;
     textRenderer->renderText(pos, USERNAME, RESIZE);
 
     pos.y += 20 * ALTO_PANTALLA / (float)ALTO_NIVEL;
@@ -98,15 +120,15 @@ void StartPage::show() {
     setFocusColor(focus == 2);
     SDL_RenderDrawRect(renderer, &doneRect);
 
-    this->showError();
+    showError();
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
 
 void StartPage::showError() {
     punto_t pos;
-    pos.x = .0f;
-    pos.y = .0f;
-    textRenderer->renderText(pos, this->resultMsg.c_str(), RESIZE);
-    SDL_RenderDrawRect(renderer, &errorRect);
+    pos.x = (TEXT_BUTTON_X + 2 * RESIZE) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
+    pos.y = ERROR_MSG_Y * ALTO_PANTALLA / (float)ALTO_NIVEL;
+    textRenderer->renderText(pos, this->resultMsg.c_str(), 1, RED);
 }
 
 bool StartPage::mouseOnUsernameButton(int x, int y) {
@@ -124,7 +146,6 @@ bool StartPage::mouseOnDoneButton(int x, int y) {
         && doneRect.x <= x && x <= doneRect.x + doneRect.w;
 }
 
-
 bool StartPage::handle(SDL_Event event) {
     
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
@@ -137,12 +158,12 @@ bool StartPage::handle(SDL_Event event) {
         } else if (mouseOnPasswordButton(x, y)) {
             focus = 1;
         } else if (mouseOnDoneButton(x, y)) {
-            return this->login(username, password);
+            return true;
         }
     } else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_BACKSPACE:
-                if (focus == 0 && !username.empty()){
+                if (focus == 0 && !username.empty()) {
                     username.pop_back();
                 } else if (focus == 1 && !password.empty()) {
                     password.pop_back();
@@ -150,7 +171,8 @@ bool StartPage::handle(SDL_Event event) {
                 break;
             case SDLK_KP_ENTER:
             case SDLK_RETURN:
-                return this->login(username, password);
+                if (focus) return true;
+                [[fallthrough]];
             case SDLK_TAB:
                 focus = (focus + 1) % 3;
                 break;
@@ -171,24 +193,28 @@ bool StartPage::handle(SDL_Event event) {
     return false;
 }
 
-bool StartPage::login(std::string name, std::string pass) {
-    std::cout << "login process..." << std::endl;
-    if (this->users.count(name) == 0) {
-        this->resultMsg = INVALID_USER;
-        return false;
-    } 
-    
-    auto user = this->users.at(name);
-
-    if (pass.compare("") == 0 || pass.compare(user.password) != 0) {
-        this->resultMsg = INVALID_PASS;
-        return false;
+void StartPage::renderResponse(int response) {
+    switch (response)
+    {
+        case LOGIN_OK:
+            this->resultMsg = MSG_OK;
+            break;
+        case LOGIN_ABORTED:
+            this->resultMsg = MSG_ABORTED;
+            break;
+        case LOGIN_INVALID_USER_PASS:
+            this->resultMsg = MSG_INVALID_PASS;
+            break;
+        case LOGIN_USER_ALREADY_CONNECTED:
+            this->resultMsg = MSG_USER_ALREADY_CONNECTED;
+            break;
+        case LOGIN_MAX_USERS_CONNECTED:
+            this->resultMsg = MSG_MAX_USERS_CONNECTED;
+            break;
+        case LOGIN_INVALID_USER:
+            this->resultMsg = MSG_INVALID_USER;
+            break;
+        default:
+            break;
     }
-
-    this->resultMsg = LOGIN_OK;
-    return true;
-}
-
-StartPage::~StartPage()  {
-    delete textRenderer;
 }

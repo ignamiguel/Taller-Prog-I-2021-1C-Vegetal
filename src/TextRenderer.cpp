@@ -1,11 +1,8 @@
 #include <string>
 #include <SDL2/SDL_image.h>
 #include "TextRenderer.h"
-
-#define ANCHO_PANTALLA 448
-#define ALTO_PANTALLA 512
-#define ANCHO_NIVEL 224
-#define ALTO_NIVEL 256
+#include "utils/Constants.hpp"
+#include "utils/window.hpp"
 
 #define LETTER_X 16
 #define LETTER_Y 8
@@ -14,13 +11,20 @@
 #define SPACING 2
 
 const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.- ";
+const char *IMG_FONT = "res/font.png";
 
+TextRenderer *TextRenderer::instance = NULL;
 SDL_Renderer *TextRenderer::renderer = NULL;
 SDL_Texture *TextRenderer::texture = NULL;
 
-TextRenderer::TextRenderer(SDL_Renderer *renderer, const char *path) {
+TextRenderer *TextRenderer::getInstance(SDL_Renderer *renderer) {
+    if (instance == NULL) instance = new TextRenderer(renderer);
+    return instance;
+}
+
+TextRenderer::TextRenderer(SDL_Renderer *renderer) {
     this->renderer = renderer;
-    SDL_Surface* surface = IMG_Load(path);
+    SDL_Surface* surface = IMG_Load(IMG_FONT);
 
     SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
     this->texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -29,11 +33,8 @@ TextRenderer::TextRenderer(SDL_Renderer *renderer, const char *path) {
     srcRect = {0, 0, LETTER_WIDTH, LETTER_HEIGHT};
 }
 
-void TextRenderer::setColor(Uint8 color) {
+void TextRenderer::renderText(punto_t punto, const char *text, float resize, color_t color) {
     srcRect.y = color * LETTER_Y;
-}
-
-void TextRenderer::renderText(punto_t punto, const char *text, float resize) {
     dstRect.x = punto.x;
     dstRect.y = punto.y;
     dstRect.w = round(resize * (LETTER_WIDTH * ANCHO_PANTALLA / (float)ANCHO_NIVEL));

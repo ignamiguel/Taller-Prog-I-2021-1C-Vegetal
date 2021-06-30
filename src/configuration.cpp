@@ -2,9 +2,17 @@
 #include <fstream>
 #include "configuration.hpp"
 #include "logger.h"
+#include <cstring>
 
 namespace configuration
 {
+    GameConfiguration *GameConfiguration::instance = NULL;
+
+    GameConfiguration *GameConfiguration::getInstance(const std::string& jsonFileName) {
+        if (instance == NULL) instance = new GameConfiguration(jsonFileName);
+        return instance;
+    }
+
     inline static bool exists(const std::string& filename)
     {
         std::ifstream f(filename.c_str());
@@ -116,11 +124,12 @@ namespace configuration
         auto users = getJsonValue(configuration, "users");
         for (auto j: users)
         {
-            user_t newUser;
-            newUser.username = getJsonValue(j, "username").asString();
-            newUser.password = getJsonValue(j, "password").asString();
+            user_t user;
+
+            strcpy(user.username, getJsonValue(j, "username").asString().c_str());
+            strcpy(user.password, getJsonValue(j, "password").asString().c_str());
             
-            this->users.emplace_back(newUser);
+            this->users.emplace_back(user);
         }
 
 
@@ -137,5 +146,10 @@ namespace configuration
             throw std::runtime_error(error_message);
         }
         return value;
+    }
+
+    GameConfiguration::~GameConfiguration() {
+        delete instance;
+        instance = NULL;
     }
 }

@@ -1,8 +1,17 @@
 #include "Nivel1.h"
+#include "../configuration.hpp"
+#include "../logger.h"
 #include "../utils/Constants.hpp"
 
 Nivel1::Nivel1() : Nivel() {
     this->initPlatforms();
+    auto config = configuration::GameConfiguration::getInstance(CONFIG_FILE);
+    auto configEnemies = config->getEnemies();
+    for (auto enemy: configEnemies) {
+        if (enemy.getType().compare("Fuego") == 0) this->addEnemies(enemy.getQuantity());
+        logger::Logger::getInstance().logDebug("Enemy type: " + enemy.getType());
+        logger::Logger::getInstance().logDebug("Enemy quantity: " + std::to_string(enemy.getQuantity()));
+    }
     this->initLadders();
     estadoNivel->level = 1;
 }

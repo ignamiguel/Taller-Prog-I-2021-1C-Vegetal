@@ -4,18 +4,18 @@
 
 class Nivel1 : public Nivel
 {
-    public:
-        Nivel1();
-        void addPlayers(std::vector<Mario *> *players);
-        void addEnemies(unsigned int amount);
-        void update();
-        estadoNivel_t *getEstado();
-        ~Nivel1();
+public:
+    Nivel1();
+    void addPlayers(std::vector<Mario *> *players);
+    void addEnemies(unsigned int amount);
+    void update();
+    estadoNivel_t *getEstado();
+    ~Nivel1();
 
-    private:
-        MovingPlatform *movingPlatforms[12];
+private:
+    MovingPlatform *movingPlatforms[12];
 
-        void initPlatforms();
-        void updatePlatforms();
-        void initLadders();
+    void initPlatforms();
+    void updatePlatforms();
+    void initLadders();
 };

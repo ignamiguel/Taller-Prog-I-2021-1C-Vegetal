@@ -1,12 +1,14 @@
 #pragma once
 #include "punto.h"
 
-typedef struct estadoMario {
+typedef struct estadoMario
+{
     punto_t pos;
     char estado;
 } estadoMario_t;
 
-typedef struct controls {
+typedef struct controls
+{
     unsigned char space : 1;
     unsigned char up : 1;
     unsigned char down : 1;
