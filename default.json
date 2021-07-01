@@ -3,6 +3,7 @@
         "log": {
             "level": "DEBUG"
         },
+        "players": 1,
         "game": {
             "enemies": [
                 {
@@ -18,6 +19,13 @@
                     "fondo1": "res/Nivel2.png"
                 }
             ]
-        }
+        },
+        "users": [
+            {
+                "username": "user",
+                "password": "pass"
+            }
+        ]
+
     }
 }

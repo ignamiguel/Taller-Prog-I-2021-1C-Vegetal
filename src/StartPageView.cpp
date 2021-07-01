@@ -24,7 +24,6 @@ const char* USERNAME = "USERNAME";
 const char* PASSWORD = "PASSWORD";
 const char* DONE = "DONE";
 
-const char* MSG_OK = "OK";
 const char* MSG_ABORTED = "SERVER DISCONNECTED";
 const char* MSG_INVALID_USER = "INVALID USER";
 const char* MSG_INVALID_PASS = "INVALID PASSWORD";
@@ -193,12 +192,9 @@ bool StartPage::handle(SDL_Event event) {
     return false;
 }
 
-void StartPage::renderResponse(int response) {
+void StartPage::renderResponse(char response) {
     switch (response)
     {
-        case LOGIN_OK:
-            this->resultMsg = MSG_OK;
-            break;
         case LOGIN_ABORTED:
             this->resultMsg = MSG_ABORTED;
             break;

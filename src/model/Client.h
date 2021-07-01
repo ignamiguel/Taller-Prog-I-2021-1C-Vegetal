@@ -12,7 +12,7 @@ public:
     int showStartPage();
     int connectToServer();
     void startGame();
-    int login(user_t user);
+    char login(user_t user);
 
 private:
     char *serverIp;
@@ -21,6 +21,5 @@ private:
     SDL_Renderer *renderer;
     int clientSocket;
     struct sockaddr_in serverAddress;
-    user_t user;
     void showConnectedPage();
 };

@@ -13,7 +13,7 @@ public:
     bool handle(SDL_Event event);
     user_t getCurrentUser() const { return currentUser; };
     user_t getLoginUser();
-    void renderResponse(int response);
+    void renderResponse(char response);
     ~StartPage() = default;
 
 private:

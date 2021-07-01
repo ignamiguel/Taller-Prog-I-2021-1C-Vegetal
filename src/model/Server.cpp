@@ -17,6 +17,7 @@
 #include "../utils/window.hpp"
 #include "../utils/estadoNivel.h"
 #include "../utils/player.h"
+#include "../utils/dataTransfer.h"
 
 #define MAX_QUEUED_CONNECTIONS 3
 
@@ -30,12 +31,8 @@ void getNextLevel(Nivel **nivel, Uint8 currentLevel);
 void *acceptNewConnections(void *serverArg);
 void *handleLogin(void *arguments);
 int validateUserLogin(int client, Server *server);
-ssize_t receiveLoginRequest(int client, user_t *user);
-ssize_t sendLoginResponse(int client, int *response);
 
 void *handleCommand(void *player);
-int receiveCommand(int clientSocket, controls_t *controls);
-ssize_t sendView(int clientSocket, estadoNivel_t *view);
 
 pthread_mutex_t connectedPlayersMutex;
 
@@ -145,7 +142,7 @@ void Server::startGame() {
             estadoNivel_t* view = nivel->getEstado();
             for(auto it = connectedPlayers.begin(); it != connectedPlayers.end(); ++it) {
                 if (it->second->isConnected) {
-                    it->second->isConnected = sendView(it->second->clientSocket, view) == sizeof(estadoNivel_t);
+                    it->second->isConnected = sendData(it->second->clientSocket, view, sizeof(estadoNivel_t)) == sizeof(estadoNivel_t);
                 }
             }
             if (__builtin_expect(nivel->isComplete(), 0)) {
@@ -195,24 +192,24 @@ void *handleLogin(void* arguments) {
 
 int validateUserLogin(int client, Server *server) {
     user_t user;
-    if (receiveLoginRequest(client, &user) != sizeof(user_t)) {
+    if (receiveData(client, &user, sizeof(user_t)) < sizeof(user_t)) {
         logger::Logger::getInstance().logDebug("Lost connection to client");
         return LOGIN_ABORTED;
     }
 
-    int response = -1;
+    char response = -1;
 
     if (server->users.count(user.username) == 0) {
         logger::Logger::getInstance().logDebug(std::string("[") + user.username + "] invalid user");
         response = LOGIN_INVALID_USER;
-        sendLoginResponse(client, &response);
+        sendData(client, &response, sizeof(char));
         return LOGIN_INVALID_USER;
     }
 
     if (strcmp(server->users.at(user.username).password, user.password) != 0) {
         logger::Logger::getInstance().logDebug(std::string("[") + user.username + "] incorrect password");
         response = LOGIN_INVALID_USER_PASS;
-        sendLoginResponse(client, &response);
+        sendData(client, &response, sizeof(char));
         return LOGIN_INVALID_USER_PASS;
     }
 
@@ -223,7 +220,7 @@ int validateUserLogin(int client, Server *server) {
             pthread_mutex_unlock(&connectedPlayersMutex);
             logger::Logger::getInstance().logDebug(std::string("[") + user.username + "] user already connected");
             response = LOGIN_USER_ALREADY_CONNECTED;
-            sendLoginResponse(client, &response);
+            sendData(client, &response, sizeof(char));
             return LOGIN_USER_ALREADY_CONNECTED;
         }
         else {
@@ -238,7 +235,7 @@ int validateUserLogin(int client, Server *server) {
     if (server->connectedPlayers.size() == server->maxPlayers && response == -1) {
         pthread_mutex_unlock(&connectedPlayersMutex);
         response = LOGIN_MAX_USERS_CONNECTED;
-        sendLoginResponse(client, &response);
+        sendData(client, &response, sizeof(char));
         return LOGIN_MAX_USERS_CONNECTED;
     }
 
@@ -259,50 +256,8 @@ int validateUserLogin(int client, Server *server) {
     pthread_t recvCommandThread;
     pthread_create(&recvCommandThread, NULL, handleCommand, server->connectedPlayers[user.username]);
 
-    sendLoginResponse(client, &response);
+    sendData(client, &response, sizeof(char));
     return LOGIN_OK;
-}
-
-ssize_t receiveLoginRequest(int client, user_t *user) {
-    size_t totalBytesReceived = 0;
-    ssize_t bytesReceived = 0;
-    size_t dataSize = sizeof(user_t);
-    bool clientSocketStillOpen = true;
-
-    while ((totalBytesReceived < dataSize) && clientSocketStillOpen) {
-        bytesReceived = recv(client, (user + totalBytesReceived), (dataSize - totalBytesReceived), MSG_NOSIGNAL);
-        if (bytesReceived < 0) {
-            return bytesReceived;
-        }
-        else if (bytesReceived == 0) {
-            clientSocketStillOpen = false;
-        }
-        else {
-            totalBytesReceived += bytesReceived;
-        }
-    }
-    return totalBytesReceived;
-}
-
-ssize_t sendLoginResponse(int client, int *response) {
-    size_t totalBytesSent = 0;
-    ssize_t bytesSent = 0;
-    size_t dataSize = sizeof(int);
-    bool clientSocketStillOpen = true;
-
-    while ((totalBytesSent < dataSize) && clientSocketStillOpen) {
-        bytesSent = send(client, (response + totalBytesSent), (dataSize - totalBytesSent), MSG_NOSIGNAL);
-        if (bytesSent < 0) {
-            return bytesSent;
-        }
-        else if (bytesSent == 0) {
-            clientSocketStillOpen = false;
-        }
-        else {
-            totalBytesSent += bytesSent;
-        }
-    }
-    return totalBytesSent;
 }
 // END LOGIN
 
@@ -316,7 +271,7 @@ void *handleCommand(void *player) {
 
     bool quitRequested = false;
     while (!quitRequested) {
-        if (receiveCommand(clientSocket, &controls) == sizeof(controls_t)) {
+        if (receiveData(clientSocket, &controls, sizeof(controls_t)) == sizeof(controls_t)) {
             mario->setControls(controls);
         } else {
             break;
@@ -327,50 +282,6 @@ void *handleCommand(void *player) {
     mario->setControls({0, 0, 0, 0, 0});
     shutdown(clientSocket, SHUT_RD);
     return NULL;
-}
-
-int receiveCommand(int clientSocket, controls_t *controls) {
-    size_t totalBytesSent = 0;
-    ssize_t bytesSent = 0;
-    size_t dataSize = sizeof(controls_t);
-    bool clientSocketStillOpen = true;
-    
-    while ((totalBytesSent < dataSize) && clientSocketStillOpen) {
-        bytesSent = recv(clientSocket, (controls + totalBytesSent), (dataSize - totalBytesSent), MSG_NOSIGNAL);
-        if (bytesSent < 0) {
-            return bytesSent;
-        }
-        else if (bytesSent == 0) {
-            clientSocketStillOpen = false;
-        }
-        else {
-            totalBytesSent += bytesSent;
-        }
-    }
-
-    return totalBytesSent;
-}
-
-ssize_t sendView(int clientSocket, estadoNivel_t* view) {
-    size_t totalBytesSent = 0;
-    ssize_t bytesSent = 0;
-    size_t dataSize = sizeof(estadoNivel_t);
-    bool clientSocketStillOpen = true;
-    
-    while ((totalBytesSent < dataSize) && clientSocketStillOpen) {
-        bytesSent = send(clientSocket, (view + totalBytesSent), (dataSize - totalBytesSent), MSG_NOSIGNAL);
-        if (bytesSent < 0) {
-            return bytesSent;
-        }
-        else if (bytesSent == 0) {
-            clientSocketStillOpen = false;
-        }
-        else {
-            totalBytesSent += bytesSent;
-        }
-    }
-
-    return totalBytesSent;
 }
 
 void getNextLevel(Nivel **nivel, Uint8 currentLevel) {
