@@ -33,14 +33,15 @@ TextRenderer::TextRenderer(SDL_Renderer *renderer) {
     srcRect = {0, 0, LETTER_WIDTH, LETTER_HEIGHT};
 }
 
-void TextRenderer::renderText(punto_t punto, const char *text, float resize, color_t color) {
+void TextRenderer::renderText(punto_t punto, const char *const text, float resize, color_t color) {
     srcRect.y = color * LETTER_Y;
     dstRect.x = punto.x;
     dstRect.y = punto.y;
     dstRect.w = round(resize * (LETTER_WIDTH * ANCHO_PANTALLA / (float)ANCHO_NIVEL));
     dstRect.h = round(resize * (LETTER_HEIGHT * ALTO_PANTALLA / (float)ALTO_NIVEL));
     char c;
-    while ((c = *text++) != '\0') {
+    size_t i = 0;
+    while ((c = *(text + i++)) != '\0') {
         srcRect.x = CHARACTERS.find_first_of(toupper(c)) * LETTER_X;
 
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);

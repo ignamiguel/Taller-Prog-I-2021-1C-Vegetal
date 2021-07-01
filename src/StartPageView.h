@@ -21,7 +21,7 @@ private:
     TextRenderer *textRenderer;
     std::string username = "";
     std::string password = "";
-    std::string resultMsg = "";
+    const char *const *resultMsg;
     user_t currentUser;
 
     char focus = 0;
