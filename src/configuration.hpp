@@ -59,5 +59,6 @@ namespace configuration
 
         static const Json::Value getJsonValue(const Json::Value &root, const std::string &name);
         bool loadFromFile(std::string configFileName);
+
     };
 }
