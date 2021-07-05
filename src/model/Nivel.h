@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <vector>
+#include <SDL2/SDL.h>
 #include "stage/Stage.h"
 #include "Mario.hpp"
 #include "EnemigoFuego.h"
@@ -24,4 +25,6 @@ class Nivel
         std::list<EnemigoFuego *> enemies;
         std::vector<Mario *> *players;
         estadoNivel_t *estadoNivel;
+        bool collision(SDL_FRect, SDL_FRect);
+        void checkCollisions ();
 };

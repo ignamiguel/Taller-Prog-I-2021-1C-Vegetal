@@ -14,6 +14,8 @@ class Mario : public Entidad
         void disable();
         void enable();
         estadoMario_t getEstado();
+        void die();
+        void reset();
 
     private:
         MarioState *state;
@@ -22,4 +24,5 @@ class Mario : public Entidad
         char estado;
         float velX;
         float velY;
+        char lives;
 };

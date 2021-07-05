@@ -14,3 +14,7 @@ punto_t Entidad::getPos() {
     
     return pos;
 }
+
+SDL_FRect Entidad::dimensions() {
+    return {posX, posY, posX + ancho, posY + alto};
+ }

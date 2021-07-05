@@ -5,6 +5,7 @@
 Mario::Mario() : Entidad(0, 0, ANCHO_MARIO, ALTO_MARIO) {
     this->state = SueloState::getInstance();
     this->isEnabled = true;
+    this->lives = 3;
 }
 
 void Mario::setControls(controls_t controls) {
@@ -43,3 +44,19 @@ void Mario::disable() {
 void Mario::enable() {
     this->isEnabled = true;
 }
+
+void Mario::die() {
+    this->lives--;
+    this->reset();
+    if (this->lives == 0) {
+        this->disable();
+    }
+}
+
+void Mario::reset() {
+    this->posX = MARIO_START_X;
+    this->posY = MARIO_START_Y;
+    this->velX = 0;
+    this->velY = 0;
+    this->state = SueloState::getInstance();
+} 
