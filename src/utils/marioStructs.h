@@ -4,6 +4,7 @@
 typedef struct estadoMario {
     punto_t pos;
     char estado;
+    char lives;
 } estadoMario_t;
 
 typedef struct controls {

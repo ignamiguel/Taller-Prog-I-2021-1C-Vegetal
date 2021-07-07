@@ -2,7 +2,9 @@
 #include "../utils/Constants.hpp"
 #include "mario/SueloState.h"
 
-Mario::Mario() : Entidad(0, 0, ANCHO_MARIO, ALTO_MARIO) {
+const int MARIO_ANCHO_REAL = 14;
+
+Mario::Mario() : Entidad(0, 0, ANCHO_MARIO, ALTO_MARIO, MARIO_ANCHO_REAL, ALTO_MARIO) {
     this->state = SueloState::getInstance();
     this->isEnabled = true;
     this->lives = 3;
