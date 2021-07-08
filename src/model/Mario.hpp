@@ -24,6 +24,7 @@ public:
     controls_t controls = {0, 0, 0, 0, 0};
     char contador;
     bool isGameOver();
+    SDL_FRect dimensions();
 
 private:
     MarioState *state;

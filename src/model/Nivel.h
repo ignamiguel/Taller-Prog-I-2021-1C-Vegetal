@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <vector>
+#include <SDL2/SDL.h>
 #include "stage/Stage.h"
 #include "Mario.hpp"
 #include "EnemigoFuego.h"
@@ -17,6 +18,8 @@ public:
     virtual estadoNivel_t *getEstado() = 0;
     bool isComplete();
     virtual ~Nivel();
+    bool collision(SDL_FRect, SDL_FRect);
+    void checkCollisions ();
 
 protected:
     Stage *stage;

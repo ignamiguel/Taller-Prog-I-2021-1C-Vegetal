@@ -43,6 +43,7 @@ void Nivel2::update() {
 
     this->updateBarrels();
     for (Mario *mario : *players) mario->mover();
+    checkCollisions();
 }
 
 void Nivel2::addBarrel() {

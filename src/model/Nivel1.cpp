@@ -78,6 +78,7 @@ void Nivel1::update() {
     for (MovingPlatform *platform : movingPlatforms) platform->move();
     for (Mario *mario : *players) mario->mover();
     for (EnemigoFuego *enemy : enemies) enemy->mover();
+    checkCollisions();
 }
 
 estadoNivel_t* Nivel1::getEstado() {

@@ -4,6 +4,8 @@
 #include "mario/MuriendoState.h"
 #include <iostream>
 
+const int MARIO_ANCHO_REAL = 14;
+
 Mario::Mario() : Entidad(0, 0, ANCHO_MARIO, ALTO_MARIO) {
     this->state = SueloState::getInstance();
     this->isEnabled = true;
@@ -20,8 +22,8 @@ void Mario::setPos(float x, float y) {
 }
 
 void Mario::setStage(Stage *stage) {
-    this->state->setStage(stage);
-    this->state = SueloState::getInstance();
+        this->state->setStage(stage);
+        this->state = SueloState::getInstance();
 }
 
 void Mario::mover() {
@@ -50,6 +52,7 @@ void Mario::enable() {
 
 MarioState *Mario::die() {
     this->lives--;
+    this->state = MuriendoState::getInstance();
     return MuriendoState::getInstance();;
 }
 
@@ -63,3 +66,8 @@ void Mario::reset() {
 bool Mario::isGameOver() {
     return this->lives == 0;
 }
+
+
+SDL_FRect Mario::dimensions() {
+    return {posX, posY, posX + MARIO_ANCHO_REAL, posY - ALTO_MARIO};
+ }

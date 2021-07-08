@@ -47,6 +47,7 @@ MarioState *MuriendoState::update(Mario *mario) {
         default:
             mario->contador = 0;
             mario->estado = MURIENDO_1;
+            std::cout << "default " << MURIENDO_1 << "=" << mario->estado << "?" << std::endl;
             break;
     }
     return instance;
