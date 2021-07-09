@@ -20,5 +20,5 @@ bool Barril::estaEnNivel() {
 }
 
 SDL_FRect Barril::dimensions() {
-    return {posX, posY, posX + BARRIL_ANCHO_REAL, posY - ALTO_BARRIL};
+    return {posX, posY, posX + BARRIL_ANCHO_REAL, posY + ALTO_BARRIL};
  }

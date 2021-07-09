@@ -69,5 +69,5 @@ bool Mario::isGameOver() {
 
 
 SDL_FRect Mario::dimensions() {
-    return {posX, posY, posX + MARIO_ANCHO_REAL, posY - ALTO_MARIO};
+    return {posX, posY, posX + MARIO_ANCHO_REAL, posY + ALTO_MARIO};
  }

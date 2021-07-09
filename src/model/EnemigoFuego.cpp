@@ -22,5 +22,5 @@ void EnemigoFuego::mover() {
 }
 
 SDL_FRect EnemigoFuego::dimensions() {
-    return {posX, posY, posX + FUEGO_ANCHO_REAL, posY - FUEGO_ALTO_REAL};
+    return {posX, posY, posX + FUEGO_ANCHO_REAL, posY + FUEGO_ALTO_REAL};
  }
