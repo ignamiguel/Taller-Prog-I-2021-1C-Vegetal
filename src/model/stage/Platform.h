@@ -11,6 +11,8 @@ public:
     float getY(float x);
     virtual float getSpeed();
     virtual ~Platform() = default;
+    float getXMovement();
+    float getYMovement();
 
 protected:
     punto_t start;

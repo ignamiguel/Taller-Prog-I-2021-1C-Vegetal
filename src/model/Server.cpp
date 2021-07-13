@@ -109,7 +109,7 @@ void Server::startGame() {
         marios.push_back(new Mario());
     }
 
-    unsigned char currentLevel = 0;
+    unsigned char currentLevel = 1;
     Nivel *nivel = NULL;
 
     getNextLevel(&nivel, ++currentLevel);

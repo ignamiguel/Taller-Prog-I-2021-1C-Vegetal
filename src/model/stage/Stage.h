@@ -2,6 +2,7 @@
 #include "Tile.h"
 #include "Ladder.h"
 #include "Platform.h"
+#include "../Barril.h"
 #include "../../utils/Constants.hpp"
 
 // Representa todos los elementos del nivel con los que Mario puede colsionar
@@ -14,6 +15,7 @@ public:
     Ladder *getLadder(float x, float y, int drection);
     void addPlatform(Platform *platform);
     bool collide(float *x, float *y, float *dx, float *dy);
+    void moverBarril (Barril*);
     ~Stage();
 
 private:

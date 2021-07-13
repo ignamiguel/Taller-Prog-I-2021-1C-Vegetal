@@ -72,6 +72,8 @@ const int MAX_PLAYERS = 4;         //se usa para el struct estadoNivel_t
 #define POS_X_FIREBARREL 16
 #define POS_Y_FIREBARREL 232
 
+#define VELOCIDAD_BARRIL 1
+
 // Common
 #define MARIO_START_Y 232
 

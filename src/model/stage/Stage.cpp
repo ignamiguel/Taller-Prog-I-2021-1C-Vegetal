@@ -1,5 +1,6 @@
 #include <unordered_set>
 #include "Stage.h"
+#include <iostream>
 
 #define ANCHO_HITBOX 8
 #define STAGE_WIDTH (ANCHO_NIVEL / ANCHO_TILE)
@@ -75,6 +76,55 @@ bool Stage::collide(float *x, float *y, float *dx, float *dy) {
         }
     }
     return is_standing;
+}
+
+void Stage::moverBarril(Barril* barril) {
+    punto_t pos = barril->getPos();
+
+    unsigned int i = ((int)(pos.y) / STAGE_HEIGHT) * GRID_COLUMNS + (int)(pos.x) / STAGE_WIDTH;
+    std::unordered_set<Platform *> platforms;
+    grid[i]->getPlatforms(&platforms);
+    grid[i + GRID_COLUMNS]->getPlatforms(&platforms);
+
+    float minDistance = ALTO_NIVEL;
+    Platform* closestPlatform = NULL;
+    float distance;
+
+    std::cout << "" << pos.x << " ; " << pos.y << std::endl;
+
+    // busco hacia abajo la plataforma mas cerca del barril
+    for(auto it = platforms.begin(); it != platforms.end(); it = platforms.erase(it)) {
+        distance = (*it)->getY(pos.x) - (pos.y + (float)ALTO_BARRIL);
+        //std::cout << "plataforma: " << pos.x << ";" << (*it)->getY(pos.x) << " distancia: " << distance << std::endl;
+        if (distance >= 0 && distance < minDistance) {
+            //std::cout << "es la plataforma mas cerca" << distance << std::endl;
+            minDistance = distance;
+            closestPlatform = *it;
+        }
+    }
+
+    //std::cout << "Distancia min a plataf: " << minDistance << std::endl;
+
+    // Si no hay plataforma debajo, o esta muy lejos cae verticalmente    
+    if (closestPlatform == NULL || (float)VELOCIDAD_BARRIL <= minDistance) {
+        barril->mover();
+        //std::cout << "no hay plataforma cerca de " << pos.x << ";" << pos.y << std::endl;
+    }
+    // Sino, se mueve un porcentaje de la distancia en x y otro en y 
+    // dependiendo de la inclinacion de la plataforma
+    else {
+        float dif = VELOCIDAD_BARRIL - minDistance;
+
+        float movX = dif * (closestPlatform->getXMovement());
+        float movY = dif * (closestPlatform->getYMovement()) + minDistance;
+
+        //std::cout << "plataforma cerca de " << pos.x << ";" << pos.y << " esta a " << dif << std::endl;
+        //std::cout << "mover y: " << movY << " x: " << movX << std::endl;
+
+        barril->moverY(movY);
+        barril->moverX(movX);
+    }
+
 }
 
 Stage::~Stage() {

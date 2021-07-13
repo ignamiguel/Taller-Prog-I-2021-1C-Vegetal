@@ -14,8 +14,8 @@ void Nivel2::initPlatforms() {
     stage->addPlatform(new Platform(16, 188, 224, 175));
     stage->addPlatform(new Platform(0, 142, 208, 155));
     stage->addPlatform(new Platform(16, 122, 224, 109));
-    stage->addPlatform(new Platform(136, 84.5, 208, 89));
-    stage->addPlatform(new Platform(0, 84, 130, 84));
+    stage->addPlatform(new Platform(130, 84.5, 208, 89));
+    stage->addPlatform(new Platform(0, 84, 136, 84));
 }
 
 void Nivel2::initLadders() {
@@ -52,7 +52,7 @@ void Nivel2::addBarrel() {
 
 void Nivel2::updateBarrels() {
     for (auto it = barriles.begin(); it != barriles.end();) {
-        (*it)->mover();
+        stage->moverBarril(*it);
         if (!(*it)->estaEnNivel()) {
             delete (*it);
             it = this->barriles.erase(it);

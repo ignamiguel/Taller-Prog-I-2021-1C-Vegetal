@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <cmath>
 #include "Platform.h"
 
 Platform::Platform(float x1, float y1, float x2, float y2) {
@@ -34,4 +35,16 @@ float Platform::getY(float x) {
 
 float Platform::getSpeed() {
     return 0;
+}
+
+float Platform::getXMovement() {
+    float distanceX = (end.x - start.x) / (end.x - start.x + fabs(end.y - start.y));
+    // decide hacia que lado ir segun la inclinacion de la plataforma
+    // si es horizontal no se mueve
+    if ((end.y - start.y) < 0) return (-1) * distanceX;
+    return distanceX;
+}
+
+float Platform::getYMovement() {
+    return fabs(end.y - start.y) / (end.x - start.x + fabs(end.y - start.y));
 }

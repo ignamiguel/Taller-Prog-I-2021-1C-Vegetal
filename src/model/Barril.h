@@ -5,10 +5,8 @@ class Barril : public Entidad
 {
 public:
     Barril(float x, float y);
-    void mover();
+    void mover ();
+    void moverX(float);
+    void moverY(float);
     bool estaEnNivel();
-
-private:
-    float velX;
-    float velY;
 };
