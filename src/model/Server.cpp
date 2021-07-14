@@ -28,8 +28,8 @@ typedef struct handleLoginArgs {
     int clientSocket;
 } handleLoginArgs_t;
 
-void getNextLevel(Nivel **nivel, unsigned char currentLevel);
-estadoJugador_t getEstadoJugador(player_t* player);
+void getNextLevel(Nivel *&nivel, unsigned char currentLevel);
+void getEstadoJugadores(estadoJuego_t &estado,  std::map<std::string, player_t> &connectedPlayers);
 
 void *acceptNewConnections(void *serverArg);
 void *handleLogin(void *arguments);
@@ -48,7 +48,7 @@ Server::Server(char *port) {
 
     logger::Logger::getInstance().logInformation("Loading valid users...");
     auto config = configuration::GameConfiguration::getInstance(CONFIG_FILE);
-    for (auto u: config->getUsers())
+    for (auto &u : config->getUsers())
     {
         this->users[u.username] = u;
         logger::Logger::getInstance().logDebug(std::string("user: ") + u.username + " " + u.password);
@@ -60,10 +60,13 @@ int Server::startServer() {
     auto logLevel = config->getLogLevel();
     logger::Logger::getInstance().setLogLevel(logLevel);
 
-    this->maxPlayers = config->getMaxPlayers();
-    if(this->maxPlayers < 1) {
+    int configPlayers = config->getMaxPlayers();
+    if(configPlayers < MIN_PLAYERS || MAX_PLAYERS < configPlayers) {
         logger::Logger::getInstance().logDebug(CANTIDAD_DE_JUGADORES_INVALIDA);
-        this->maxPlayers = DEFAULT_MAX_PLAYERS;
+        maxPlayers = DEFAULT_MAX_PLAYERS;
+    }
+    else {
+        maxPlayers = configPlayers;
     }
 
     //socket
@@ -85,14 +88,14 @@ int Server::startServer() {
     logger::Logger::getInstance().logInformation("Waiting for players...");
 
     pthread_t acceptConnectionsThread;
-    pthread_create(&acceptConnectionsThread, NULL, acceptNewConnections, this);
+    pthread_create(&acceptConnectionsThread, nullptr, acceptNewConnections, this);
 
-    while (this->connectedPlayers.size() < (unsigned int)maxPlayers) {}
+    while (this->connectedPlayers.size() < maxPlayers) {}
 
     startGame();
 
-    for (auto player : connectedPlayers) {
-        close(player.second->clientSocket);
+    for (auto &player : connectedPlayers) {
+        close(player.second.clientSocket);
     }
 
     close(serverSocket);
@@ -104,36 +107,37 @@ void Server::startGame() {
     
     srand(time(NULL));
 
-    std::vector<Mario *> marios;
-    for(unsigned int i = 0; i < (unsigned int)maxPlayers; ++i) {
-        marios.push_back(new Mario());
+    std::vector<Mario> marios;
+    for(size_t i = 0; i < maxPlayers; ++i) {
+        marios.emplace_back();
     }
 
     unsigned char currentLevel = 0;
-    Nivel *nivel = NULL;
+    Nivel *nivel{nullptr};
+    estadoJuego_t game;
 
-    getNextLevel(&nivel, ++currentLevel);
-    nivel->addPlayers(&marios);
+    getNextLevel(nivel, ++currentLevel);
+    nivel->addPlayers(marios);
 
     {
         size_t i = 0;
-        for(auto it = connectedPlayers.begin(); it != connectedPlayers.end(); ++it) {
-            it->second->mario = marios[i++];
+        for(auto &player : connectedPlayers) {
+            player.second.mario = &marios[i];
+            strcpy(game.players[i++].name, player.second.user);
         }
     }
 
     std::chrono::time_point <std::chrono::steady_clock, std::chrono::milliseconds> previous, current;
     previous = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now());
     std::chrono::milliseconds elapsed;
-    std::chrono::milliseconds lag;
+    std::chrono::milliseconds lag{0};
     bool updated = false;
-    lag = std::chrono::milliseconds{0};
-    while (nivel != NULL) {
+    while (nivel != nullptr) {
         current = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now());
         elapsed = current - previous;
-        previous += elapsed;
+        previous = current;
         lag += elapsed;
-    
+
         // Update Model
         updated = false;
         while (lag >= MS_PER_UPDATE) {
@@ -143,23 +147,20 @@ void Server::startGame() {
         }
 
         if (updated) {
-            estadoJuego_t game;
-            game.estadoNivel = *(nivel->getEstado());
+            game.estadoNivel = nivel->getEstado();
 
-            size_t i = 0;
-            for(auto it = connectedPlayers.begin(); it != connectedPlayers.end(); ++it) {
-                game.players[i++] = getEstadoJugador(it->second);
-            }
+            getEstadoJugadores(game, connectedPlayers);
 
-            for(auto it = connectedPlayers.begin(); it != connectedPlayers.end(); ++it) {
-                if (it->second->isConnected) {
-                    it->second->isConnected = sendData(it->second->clientSocket, &game) == sizeof(estadoJuego_t);
+            for(auto &player : connectedPlayers) {
+                if (player.second.isConnected) {
+                    player.second.isConnected = sendData(player.second.clientSocket, &game) == sizeof(estadoJuego_t);
                 }
+                player.second.mario->audioObserver.reset();
             }
             if (__builtin_expect(nivel->isComplete(), 0)) {
-                getNextLevel(&nivel, ++currentLevel);
-                if (nivel != NULL) {
-                    nivel->addPlayers(&marios);
+                getNextLevel(nivel, ++currentLevel);
+                if (nivel != nullptr) {
+                    nivel->addPlayers(marios);
                 }
             }
         }
@@ -171,14 +172,16 @@ void *acceptNewConnections(void* serverArg) {
     Server* server = (Server *)serverArg;
 
     while(true) {
-        int client = accept(server->serverSocket, (struct sockaddr *)&(server->clientAddress), (socklen_t*) &(server->clientAddrLen));
+        struct sockaddr_in clientAddress;
+        int clientAddrLen;
+        int client = accept(server->serverSocket, (struct sockaddr *)&clientAddress, (socklen_t*)&clientAddrLen);
 
         handleLoginArgs_t arguments;
         arguments.clientSocket = client;
         arguments.server = server;
 
         pthread_t clientConnection;
-        pthread_create(&clientConnection, NULL, handleLogin, &arguments);
+        pthread_create(&clientConnection, nullptr, handleLogin, &arguments);
     }
 }
 
@@ -196,7 +199,7 @@ void *handleLogin(void* arguments) {
         close(client);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 int validateUserLogin(int client, Server *server) {
@@ -224,8 +227,8 @@ int validateUserLogin(int client, Server *server) {
 
     pthread_mutex_lock(&connectedPlayersMutex);
     if (server->connectedPlayers.count(user.username) != 0) {
-        player_t *player = server->connectedPlayers[user.username];
-        if (player->isConnected) {
+        player_t &player = server->connectedPlayers.at(user.username);
+        if (player.isConnected) {
             pthread_mutex_unlock(&connectedPlayersMutex);
             logger::Logger::getInstance().logDebug(std::string("[") + user.username + "] user already connected");
             response = LOGIN_USER_ALREADY_CONNECTED;
@@ -233,10 +236,10 @@ int validateUserLogin(int client, Server *server) {
             return LOGIN_USER_ALREADY_CONNECTED;
         }
         else {
-            close(player->clientSocket);
-            player->clientSocket = client;
+            close(player.clientSocket);
+            player.clientSocket = client;
             response = LOGIN_OK;
-            player->isConnected = true;
+            player.isConnected = true;
             logger::Logger::getInstance().logInformation(std::string("Succesfully reconnected ") + user.username);
         }
     }
@@ -252,18 +255,16 @@ int validateUserLogin(int client, Server *server) {
     // Lo agrego a jugadores conectados
     if (response == -1) {
         response = LOGIN_OK;
-        player_t *newPlayer = new player_t();
-        newPlayer->clientSocket = client;
-        newPlayer->isConnected = true;
-        newPlayer->mario = NULL;
-        newPlayer->user = user;
-        server->connectedPlayers[user.username] = newPlayer;
+        server->connectedPlayers[user.username] = {{user.username[0], user.username[1], user.username[2], '\0'},
+                                                   nullptr,
+                                                   client,
+                                                   true};
         logger::Logger::getInstance().logInformation(std::string("Accepted new user: ") + user.username);
     }
     pthread_mutex_unlock(&connectedPlayersMutex);
 
     pthread_t recvCommandThread;
-    pthread_create(&recvCommandThread, NULL, handleCommand, server->connectedPlayers[user.username]);
+    pthread_create(&recvCommandThread, nullptr, handleCommand, &server->connectedPlayers[user.username]);
 
     sendData(client, &response);
     return LOGIN_OK;
@@ -271,47 +272,48 @@ int validateUserLogin(int client, Server *server) {
 // END LOGIN
 
 void *handleCommand(void *player) {
-    Mario *mario;
-    while ((mario = ((player_t *)player)->mario) == NULL) {}
-    mario->enable();
+    while (((player_t *)player)->mario == nullptr) {}
 
     int clientSocket = ((player_t *)player)->clientSocket;
+    Mario &mario = *((player_t *)player)->mario;
+    mario.enable();
+
     controls_t controls;
 
     bool clientOpen = true;
     while (clientOpen) {
         if (receiveData(clientSocket, &controls) == sizeof(controls_t)) {
-            mario->setControls(controls);
+            mario.controls = controls;
         } else {
             clientOpen = false;
         }
     }
-    mario->disable();
-    mario->setControls({0, 0, 0, 0, 0});
+    mario.disable();
     shutdown(clientSocket, SHUT_RD);
-    return NULL;
+    return nullptr;
 }
 
-void getNextLevel(Nivel **nivel, unsigned char currentLevel) {
-    delete *nivel;
+void getNextLevel(Nivel *&nivel, unsigned char currentLevel) {
+    delete nivel;
     if (currentLevel == 1) {
         logger::Logger::getInstance().logInformation("Level 1 starts");
-        *nivel = new Nivel1();
+        nivel = new Nivel1();
     }
     else if (currentLevel == 2) {
         logger::Logger::getInstance().logInformation("End of Level 1");
-        *nivel = new Nivel2();
+        nivel = new Nivel2();
         logger::Logger::getInstance().logInformation("Level 2 starts");
     }
     else {
         logger::Logger::getInstance().logInformation("End of Level 2");
-        *nivel = NULL;
+        nivel = nullptr;
     }
 }
 
-estadoJugador_t getEstadoJugador(player_t* player) {
-    estadoJugador_t estado;
-    strcpy(estado.name, player->user.username);
-    //TODO: agregar vidas, puntaje, etc.
-    return estado;
+void getEstadoJugadores(estadoJuego_t &estado,  std::map<std::string, player_t> &connectedPlayers) {
+    size_t i = 0;
+    for (auto &player : connectedPlayers) {
+        estado.players[i].lives = player.second.mario->lives;
+        estado.players[i++].score = player.second.mario->score;
+    }
 }

@@ -5,9 +5,9 @@
 
 typedef struct estadoJugador 
 {
-    char name[11];
-    int score;
-    int lives;
+    char name[4];
+    char lives;
+    unsigned char score;
 } estadoJugador_t;
 
 struct estadoNivel

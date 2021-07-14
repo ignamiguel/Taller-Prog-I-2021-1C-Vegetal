@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include "utils/punto.h"
 
-typedef enum color
+enum Color
 {
     YELLOW,
     RED,
@@ -12,14 +12,14 @@ typedef enum color
     LIME,
     MAGENTA,
     BLUE
-} color_t;
+};
 
 class TextRenderer
 {
 public:
     static TextRenderer *getInstance(SDL_Renderer *);
-    void renderText(punto_t punto, const char *text, float resize, color_t color = YELLOW);
-    bool includesCharacter(char);
+    void renderText(punto_t punto, const char *text, float resize, Color color = YELLOW);
+    bool includesCharacter(char) const;
     ~TextRenderer();
 
 private:

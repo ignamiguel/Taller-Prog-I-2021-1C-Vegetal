@@ -1,3 +1,3 @@
 #include "EntidadEstaticaVista.h"
 
-SDL_Renderer *EntidadEstaticaVista::renderer = NULL;
+SDL_Renderer *EntidadEstaticaVista::renderer{nullptr};

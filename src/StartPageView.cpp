@@ -1,10 +1,8 @@
-#include <iostream>
 #include <SDL2/SDL_image.h>
 #include "StartPageView.h"
 #include "utils/Constants.hpp"
 #include "utils/window.hpp"
 #include "model/Client.h"
-#include "utils/GameAbortedException.h"
 
 #define MS_PER_UPDATE 50
 
@@ -52,10 +50,10 @@ const SDL_Rect doneRect = {(int)(DONE_BUTTON_X * ANCHO_PANTALLA / (float)ANCHO_N
 StartPage::StartPage(SDL_Renderer *renderer) {
     this->renderer = renderer;
     this->textRenderer = TextRenderer::getInstance(renderer);
-    this->resultMsg = &EMPTY_STR;
+    this->resultMsg = EMPTY_STR;
 }
 
-user_t StartPage::getLoginUser() {
+user_t StartPage::getLoginUser(bool &quitRequested) {
     SDL_StartTextInput();
 
     bool loginDone = false;
@@ -63,13 +61,12 @@ user_t StartPage::getLoginUser() {
 
     int inicio, fin;
     
-    while (!loginDone) {
+    while (!loginDone && !quitRequested) {
         inicio = SDL_GetTicks();
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                std::cout << "aborted" << std::endl;
-                throw GameAborted;
+                quitRequested = true;
             }
             else if (event.type != SDL_MOUSEMOTION)
                 loginDone = handle(event);
@@ -85,19 +82,19 @@ user_t StartPage::getLoginUser() {
     }
 
     SDL_StopTextInput();
-    user_t user;
-    strcpy (user.username, username.c_str());
-    strcpy (user.password, password.c_str());
 
-    std::cout << "capturing user [" << user.username << " " << user.password << "]" << std::endl;
+    user_t user;
+    strcpy(user.username, username.c_str());
+    strcpy(user.password, password.c_str());
+
     return user;
 }
 
-int StartPage::setFocusColor(int focus) {
+int StartPage::setFocusColor(int focus) const {
     return SDL_SetRenderDrawColor(renderer, 128 + focus * 127, (1 - focus) * 128, (1 - focus) * 128, 255);
 }
 
-void StartPage::show() {
+void StartPage::show() const {
     SDL_RenderClear(renderer);
 
     punto_t pos;
@@ -128,24 +125,24 @@ void StartPage::show() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
 
-void StartPage::showError() {
+void StartPage::showError() const {
     punto_t pos;
     pos.x = (TEXT_BUTTON_X + 2 * RESIZE) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
     pos.y = ERROR_MSG_Y * ALTO_PANTALLA / (float)ALTO_NIVEL;
-    textRenderer->renderText(pos, *this->resultMsg, 1, RED);
+    textRenderer->renderText(pos, this->resultMsg, 1, RED);
 }
 
-bool StartPage::mouseOnUsernameButton(int x, int y) {
+bool StartPage::mouseOnUsernameButton(int x, int y) const {
     return usernameRect.y <= y && y <= usernameRect.y + usernameRect.h
         && usernameRect.x <= x && x <= usernameRect.x + usernameRect.w;
 }
 
-bool StartPage::mouseOnPasswordButton(int x, int y) {
+bool StartPage::mouseOnPasswordButton(int x, int y) const {
     return passwordRect.y <= y && y <= passwordRect.y + passwordRect.h
         && passwordRect.x <= x && x <= passwordRect.x + passwordRect.w;
 }
 
-bool StartPage::mouseOnDoneButton(int x, int y) {
+bool StartPage::mouseOnDoneButton(int x, int y) const {
     return doneRect.y <= y && y <= doneRect.y + doneRect.h
         && doneRect.x <= x && x <= doneRect.x + doneRect.w;
 }
@@ -197,20 +194,20 @@ bool StartPage::handle(SDL_Event event) {
     return false;
 }
 
-void StartPage::setResponse(char response) {
+void StartPage::setResponse(const char response) {
     switch (response)
     {
         case LOGIN_INVALID_USER_PASS:
-            this->resultMsg = &MSG_INVALID_PASS;
+            this->resultMsg = MSG_INVALID_PASS;
             break;
         case LOGIN_USER_ALREADY_CONNECTED:
-            this->resultMsg = &MSG_USER_ALREADY_CONNECTED;
+            this->resultMsg = MSG_USER_ALREADY_CONNECTED;
             break;
         case LOGIN_MAX_USERS_CONNECTED:
-            this->resultMsg = &MSG_MAX_USERS_CONNECTED;
+            this->resultMsg = MSG_MAX_USERS_CONNECTED;
             break;
         case LOGIN_INVALID_USER:
-            this->resultMsg = &MSG_INVALID_USER;
+            this->resultMsg = MSG_INVALID_USER;
             break;
         default:
             break;

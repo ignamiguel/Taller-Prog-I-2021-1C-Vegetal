@@ -1,18 +1,17 @@
 #include "GameOverState.h"
-#include "../../utils/Constants.hpp"
+#include "../Mario.hpp"
 
-GameOverState *GameOverState::instance = NULL;
+const GameOverState GameOverState::instance{};
 
-GameOverState::GameOverState() {}
-
-GameOverState *GameOverState::getInstance() {
-    if (instance == NULL) {
-        instance = new GameOverState();
-    }
-    return instance;
+const GameOverState *GameOverState::getInstance() {
+    return &instance;
 }
 
-MarioState *GameOverState::update(Mario *mario) {
-    mario->estado = DESCONECTADO;
-    return instance;
+const MarioState *GameOverState::reset(Mario &) const {
+    return this;
+}
+
+const MarioState *GameOverState::update(Mario &mario) const {
+    mario.estado = GAME_OVER;
+    return this;
 }

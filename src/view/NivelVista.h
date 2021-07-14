@@ -1,24 +1,27 @@
 #pragma once
 #include <string>
-#include <list>
 #include <vector>
 #include <SDL2/SDL.h>
 #include "../utils/estadoJuego.h"
 #include "MarioVista.h"
 #include "EntidadEstaticaVista.h"
+#include "StatsVista.h"
 
 class NivelVista
 {
 public:
-    NivelVista(SDL_Renderer *renderer);
-    void setBackground(std::string rutaImagen);
-    void addPlayers(unsigned int n);
-    virtual void update(estadoJuego_t *estadoJuego) = 0;
+    NivelVista(SDL_Renderer *renderer, const char *clientUsername);
+    void setBackground(const std::string &rutaImagen);
+    virtual void update(const estadoJuego_t &estadoJuego) = 0;
     virtual ~NivelVista();
 
 protected:
-    static SDL_Renderer *renderer;
+    SDL_Renderer *renderer;
     SDL_Texture *texture;
-    std::vector<MarioVista *> jugadoresVista;
-    std::list<EntidadEstaticaVista *> entidadesVista;
+    StatsVista statsVista;
+    std::vector<MarioVista> jugadoresVista;
+    std::vector<EntidadEstaticaVista *> entidadesVista;
+    char clientUsername[4];
+private:
+    void addPlayers(size_t n);
 };

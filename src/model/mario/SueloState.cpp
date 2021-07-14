@@ -1,39 +1,41 @@
 #include "SueloState.h"
 #include "AireState.h"
 #include "TrepandoState.h"
+#include "../Mario.hpp"
 #include "../../utils/Constants.hpp"
 
-SueloState *SueloState::instance = NULL;
+const SueloState SueloState::instance{};
 
-SueloState::SueloState() {}
-
-SueloState *SueloState::getInstance() {
-    if (instance == NULL) {
-        instance = new SueloState();
-    }
-    return instance;
+const SueloState *SueloState::getInstance() {
+    return &instance;
 }
 
-MarioState *SueloState::update(Mario *mario) {
-    Ladder *ladder = stage->getLadder(mario->posX, mario->posY, mario->controls.up - mario->controls.down);
-    if (ladder != NULL) {
-        float distance = ladder->getX() - mario->posX;
+const MarioState *SueloState::update(Mario &mario) const {
+    const Ladder *ladder = stage->getLadder(mario.pos.x, mario.pos.y, mario.controls.up - mario.controls.down);
+    if (ladder != nullptr) {
+        const float distance = ladder->x - mario.pos.x;
         if (-4 <= distance && distance <= 4) {
-            mario->posX = ladder->getX();
-            TrepandoState *trepandoState = TrepandoState::getInstance();
-            trepandoState->setLadder(ladder);
-            return trepandoState;
+            mario.pos.x = ladder->x;
+            mario.pos.y -= (mario.controls.up - mario.controls.down) * MARIO_VEL_TREPAR;
+            mario.climbMin = ladder->bottom;
+            mario.climbMax = ladder->top;
+            return TrepandoState::getInstance();
         }
     }
-    mario->velX = (mario->controls.right - mario->controls.left) * MARIO_VEL_X;
-    mario->velY = GRAVEDAD;
-    mario->posX += mario->velX * ((mario->posX < ANCHO_NIVEL - ANCHO_MARIO && 0 < mario->velX) || (0 < mario->posX && mario->velX < 0));
-    mario->posY -= mario->velY;
-    if (mario->controls.space || !stage->collide(&mario->posX, &mario->posY, &mario->velX, &mario->velY)) {
-        mario->velX *= mario->controls.space;
-        mario->velY = mario->controls.space * MARIO_VEL_SALTO;
+    mario.velX = (mario.controls.right - mario.controls.left) * MARIO_VEL_X;
+    mario.velY = GRAVEDAD;
+    mario.pos.x += mario.velX * ((mario.pos.x < ANCHO_NIVEL - ANCHO_MARIO && 0 < mario.velX) || (0 < mario.pos.x && mario.velX < 0));
+    mario.pos.y -= mario.velY;
+    if (mario.controls.space) {
+        mario.velY = MARIO_VEL_SALTO;
+        mario.audioObserver.update(JUMP);
         return AireState::getInstance();
     }
-    mario->estado = (mario->estado == DE_ESPALDAS) + (mario->velX != 0) * (CORRIENDO - (mario->estado == DE_ESPALDAS));
-    return instance;
+    if (!stage->collide(mario.pos.x, mario.pos.y, mario.velX, mario.velY)) {
+        mario.velX = 0;
+        mario.velY = 0;
+        return AireState::getInstance();
+    }
+    mario.estado = (mario.estado == DE_ESPALDAS) + (mario.velX != 0) * (CORRIENDO - (mario.estado == DE_ESPALDAS));
+    return this;
 }

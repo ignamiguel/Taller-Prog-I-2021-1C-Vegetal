@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_set>
-#include <list>
+#include <vector>
 #include "Platform.h"
 #include "Ladder.h"
 
@@ -9,16 +9,16 @@
 class Tile
 {
 public:
-    void addPlatform(Platform *platform);
-    void getPlatforms(std::unordered_set<Platform *> *);
-    void setLadderBottom(Ladder *ladder);
-    void setLadderTop(Ladder *ladder);
-    Ladder *getLadderBottom();
-    Ladder *getLadderTop();
+    void addPlatform(const Platform *platform);
+    void getPlatforms(std::unordered_set<const Platform *> &platforms) const;
+    void setLadderBottom(const Ladder *ladder);
+    void setLadderTop(const Ladder *ladder);
+    const Ladder *getLadderBottom() const { return ladderBottom; }
+    const Ladder *getLadderTop() const { return ladderTop; }
     ~Tile();
 
 private:
-    Ladder *ladderBottom = NULL;
-    Ladder *ladderTop = NULL;
-    std::list<Platform *> platforms;
+    const Ladder *ladderBottom{nullptr};
+    const Ladder *ladderTop{nullptr};
+    std::vector<const Platform *> platforms;
 };

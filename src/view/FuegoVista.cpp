@@ -11,13 +11,13 @@
 
 const std::string IMG_FUEGO = "res/Fuego.png";
 
-SDL_Texture *FuegoVista::texture = NULL;
+SDL_Texture *FuegoVista::texture{nullptr};
 SDL_Rect FuegoVista::srcRect;
 int FuegoVista::totalFuegos = 0;
 
 FuegoVista::FuegoVista(int x, int y, SDL_Renderer* renderer)
 : EntidadEstaticaVista() {
-    if (texture == NULL) {
+    if (texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_FUEGO.c_str());
         if (surface == NULL) {
@@ -34,8 +34,8 @@ FuegoVista::FuegoVista(int x, int y, SDL_Renderer* renderer)
         srcRect.h = ALTO_FUEGO;
     }
 
-    dstRect.x = round(x * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    dstRect.y = round(y * ALTO_PANTALLA / (float)ALTO_NIVEL);
+    dstRect.x = round(x * (ANCHO_PANTALLA / (float)ANCHO_NIVEL));
+    dstRect.y = round(y * (ALTO_PANTALLA / (float)ALTO_NIVEL));
     dstRect.w = round(ANCHO_FUEGO * ANCHO_PANTALLA / ANCHO_NIVEL);
     dstRect.h = round(ALTO_FUEGO * ALTO_PANTALLA / ALTO_NIVEL);
 
@@ -52,6 +52,6 @@ void FuegoVista::mostrar() {
 FuegoVista::~FuegoVista() {
     if (--totalFuegos == 0) {
         SDL_DestroyTexture(texture);
-        texture = NULL;
+        texture = nullptr;
     }
 }

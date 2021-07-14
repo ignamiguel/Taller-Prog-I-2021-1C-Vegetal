@@ -1,16 +1,4 @@
 #include "Entidad.h"
 
-Entidad::Entidad(float posX, float posY, int ancho, int alto) {
-    this->posX = posX;
-    this->posY = posY;
-    this->ancho = ancho;
-    this->alto = alto;
-}
-
-punto_t Entidad::getPos() {
-    punto_t pos;
-    pos.x = posX;
-    pos.y = posY;
-    
-    return pos;
-}
+Entidad::Entidad(const float posX, const float posY, const int ancho, const int alto)
+: pos{posX, posY}, ancho(ancho), alto(alto) {}

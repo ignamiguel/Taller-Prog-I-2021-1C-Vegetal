@@ -4,10 +4,11 @@
 class GameOverState : public MarioState
 {
 public:
-    MarioState *update(Mario *mario);
-    static GameOverState *getInstance();
+    const MarioState *update(Mario &mario) const;
+    const MarioState *reset(Mario &) const;
+    static const GameOverState *getInstance();
 
 private:
-    GameOverState();
-    static GameOverState *instance;
+    GameOverState() = default;
+    static const GameOverState instance;
 };

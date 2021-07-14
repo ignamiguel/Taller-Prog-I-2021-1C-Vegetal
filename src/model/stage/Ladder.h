@@ -1,16 +1,8 @@
 #pragma once
-#include "../../utils/punto.h"
 
-class Ladder
+struct Ladder
 {
-public:
-    Ladder(float x, float bottom, float top);
-    float getX();
-    float getBottom();
-    float getTop();
-
-private:
-    float x;
-    float bottom;
-    float top;
+    const float x;
+    const float bottom;
+    const float top;
 };

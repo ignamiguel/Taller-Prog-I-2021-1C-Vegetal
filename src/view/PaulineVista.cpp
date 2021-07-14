@@ -5,16 +5,16 @@
 #include "../utils/Constants.hpp"
 #include "../utils/window.hpp"
 
-const std::string IMG_PEACH = "res/Pauline.png";
+const std::string IMG_PAULINE = "res/Pauline.png";
 
-SDL_Texture *PaulineVista::texture = NULL;
+SDL_Texture *PaulineVista::texture{nullptr};
 
 PaulineVista::PaulineVista(SDL_Renderer* renderer)
 : EntidadEstaticaVista() {
     this->renderer = renderer;
-    SDL_Surface* surface = IMG_Load(IMG_PEACH.c_str());
+    SDL_Surface* surface = IMG_Load(IMG_PAULINE.c_str());
     if (surface == NULL) {
-        logger::Logger::getInstance().logError("Image not found: " + IMG_PEACH);
+        logger::Logger::getInstance().logError("Image not found: " + IMG_PAULINE);
         logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
         surface = IMG_Load(IMG_DEFAULT.c_str());
     }
@@ -22,10 +22,10 @@ PaulineVista::PaulineVista(SDL_Renderer* renderer)
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
-    rect.x = round(PEACH_POS_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    rect.y = round(PEACH_POS_Y * ALTO_PANTALLA / (float)ALTO_NIVEL);
-    rect.w = round(PEACH_ANCHO * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    rect.h = round(PEACH_ALTO * ALTO_PANTALLA / (float)ALTO_NIVEL);
+    rect.x = round(PAULINE_POS_X * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
+    rect.y = round(PAULINE_POS_Y * ALTO_PANTALLA / (float)ALTO_NIVEL);
+    rect.w = round(PAULINE_ANCHO * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
+    rect.h = round(PAULINE_ALTO * ALTO_PANTALLA / (float)ALTO_NIVEL);
 }
 
 void PaulineVista::mostrar() {

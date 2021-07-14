@@ -6,10 +6,10 @@
 
 namespace configuration
 {
-    GameConfiguration *GameConfiguration::instance = NULL;
+    GameConfiguration *GameConfiguration::instance{nullptr};
 
     GameConfiguration *GameConfiguration::getInstance(const std::string& jsonFileName) {
-        if (instance == NULL) instance = new GameConfiguration(jsonFileName);
+        if (instance == nullptr) instance = new GameConfiguration(jsonFileName);
         return instance;
     }
 
@@ -64,11 +64,6 @@ namespace configuration
             }
         }
     }
-
-    bool GameConfiguration::getDefaultConfigFlag()
-    {
-        return this->useDefaultConfig;
-    };
 
     bool GameConfiguration::loadFromFile(std::string configFileName)
     {
@@ -150,6 +145,6 @@ namespace configuration
 
     GameConfiguration::~GameConfiguration() {
         delete instance;
-        instance = NULL;
+        instance = nullptr;
     }
 }

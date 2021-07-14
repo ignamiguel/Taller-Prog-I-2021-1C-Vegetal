@@ -11,13 +11,13 @@
 
 const std::string IMG_POLEAS = "res/Polea.png";
 
-SDL_Texture *PoleaVista::texture = NULL;
+SDL_Texture *PoleaVista::texture{nullptr};
 SDL_Rect PoleaVista::rectSrc;
 int PoleaVista::totalPoleas = 0;
 
 PoleaVista::PoleaVista(int x, int y, int orientation, int rotation, SDL_Renderer *renderer)
 : EntidadEstaticaVista() {
-    if (texture == NULL) {
+    if (texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_POLEAS.c_str());
         if (surface == NULL) {
@@ -54,6 +54,6 @@ void PoleaVista::mostrar() {
 PoleaVista::~PoleaVista() {
     if (!(--totalPoleas)) {
         SDL_DestroyTexture(texture);
-        texture = NULL;
+        texture = nullptr;
     }
 }

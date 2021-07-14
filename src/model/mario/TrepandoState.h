@@ -4,12 +4,10 @@
 class TrepandoState : public MarioState
 {
 public:
-    MarioState *update(Mario *mario);
-    static TrepandoState *getInstance();
-    void setLadder(Ladder *ladder);
+    const MarioState *update(Mario &mario) const;
+    static const TrepandoState *getInstance();
 
 private:
-    TrepandoState();
-    static TrepandoState *instance;
-    Ladder *ladder;
+    TrepandoState() = default;
+    static const TrepandoState instance;
 };

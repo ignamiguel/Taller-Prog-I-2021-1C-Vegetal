@@ -4,10 +4,10 @@
 class AireState : public MarioState
 {
 public:
-    MarioState *update(Mario *mario);
-    static AireState *getInstance();
+    const MarioState *update(Mario &mario) const;
+    static const AireState *getInstance();
 
 private:
-    AireState();
-    static AireState *instance;
+    AireState() = default;
+    static const AireState instance;
 };

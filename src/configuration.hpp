@@ -44,7 +44,8 @@ namespace configuration
         const std::vector<configuration::Enemy> getEnemies() const { return enemies; };
         const std::vector<configuration::Stage> getStages() const { return stages; };
         int getMaxPlayers() const { return maxPlayers; };
-        bool getDefaultConfigFlag();
+        bool getDefaultConfigFlag() const { return this->useDefaultConfig; };
+;
         std::vector<user_t> getUsers() const { return users; };
 
     private:

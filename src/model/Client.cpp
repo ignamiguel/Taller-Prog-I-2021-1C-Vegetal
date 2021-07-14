@@ -1,8 +1,6 @@
 #include <iostream>
-#include <SDL2/SDL_image.h>
 #include <pthread.h>
 #include <string>
-#include <exception>
 
 #include "Client.h"
 #include "../view/Nivel1Vista.h"
@@ -25,7 +23,7 @@
 typedef struct handleLevelStateArgs
 {
     int clientSocket;
-    estadoJuego_t **estado;
+    const estadoJuego_t *&estado;
 } handleLevelStateArgs_t;
 
 pthread_mutex_t mutex;
@@ -37,7 +35,7 @@ void *receiveDataThread(void *args);
 
 Client::Client(char *serverIp, char *port)
 {
-    std::cout << "Aplicación iniciada en modo cliente" << std::endl;
+    std::cout << "Aplicación iniciada en modo cliente\n";
 
     this->serverIp = serverIp;
     this->port = port;
@@ -83,7 +81,7 @@ int Client::startClient()
 
 int Client::connectToServer()
 {
-    std::cout << "Conectando al servidor: " << serverIp << " puerto: " << port << std::endl;
+    std::cout << "Conectando al servidor: " << serverIp << " puerto: " << port << '\n';
 
     //socket
     this->clientSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -99,7 +97,7 @@ int Client::connectToServer()
     //connect
     if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(struct sockaddr_in)) != 0)
     {
-        std::cout << "Error al conectarse con el servidor" << std::endl;
+        std::cout << "Error al conectarse con el servidor\n";
         return EXIT_FAILURE;
     }
 
@@ -117,16 +115,14 @@ void Client::startGame()
     logger::Logger::getInstance().setLogLevel(log_level);
 
     unsigned char currentLevel = 0;
-    NivelVista *vista = NULL;
+    NivelVista *vista{nullptr};
 
     pthread_t sendThread;
     pthread_create(&sendThread, NULL, sendDataThread, &clientSocket);
 
-    estadoJuego_t* estadoJuego = NULL;
+    const estadoJuego_t *estadoJuego{nullptr};
 
-    handleLevelStateArgs_t receiveArgs;
-    receiveArgs.clientSocket = clientSocket;
-    receiveArgs.estado = &estadoJuego;
+    handleLevelStateArgs_t receiveArgs{clientSocket, estadoJuego};
 
     pthread_t receiveThread;
     pthread_create(&receiveThread, NULL, receiveDataThread, &receiveArgs);
@@ -134,14 +130,14 @@ void Client::startGame()
     bool quitRequested = false;
     while (!quitRequested && serverOpen)
     {
-        if (estadoJuego != NULL)
+        if (estadoJuego != nullptr)
         {
             pthread_mutex_lock(&mutex);
             if (currentLevel < estadoJuego->estadoNivel.level)
-                getNextLevelView(&vista, ++currentLevel, renderer);
+                getNextLevelView(vista, ++currentLevel);
             SDL_RenderClear(renderer);
-            vista->update(estadoJuego);
-            estadoJuego = NULL;
+            vista->update(*estadoJuego);
+            estadoJuego = nullptr;
             pthread_mutex_unlock(&mutex);
             SDL_RenderPresent(renderer);
         }
@@ -170,13 +166,13 @@ void *sendDataThread(void *args)
 
         quitRequested = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT) > 0;
     }
-    return NULL;
+    return nullptr;
 }
 
 void *receiveDataThread(void *args)
 {
     int clientSocket = ((handleLevelStateArgs_t *)args)->clientSocket;
-    estadoJuego_t **estado = ((handleLevelStateArgs_t *)args)->estado;
+    const estadoJuego_t *&estado = ((handleLevelStateArgs_t *)args)->estado;
     estadoJuego_t game;
 
     bool quitRequested = false;
@@ -185,7 +181,7 @@ void *receiveDataThread(void *args)
         if (receiveData(clientSocket, &game) == sizeof(estadoJuego_t))
         {
             pthread_mutex_lock(&mutex);
-            *estado = &game;
+            estado = &game;
             pthread_mutex_unlock(&mutex);
         }
         else
@@ -194,68 +190,45 @@ void *receiveDataThread(void *args)
         }
         quitRequested = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT) > 0;
     }
-    return NULL;
+    return nullptr;
 }
 
-void Client::getNextLevelView(NivelVista **vista, unsigned char currentLevel, SDL_Renderer *renderer)
+void Client::getNextLevelView(NivelVista *&vista, unsigned char currentLevel)
 {
-    auto config = configuration::GameConfiguration::getInstance(CONFIG_FILE);
-    int maxPlayers = config->getMaxPlayers();
-    if (maxPlayers < 0)
-        maxPlayers = DEFAULT_MAX_PLAYERS;
-
-    delete *vista;
+    delete vista;
     if (currentLevel == 1)
     {
-        *vista = new Nivel1Vista(renderer, config->getDefaultConfigFlag(), name);
-        (*vista)->addPlayers(maxPlayers);
-        auto stages = config->getStages();
-        if (stages.size() > 0)
-        {
-            std::string rutaImagen = stages[0].getBackgrounds()[0];
-            logger::Logger::getInstance().logDebug("Stage 1 background img: " + rutaImagen);
-            (*vista)->setBackground(rutaImagen);
-        }
+        vista = new Nivel1Vista(renderer, name);
     }
     if (currentLevel == 2)
     {
-        *vista = new Nivel2Vista(renderer, config->getDefaultConfigFlag(), name);
-        (*vista)->addPlayers(maxPlayers);
-        auto stages = config->getStages();
-        if (stages.size() > 1)
-        {
-            std::string rutaImagen = stages[1].getBackgrounds()[0];
-            logger::Logger::getInstance().logDebug("Stage 2 background img: " + rutaImagen);
-            (*vista)->setBackground(rutaImagen);
-        }
+        vista = new Nivel2Vista(renderer, name);
     }
 }
 
 int Client::showStartPage()
 {
-    StartPage startPage = StartPage(renderer);
+    StartPage startPage{renderer};
     int response;
-    try
+    bool quitRequested = false;
+    do
     {
-        do
+        user_t user = startPage.getLoginUser(quitRequested);
+        if (quitRequested)
         {
-            user_t user = startPage.getLoginUser();
-            response = login(user);
+            return EXIT_FAILURE;
+        }
 
-            if (response == LOGIN_OK)
-            {
-                strcpy(this->name, user.username);
-            }
-            else
-            {
+        response = login(user);
+        if (response == LOGIN_OK)
+        {
+            strcpy(this->name, user.username);
+        }
+        else
+        {
             startPage.setResponse(response);
-            }
-        } while (response != LOGIN_OK && serverOpen);
-    }
-    catch (std::exception &e)
-    {
-        return EXIT_FAILURE;
-    }
+        }
+    } while (response != LOGIN_OK && serverOpen);
 
     return EXIT_SUCCESS;
 }
@@ -279,8 +252,8 @@ void Client::showConnectedPage()
     SDL_RenderClear(renderer);
 
     punto_t pos;
-    pos.x = (10 + 2) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
-    pos.y = (110 + 2) * ALTO_PANTALLA / (float)ALTO_NIVEL;
+    pos.x = (10 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
+    pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
     TextRenderer::getInstance(renderer)->renderText(pos, "Esperando a jugadores...", 1);
 
     SDL_RenderPresent(renderer);

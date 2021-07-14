@@ -7,12 +7,12 @@
 
 const std::string IMG_PLATAFORMA_MOVIL = "res/PlataformaMovil.png";
 
-SDL_Renderer *PlataformaMovilVista::renderer = NULL;
-SDL_Texture *PlataformaMovilVista::texture = NULL;
+SDL_Renderer *PlataformaMovilVista::renderer{nullptr};
+SDL_Texture *PlataformaMovilVista::texture{nullptr};
 int PlataformaMovilVista::totalPlataformas = 0;
 
 PlataformaMovilVista::PlataformaMovilVista(SDL_Renderer *renderer) {
-    if (this->texture == NULL) {
+    if (this->texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_PLATAFORMA_MOVIL.c_str());
         if (surface == NULL) {
@@ -31,8 +31,8 @@ PlataformaMovilVista::PlataformaMovilVista(SDL_Renderer *renderer) {
 }
 
 void PlataformaMovilVista::mover(punto_t pos) {
-    dstRect.x = round(pos.x * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    dstRect.y = round(pos.y * ALTO_PANTALLA / (float)ALTO_NIVEL);
+    dstRect.x = round(pos.x * (ANCHO_PANTALLA / (float)ANCHO_NIVEL));
+    dstRect.y = round(pos.y * (ALTO_PANTALLA / (float)ALTO_NIVEL));
 }
 
 void PlataformaMovilVista::mostrar() {
@@ -42,6 +42,6 @@ void PlataformaMovilVista::mostrar() {
 PlataformaMovilVista::~PlataformaMovilVista() {
     if (--totalPlataformas == 0) {
         SDL_DestroyTexture(texture);
-        texture = NULL;
+        texture = nullptr;
     }
 }

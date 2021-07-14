@@ -1,26 +1,38 @@
 #include <string>
 #include <SDL2/SDL_image.h>
 #include "NivelVista.h"
+#include "PaulineVista.h"
+#include "DonkeyKongVista.h"
+#include "DefaultConfigVista.h"
+#include "../configuration.hpp"
 #include "../logger.h"
 #include "../utils/Constants.hpp"
 
-SDL_Renderer* NivelVista::renderer = NULL;
-
-NivelVista::NivelVista(SDL_Renderer *renderer) {
+NivelVista::NivelVista(SDL_Renderer *renderer, const char *clientUsername) : statsVista(renderer) {
     this->renderer = renderer;
+    strcpy(this->clientUsername, clientUsername);
+
+    entidadesVista.push_back(new PaulineVista(renderer));
+    entidadesVista.push_back(new DonkeyKongVista(renderer));
+
+    const configuration::GameConfiguration *const config = configuration::GameConfiguration::getInstance(CONFIG_FILE);
+    if (config->getDefaultConfigFlag())
+        entidadesVista.push_back(new DefaultConfigVista(renderer));
+
+    auto maxPlayers = config->getMaxPlayers();
+    if (maxPlayers < MIN_PLAYERS || MAX_PLAYERS < maxPlayers) maxPlayers = DEFAULT_MAX_PLAYERS;
+    addPlayers(maxPlayers);
 }
 
-void NivelVista::addPlayers(unsigned int n) {
-    for (unsigned int i = 0; i < n; ++i) {
-        MarioVista *vista = new MarioVista(renderer);
-        vista->setColor(i);
-        jugadoresVista.push_back(vista);
+void NivelVista::addPlayers(size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        jugadoresVista.emplace_back(renderer);
     }
 }
 
-void NivelVista::setBackground(std::string rutaImagen) {
+void NivelVista::setBackground(const std::string &rutaImagen) {
     SDL_Surface* surface = IMG_Load(rutaImagen.c_str());
-    if(surface == NULL) {
+    if (surface == NULL) {
         logger::Logger::getInstance().logError("Image not found: " + rutaImagen);
         logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
         surface = IMG_Load(IMG_DEFAULT.c_str());
@@ -32,9 +44,6 @@ void NivelVista::setBackground(std::string rutaImagen) {
 NivelVista::~NivelVista() {
     SDL_DestroyTexture(texture);
 
-    for (MarioVista *vista : jugadoresVista) delete vista;
     jugadoresVista.clear();
-
-    for (EntidadEstaticaVista *vista : entidadesVista) delete vista;
     entidadesVista.clear();
 }

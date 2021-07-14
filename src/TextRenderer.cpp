@@ -11,14 +11,14 @@
 #define SPACING 2
 
 const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.- ";
-const char *IMG_FONT = "res/font.png";
+const char *const IMG_FONT = "res/font.png";
 
-TextRenderer *TextRenderer::instance = NULL;
-SDL_Renderer *TextRenderer::renderer = NULL;
-SDL_Texture *TextRenderer::texture = NULL;
+TextRenderer *TextRenderer::instance{nullptr};
+SDL_Renderer *TextRenderer::renderer{nullptr};
+SDL_Texture *TextRenderer::texture{nullptr};
 
 TextRenderer *TextRenderer::getInstance(SDL_Renderer *renderer) {
-    if (instance == NULL) instance = new TextRenderer(renderer);
+    if (instance == nullptr) instance = new TextRenderer(renderer);
     return instance;
 }
 
@@ -33,7 +33,7 @@ TextRenderer::TextRenderer(SDL_Renderer *renderer) {
     srcRect = {0, 0, LETTER_WIDTH, LETTER_HEIGHT};
 }
 
-void TextRenderer::renderText(punto_t punto, const char *text, float resize, color_t color) {
+void TextRenderer::renderText(punto_t punto, const char *text, const float resize, Color color) {
     srcRect.y = color * LETTER_Y;
     dstRect.x = punto.x;
     dstRect.y = punto.y;
@@ -48,11 +48,11 @@ void TextRenderer::renderText(punto_t punto, const char *text, float resize, col
     }
 }
 
-bool TextRenderer::includesCharacter(char character) {
+bool TextRenderer::includesCharacter(const char character) const {
     return CHARACTERS.find_first_of(toupper(character)) != CHARACTERS.npos;
 }
 
 TextRenderer::~TextRenderer() {
     SDL_DestroyTexture(texture);
-    texture = NULL;
+    texture = nullptr;
 };

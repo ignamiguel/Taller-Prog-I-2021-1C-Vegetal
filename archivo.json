@@ -22,20 +22,20 @@
         },
         "users": [
             {
-                "username": "nachoi",
-                "password": "nachoi"
+                "username": "nac",
+                "password": "nac"
             },
             {
                 "username": "kai",
                 "password": "kai"
             },
             {
-                "username": "ailin",
-                "password": "ailin"
+                "username": "aln",
+                "password": "aln"
             },
             {
-                "username": "nachod",
-                "password": "nachod"
+                "username": "jid",
+                "password": "jid"
             }
         ]
     }

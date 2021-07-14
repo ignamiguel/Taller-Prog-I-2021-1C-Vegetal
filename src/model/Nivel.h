@@ -1,30 +1,27 @@
 #pragma once
-#include <list>
 #include <vector>
-#include <SDL2/SDL.h>
 #include "stage/Stage.h"
 #include "Mario.hpp"
 #include "EnemigoFuego.h"
 #include "../utils/estadoJuego.h"
 
 // Representa el escenario del juego
-// contiene a Stage (elementos colisionables)
+// contiene a Stage (plataformas y escaleras)
 class Nivel
 {
 public:
-    Nivel();
-    virtual void addPlayers(std::vector<Mario *> *players) = 0;
+    virtual void addPlayers(std::vector<Mario> &players) = 0;
     virtual void update() = 0;
-    virtual estadoNivel_t *getEstado() = 0;
-    bool isComplete();
+    virtual const estadoNivel_t &getEstado() = 0;
+    bool isComplete() const;
     virtual ~Nivel();
-    bool collision(SDL_FRect, SDL_FRect);
-    void checkCollisions ();
+    bool collision(dimensiones_t, dimensiones_t);
+    virtual void checkCollisions () = 0;
 
 protected:
-    Stage *stage;
-    std::vector<Platform *> platforms;
-    std::list<EnemigoFuego *> enemies;
-    std::vector<Mario *> *players;
-    estadoNivel_t *estadoNivel;
+    Stage stage;
+    estadoNivel_t estadoNivel;
+    std::vector<EnemigoFuego> enemies;
+    std::vector<Platform> platforms;
+    std::vector<Mario> *players;
 };

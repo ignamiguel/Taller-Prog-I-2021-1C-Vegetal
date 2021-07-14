@@ -14,11 +14,12 @@ class Mario;
 class MarioState
 {
 public:
-    void setStage(Stage *stage);
-    virtual MarioState *update(Mario *mario) = 0;
+    static void setStage(const Stage *stage);
+    virtual const MarioState *reset(Mario &mario) const;
+    virtual const MarioState *update(Mario &mario) const = 0;
     virtual ~MarioState() = default;
 
 protected:
-    MarioState();
-    static Stage *stage;
+    MarioState() = default;
+    static const Stage *stage;
 };

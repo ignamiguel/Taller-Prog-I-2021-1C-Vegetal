@@ -1,13 +1,13 @@
 #pragma once
 #include "MarioState.h"
 
-class MuriendoState  : public MarioState
+class MuriendoState : public MarioState
 {
-    public:
-        MarioState *update(Mario *mario);
-        static MuriendoState  *getInstance();
+public:
+    const MarioState *update(Mario &mario) const;
+    static const MuriendoState *getInstance();
 
-    private:
-        MuriendoState ();
-        static MuriendoState  *instance;
+private:
+    MuriendoState() = default;
+    static const MuriendoState instance;
 };

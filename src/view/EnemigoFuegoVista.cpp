@@ -11,12 +11,12 @@
 
 const std::string IMG_ENEMIGO_FUEGO = "res/Enemy1.png";
 
-SDL_Renderer *EnemigoFuegoVista::renderer = NULL;
-SDL_Texture *EnemigoFuegoVista::texture = NULL;
+SDL_Renderer *EnemigoFuegoVista::renderer{nullptr};
+SDL_Texture *EnemigoFuegoVista::texture{nullptr};
 SDL_Rect EnemigoFuegoVista::srcRect, EnemigoFuegoVista::dstRect;
 
 EnemigoFuegoVista::EnemigoFuegoVista(SDL_Renderer *renderer) {
-    if (this->texture == NULL) {
+    if (this->texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_ENEMIGO_FUEGO.c_str());
         if (surface == NULL) {
@@ -39,8 +39,8 @@ void EnemigoFuegoVista::startRender() {
 }
 
 void EnemigoFuegoVista::mover(punto_t pos) {
-    dstRect.x = round(pos.x * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    dstRect.y = round(pos.y * ALTO_PANTALLA / (float)ALTO_NIVEL);
+    dstRect.x = round(pos.x * (ANCHO_PANTALLA / (float)ANCHO_NIVEL));
+    dstRect.y = round(pos.y * (ALTO_PANTALLA / (float)ALTO_NIVEL));
 }
 
 void EnemigoFuegoVista::mostrar() {
@@ -53,5 +53,5 @@ void EnemigoFuegoVista::mostrar() {
 
 EnemigoFuegoVista::~EnemigoFuegoVista() {
     SDL_DestroyTexture(texture);
-    texture = NULL;
+    texture = nullptr;
 }

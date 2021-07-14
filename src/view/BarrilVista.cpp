@@ -11,11 +11,11 @@
 
 const std::string IMG_BARRIL = "res/Barril.png";
 
-SDL_Renderer *BarrilVista::renderer = NULL;
-SDL_Texture *BarrilVista::texture = NULL;
+SDL_Renderer *BarrilVista::renderer{nullptr};
+SDL_Texture *BarrilVista::texture{nullptr};
 
 BarrilVista::BarrilVista(SDL_Renderer *renderer) {
-    if (this->texture == NULL) {
+    if (this->texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_BARRIL.c_str());
         if (surface == NULL) {
@@ -51,5 +51,5 @@ void BarrilVista::mostrar() {
 
 BarrilVista::~BarrilVista() {
     SDL_DestroyTexture(texture);
-    texture = NULL;
+    texture = nullptr;
 }

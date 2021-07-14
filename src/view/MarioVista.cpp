@@ -5,25 +5,26 @@
 #include "../utils/Constants.hpp"
 #include "../utils/window.hpp"
 
-#define MARIO_SPRITE_SIZE 24
-#define MARIO_SALTANDO_INDEX 14
 #define MARIO_TREPANDO_INDEX 3
-#define MARIO_MURIENDO_1_INDEX 16
-#define MARIO_MURIENDO_2_INDEX 17
-#define MARIO_MURIENDO_3_INDEX 18
 #define MARIO_DE_ESPALDAS_INDEX 6
+#define MARIO_SALTANDO_INDEX 14
+#define MARIO_MURIENDO_INDEX 16
+#define MARIO_MUERTO_INDEX 18
+
+#define TIEMPO_FRAME_MUERTO 16
 #define TIEMPO_POR_FRAME 2
 #define CANT_FRAMES 4
+#define MARIO_SPRITE_SIZE 24
 
 const std::string IMG_MARIO = "res/Mario.png";
 
-SDL_Renderer *MarioVista::renderer = NULL;
-SDL_Texture *MarioVista::texture = NULL;
+SDL_Renderer *MarioVista::renderer{nullptr};
+SDL_Texture *MarioVista::texture{nullptr};
 
-int MarioVista::totalJugadores = 0;
+size_t MarioVista::totalJugadores = 0;
 
 MarioVista::MarioVista(SDL_Renderer *renderer) {
-    if (texture == NULL) {
+    if (texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_MARIO.c_str());
 
@@ -42,23 +43,25 @@ MarioVista::MarioVista(SDL_Renderer *renderer) {
     dstRect.w = round(ANCHO_MARIO * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     dstRect.h = round(ALTO_MARIO * ALTO_PANTALLA / (float)ALTO_NIVEL);
 
-    tiempo = 0;
-    flip = SDL_FLIP_HORIZONTAL;
-
     ++totalJugadores;
 }
 
-void MarioVista::setColor(int nroJugador) {
-    srcRect.y = nroJugador * ALTO_MARIO;
+MarioVista::MarioVista(const MarioVista &other)
+: srcRect{other.srcRect}, dstRect{other.dstRect}, flip{other.flip}, tiempo{other.tiempo} {
+    ++totalJugadores;
 }
 
-void MarioVista::mostrar(punto_t pos, char estado) {
-    int nextX = round((int)pos.x * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    int nextY = round((int)pos.y * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
-    switch(estado) {
+void MarioVista::setColor(size_t color) {
+    srcRect.y = color * ALTO_MARIO;
+}
+
+void MarioVista::mostrar(const estadoMario_t &estadoMario) {
+    int nextX = round((int)estadoMario.pos.x * (ANCHO_PANTALLA / (float)ANCHO_NIVEL));
+    int nextY = round((int)estadoMario.pos.y * (ANCHO_PANTALLA / (float)ANCHO_NIVEL));
+    switch(estadoMario.estado) {
         case REPOSO:
         case DE_ESPALDAS:
-            updateReposo(estado);
+            updateReposo(estadoMario.estado);
             break;
         case CORRIENDO:
             updateCorriendo(nextX);
@@ -69,15 +72,13 @@ void MarioVista::mostrar(punto_t pos, char estado) {
         case TREPANDO:
             updateTrepando(nextY);
             break;
-        case DESCONECTADO:
-            updateDesconectado(nextX, nextY);
+        case MURIENDO:
+        case MUERTO:
+            updateMuriendo(estadoMario.estado);
+            break;
+        case GAME_OVER:
             return;
         default:
-            break;
-        case MURIENDO_1:
-        case MURIENDO_2:
-        case MURIENDO_3:
-            updateMuriendo(estado);
             break;
     }
     dstRect.x = nextX;
@@ -87,7 +88,7 @@ void MarioVista::mostrar(punto_t pos, char estado) {
 }
 
 void MarioVista::updateReposo(char estado) {
-    srcRect.x = MARIO_DE_ESPALDAS_INDEX * (estado == DE_ESPALDAS) * MARIO_SPRITE_SIZE;
+    srcRect.x = (estado == DE_ESPALDAS) * (MARIO_DE_ESPALDAS_INDEX * MARIO_SPRITE_SIZE);
 }
 
 void MarioVista::updateCorriendo(int nextX) {
@@ -109,40 +110,22 @@ void MarioVista::updateTrepando(int nextY) {
 }
 
 void MarioVista::updateMuriendo(char estado) {
-    switch (estado)
-    {
-        case MURIENDO_1:
-            srcRect.x = MARIO_MURIENDO_1_INDEX * MARIO_SPRITE_SIZE;
-            break;
-        case MURIENDO_2:
-            srcRect.x = MARIO_MURIENDO_2_INDEX * MARIO_SPRITE_SIZE;
-            break;
-        case MURIENDO_3:
-            srcRect.x = MARIO_MURIENDO_3_INDEX * MARIO_SPRITE_SIZE;
-            break;
-        default:
-            break;
+    tiempo *= srcRect.x >= MARIO_MURIENDO_INDEX * MARIO_SPRITE_SIZE;
+    ++tiempo;
+    if (estado == MURIENDO) {
+        int sprite = (tiempo / TIEMPO_FRAME_MUERTO) % 4;
+        srcRect.x = (MARIO_MURIENDO_INDEX + 1 - sprite % 2) * MARIO_SPRITE_SIZE;
+        flip = (SDL_RendererFlip)((sprite > 1) * (sprite - 1));
     }
-    
-}
-
-void MarioVista::updateDesconectado(int nextX, int nextY) {
-    SDL_Rect _srcRect;
-    flip = SDL_FLIP_HORIZONTAL;
-    _srcRect.w = ANCHO_MARIO;
-    _srcRect.h = ALTO_MARIO;
-    _srcRect.x = 0;
-    _srcRect.y = 64;
-
-    dstRect.x = nextX;
-    dstRect.y = nextY;
-
-    SDL_RenderCopyEx(renderer, texture, &_srcRect, &dstRect, 0., NULL, flip);
+    else {
+        flip = SDL_FLIP_NONE;
+        srcRect.x = MARIO_MUERTO_INDEX * MARIO_SPRITE_SIZE;
+    }
 }
 
 MarioVista::~MarioVista() {
     if (--totalJugadores == 0) {
         SDL_DestroyTexture(texture);
-        texture = NULL;
+        texture = nullptr;
     }
 }
