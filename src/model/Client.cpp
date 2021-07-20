@@ -29,6 +29,7 @@ typedef struct handleLevelStateArgs
 pthread_mutex_t mutex;
 bool serverOpen = true;
 bool isGameOver = false;
+bool isGameCompleted = false;
 
 void *sendDataThread(void *args);
 void *receiveDataThread(void *args);
@@ -61,11 +62,16 @@ int Client::startClient()
     }
 
     if (isGameOver) {
-        this->showGameOver();
+        this->showGameOverPage();
+        while (!SDL_QuitRequested()) { }
+    }
+
+    if (isGameCompleted) {
+        this->showGameOverPage();
         while (!SDL_QuitRequested()) { }
     }
     
-    if (!serverOpen) {
+    if (!serverOpen && !isGameOver) {
         DesconexionVista::show(renderer);
         while (!SDL_QuitRequested()) { }
     }
@@ -126,7 +132,7 @@ void Client::startGame()
 
     bool quitRequested = false;
 
-    while (!quitRequested && serverOpen && !isGameOver) {
+    while (!quitRequested && serverOpen && !isGameOver && !isGameCompleted) {
         if (estadoJuego != nullptr) {
             pthread_mutex_lock(&mutex);
             if (currentLevel < estadoJuego->estadoNivel.level)
@@ -135,6 +141,7 @@ void Client::startGame()
             vista->update(*estadoJuego);
 
             isGameOver = estadoJuego->estadoNivel.isGameOver;
+            isGameCompleted = estadoJuego->estadoNivel.isGameCompleted;
 
             estadoJuego = nullptr;
             pthread_mutex_unlock(&mutex);
@@ -251,7 +258,7 @@ void Client::showConnectedPage()
     SDL_RenderPresent(renderer);
 }
 
-void Client::showGameOver()
+void Client::showGameOverPage()
 {
     SDL_RenderClear(renderer);
 
@@ -259,6 +266,18 @@ void Client::showGameOver()
     pos.x = (50 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
     TextRenderer::getInstance(renderer)->renderText(pos, "Game Over", 1);
+
+    SDL_RenderPresent(renderer);
+}
+
+void Client::showGameCompletedPage()
+{
+    SDL_RenderClear(renderer);
+
+    punto_t pos;
+    pos.x = (50 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
+    pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
+    TextRenderer::getInstance(renderer)->renderText(pos, "Congratulations! You won...", 1);
 
     SDL_RenderPresent(renderer);
 }

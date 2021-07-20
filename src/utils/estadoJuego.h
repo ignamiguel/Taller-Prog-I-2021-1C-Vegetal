@@ -19,6 +19,7 @@ struct estadoNivel
     estadoMario_t players[MAX_PLAYERS];
     unsigned char level;
     bool isGameOver;
+    bool isGameCompleted;
 };
 
 typedef struct estadoNivel estadoNivel_t;

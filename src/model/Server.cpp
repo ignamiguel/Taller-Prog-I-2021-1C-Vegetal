@@ -168,6 +168,15 @@ void Server::startGame() {
                 getNextLevel(nivel, ++currentLevel);
                 if (nivel != nullptr) {
                     nivel->addPlayers(marios);
+                } else {
+                    std::cout << "Congratulations! Ending the game..." << '\n';
+                    game.estadoNivel.isGameCompleted = true;
+                    for(auto &player : connectedPlayers) {
+                        if (player.second.isConnected) {
+                            player.second.isConnected = sendData(player.second.clientSocket, &game) == sizeof(estadoJuego_t);
+                        }
+                    }
+                    return;
                 }
             }
 

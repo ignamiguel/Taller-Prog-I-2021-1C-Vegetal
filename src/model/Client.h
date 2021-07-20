@@ -24,6 +24,7 @@ private:
     struct sockaddr_in serverAddress;
     char name[4];
     void showConnectedPage();
-    void showGameOver();
+    void showGameOverPage();
+    void showGameCompletedPage();
     void getNextLevelView(NivelVista *&vista, unsigned char currentLevel);
 };
