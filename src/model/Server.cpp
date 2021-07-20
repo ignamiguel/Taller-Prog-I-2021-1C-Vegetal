@@ -112,7 +112,7 @@ void Server::startGame() {
         marios.emplace_back();
     }
 
-    unsigned char currentLevel = 0;
+    unsigned char currentLevel = 1;
     Nivel *nivel{nullptr};
     estadoJuego_t game;
 

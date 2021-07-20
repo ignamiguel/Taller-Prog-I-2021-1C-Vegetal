@@ -8,8 +8,9 @@ class Barril : public Entidad
 public:
     Barril(float x, float y);
     void mover();
-    bool estaEnNivel() const { return pos.y < ALTO_NIVEL; }
-
+    void updateDirection(float, float);
+    bool estaEnNivel();
+    bool isAt(float posX, float posY);
 private:
     float velX;
     float velY;

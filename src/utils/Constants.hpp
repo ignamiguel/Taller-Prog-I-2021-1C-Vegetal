@@ -64,7 +64,8 @@
 #define N2_POS_X_FUEGO 16
 #define N2_POS_Y_FUEGO 216
 
-#define N2_POS_Y_BARRIL 30
+#define N2_POS_Y_BARRIL 74
+#define N2_POS_X_BARRIL 20
 
 // Common
 #define MARIO_START_X 0
