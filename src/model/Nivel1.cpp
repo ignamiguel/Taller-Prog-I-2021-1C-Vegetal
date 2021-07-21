@@ -97,6 +97,8 @@ void Nivel1::getEstado(estadoNivel_t &estadoNivel) const {
     for (auto &player : *players) {
         estadoNivel.players[i++] = player.getEstado();
     }
+
+    estadoNivel.isGameOver = this->getIsGameOver();
 }
 
 void Nivel1::checkCollisions() const {
