@@ -28,7 +28,6 @@ typedef struct handleLevelStateArgs
 
 pthread_mutex_t mutex;
 bool serverOpen = true;
-bool isGameOver = false;
 bool isGameCompleted = false;
 
 void *sendDataThread(void *args);
@@ -58,22 +57,8 @@ int Client::startClient()
 
     if (serverOpen) {
         this->showConnectedPage();
-        this->startGame();
-    }
-
-    if (isGameOver) {
-        this->showGameOverPage();
-        while (!SDL_QuitRequested()) { }
-    }
-
-    if (isGameCompleted) {
-        this->showGameOverPage();
-        while (!SDL_QuitRequested()) { }
-    }
-    
-    if (!serverOpen && !isGameOver) {
-        DesconexionVista::show(renderer);
-        while (!SDL_QuitRequested()) { }
+        ClientExitStatus exitStatus = this->startGame();
+        processExit(exitStatus);
     }
 
     SDL_DestroyRenderer(renderer);
@@ -82,6 +67,25 @@ int Client::startClient()
     SDL_Quit();
 
     return EXIT_SUCCESS;
+}
+
+void Client::processExit(ClientExitStatus clientExitStatus) {
+    switch (clientExitStatus) {
+        case CLIENT_GAME_OVER:
+            logger::Logger::getInstance().logInformation(std::string("[") + std::to_string(this->clientSocket) + "] " + "GAME_OVER");
+            this->showGameOverPage();
+            while (!SDL_QuitRequested()) { }
+            break;
+        case CLIENT_CONNECTION_CLOSED:
+            logger::Logger::getInstance().logInformation(std::string("[") + std::to_string(this->clientSocket) + "] " + "CONNECTION_CLOSED");
+            DesconexionVista::show(renderer);
+            while (!SDL_QuitRequested()) { };
+            break;
+        case CLIENT_QUIT_REQUESTED:
+            logger::Logger::getInstance().logInformation(std::string("[") + std::to_string(this->clientSocket) + "] " + "QUIT_REQUESTED");
+        default:
+            break;
+    }
 }
 
 int Client::connectToServer()
@@ -107,7 +111,7 @@ int Client::connectToServer()
     return EXIT_SUCCESS;
 }
 
-void Client::startGame()
+ClientExitStatus Client::startGame()
 {
     AudioController::toggleMusic();
 
@@ -131,6 +135,7 @@ void Client::startGame()
     pthread_create(&receiveThread, NULL, receiveDataThread, &receiveArgs);
 
     bool quitRequested = false;
+    bool isGameOver = false;
 
     while (!quitRequested && serverOpen && !isGameOver && !isGameCompleted) {
         if (estadoJuego != nullptr) {
@@ -152,7 +157,9 @@ void Client::startGame()
         quitRequested = SDL_QuitRequested();
     }
 
-    logger::Logger::getInstance().logInformation("Game over");
+    if (isGameOver) return CLIENT_GAME_OVER;
+    if (!serverOpen) return CLIENT_CONNECTION_CLOSED;
+    return CLIENT_QUIT_REQUESTED;
 }
 
 void *sendDataThread(void *args)
@@ -216,8 +223,7 @@ int Client::showStartPage()
     do
     {
         user_t user = startPage.getLoginUser(quitRequested);
-        if (quitRequested)
-        {
+        if (quitRequested) {
             return EXIT_FAILURE;
         }
 
@@ -263,9 +269,9 @@ void Client::showGameOverPage()
     SDL_RenderClear(renderer);
 
     punto_t pos;
-    pos.x = (50 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
+    pos.x = (30 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
-    TextRenderer::getInstance(renderer)->renderText(pos, "Game Over", 1);
+    TextRenderer::getInstance(renderer)->renderText(pos, "Game Over", 2);
 
     SDL_RenderPresent(renderer);
 }
