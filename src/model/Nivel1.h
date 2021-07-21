@@ -9,7 +9,7 @@ public:
     void addPlayers(std::vector<Mario> &players);
     void addEnemies(unsigned int amount);
     void update();
-    const estadoNivel_t &getEstado();
+    void getEstado(estadoNivel_t &estadoNivel) const override;
     void checkCollisions() const;
 
 private:

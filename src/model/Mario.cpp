@@ -38,7 +38,7 @@ dimensiones_t Mario::dimensions() const {
     return {pos.x + MARIO_X_DIF, pos.y + MARIO_Y_DIF, pos.x + (ANCHO_MARIO - MARIO_X_DIF), pos.y + (ALTO_MARIO - MARIO_Y_DIF)};
 }
 
-unsigned char Mario::getScore() {
+unsigned char Mario::getScore() const {
     return this->score;
 }
 
@@ -46,10 +46,10 @@ void Mario::addPoints(unsigned char points) {
     this->score += points;
 }
 
-bool Mario::getIsLevelCompletedOrDisabled() {
+bool Mario::getIsLevelCompletedOrDisabled() const {
     return (this->state->getIsLevelCompleted() || !this->isEnabled);
 }
 
-bool Mario::getIsGameOver() {
+bool Mario::getIsGameOver() const {
     return this->state->getIsGameOver();
 }

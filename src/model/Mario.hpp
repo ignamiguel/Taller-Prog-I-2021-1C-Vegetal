@@ -19,10 +19,10 @@ public:
     estadoMario_t getEstado() const;
     void die();
     dimensiones_t dimensions() const;
-    unsigned char getScore();
+    unsigned char getScore() const;
     void addPoints(unsigned char points);
-    bool getIsLevelCompletedOrDisabled();
-    bool getIsGameOver();
+    bool getIsLevelCompletedOrDisabled() const;
+    bool getIsGameOver() const;
 
     AudioObserver audioObserver{};
     char lives{MARIO_LIVES};

@@ -5,7 +5,6 @@ Nivel2::Nivel2() : Nivel() {
     this->initPlatforms();
     this->initLadders();
     this->initHammers();
-    estadoNivel.level = 2;
 }
 
 void Nivel2::initPlatforms() {
@@ -67,7 +66,8 @@ void Nivel2::updateBarrels() {
     }
 }
 
-const estadoNivel_t &Nivel2::getEstado() {
+void Nivel2::getEstado(estadoNivel_t &estadoNivel) const {
+    estadoNivel.level = 2;
     size_t i = 0;
     for (auto &barril : barriles) {
         estadoNivel.barrels[i++] = barril.pos;
@@ -84,8 +84,6 @@ const estadoNivel_t &Nivel2::getEstado() {
     }
 
     estadoNivel.isGameOver = this->getIsGameOver();
-
-    return estadoNivel;
 }
 
 void Nivel2::checkCollisions() const {

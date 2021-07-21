@@ -147,7 +147,7 @@ void Server::startGame() {
         }
 
         if (isUpdated) {
-            game.estadoNivel = nivel->getEstado();
+            nivel->getEstado(game.estadoNivel);
 
             getEstadoJugadores(game, connectedPlayers);
 

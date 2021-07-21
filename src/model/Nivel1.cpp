@@ -15,7 +15,6 @@ Nivel1::Nivel1() : Nivel() {
     }
     this->initLadders();
     this->initHammers();
-    estadoNivel.level = 1;
 }
 
 void Nivel1::initPlatforms() {
@@ -79,7 +78,8 @@ void Nivel1::update() {
     checkCollisions();
 }
 
-const estadoNivel_t &Nivel1::getEstado() {
+void Nivel1::getEstado(estadoNivel_t &estadoNivel) const {
+    estadoNivel.level = 1;
     size_t i = 0;
     for (; i < 12; ++i) {
         estadoNivel.platforms[i] = movingPlatforms[i].getPos();
@@ -97,10 +97,6 @@ const estadoNivel_t &Nivel1::getEstado() {
     for (auto &player : *players) {
         estadoNivel.players[i++] = player.getEstado();
     }
-
-    estadoNivel.isGameOver = this->getIsGameOver();
-
-    return estadoNivel;
 }
 
 void Nivel1::checkCollisions() const {

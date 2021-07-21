@@ -9,7 +9,7 @@ public:
     Nivel2();
     void addPlayers(std::vector<Mario> &players);
     void update();
-    const estadoNivel_t &getEstado();
+    void getEstado(estadoNivel_t &estadoNivel) const override;
     void checkCollisions() const;
 
 private:

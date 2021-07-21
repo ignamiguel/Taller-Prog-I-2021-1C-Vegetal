@@ -13,10 +13,10 @@ class Nivel
 public:
     void addPlayers(std::vector<Mario> &players);
     virtual void update() = 0;
-    virtual const estadoNivel_t &getEstado() = 0;
+    virtual void getEstado(estadoNivel_t &estadoNivel) const = 0;
     bool isComplete() const;
     bool collision(dimensiones_t, dimensiones_t) const;
-    bool getIsGameOver();
+    bool getIsGameOver() const;
     virtual ~Nivel() = default;
 
 protected:
