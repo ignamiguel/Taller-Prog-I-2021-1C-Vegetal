@@ -170,13 +170,6 @@ void Server::startGame() {
                     nivel->addPlayers(marios);
                 } else {
                     std::cout << "Congratulations! Ending the game..." << '\n';
-                    game.estadoNivel.isGameCompleted = true;
-                    for(auto &player : connectedPlayers) {
-                        if (player.second.isConnected) {
-                            player.second.isConnected = sendData(player.second.clientSocket, &game) == sizeof(estadoJuego_t);
-                        }
-                    }
-                    return;
                 }
             }
 
@@ -312,11 +305,11 @@ void *handleCommand(void *player) {
 
 void getNextLevel(Nivel *&nivel, unsigned char currentLevel) {
     delete nivel;
-    if (currentLevel == 1) {
+    if (currentLevel == NIVEL_1) {
         logger::Logger::getInstance().logInformation("[server] Level 1 starts");
         nivel = new Nivel1();
     }
-    else if (currentLevel == 2) {
+    else if (currentLevel == NIVEL_2) {
         logger::Logger::getInstance().logInformation("[server] End of Level 1");
         nivel = new Nivel2();
         logger::Logger::getInstance().logInformation("[server] Level 2 starts");

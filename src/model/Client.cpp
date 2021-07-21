@@ -83,6 +83,10 @@ void Client::processExit(ClientExitStatus clientExitStatus) {
             break;
         case CLIENT_QUIT_REQUESTED:
             logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "QUIT_REQUESTED");
+        case CLIENT_GAME_COMPLETED:
+            logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "CLIENT_GAME_COMPLETED");
+            this->showGameCompletedPage();
+            break;
         default:
             break;
     }
@@ -147,7 +151,8 @@ ClientExitStatus Client::startGame()
             vista->update(*estadoJuego);
 
             isGameOver = estadoJuego->estadoNivel.isGameOver;
-            isGameCompleted = estadoJuego->estadoNivel.isGameCompleted;
+            isGameCompleted = estadoJuego->estadoNivel.isGameCompleted 
+                && estadoJuego->estadoNivel.level == NIVEL_2;
 
             estadoJuego = nullptr;
             pthread_mutex_unlock(&mutex);
@@ -159,6 +164,7 @@ ClientExitStatus Client::startGame()
     }
 
     if (isGameOver) return CLIENT_GAME_OVER;
+    if (isGameCompleted) return CLIENT_GAME_COMPLETED;
     if (!serverOpen) return CLIENT_CONNECTION_CLOSED;
     return CLIENT_QUIT_REQUESTED;
 }
@@ -284,7 +290,7 @@ void Client::showGameCompletedPage()
     punto_t pos;
     pos.x = (50 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
-    TextRenderer::getInstance(renderer)->renderText(pos, "Congratulations! You won...", 1);
+    TextRenderer::getInstance(renderer)->renderText(pos, "Felicitaciones... Juego completado", 1);
 
     SDL_RenderPresent(renderer);
 }

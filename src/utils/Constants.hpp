@@ -48,6 +48,7 @@
 #define ALTO_DEFAULT_CONFIG 7
 
 // Nivel 1
+#define NIVEL_1 1
 #define N1_POS_X_FUEGO1 48
 #define N1_POS_X_FUEGO2 88
 #define N1_POS_X_FUEGO3 128
@@ -62,18 +63,19 @@
 #define N1_POS_Y2_POLEA 168
 
 // Nivel 2
+#define NIVEL_2 2
 #define N2_POS_X_FUEGO 16
 #define N2_POS_Y_FUEGO 216
 
 #define N2_POS_Y_BARRIL 30
 
 // Common
-// #define MARIO_START_X 0
-// #define MARIO_START_Y 232
+#define MARIO_START_X 0
+#define MARIO_START_Y 232
 
 // Remplazar esta coordenadas iniciales para debug
-#define MARIO_START_X 208
-#define MARIO_START_Y 72
+// #define MARIO_START_X 208
+// #define MARIO_START_Y 72
 
 #define DONKEYKONG_POS_X 24
 #define DONKEYKONG_POS_Y 50

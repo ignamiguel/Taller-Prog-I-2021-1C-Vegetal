@@ -4,12 +4,14 @@
 #include <arpa/inet.h>
 #include "../utils/user.h"
 #include "../view/NivelVista.h"
+#include "../utils/Constants.hpp"
 
 enum ClientExitStatus
 {
     CLIENT_QUIT_REQUESTED,
     CLIENT_CONNECTION_CLOSED,
     CLIENT_GAME_OVER,
+    CLIENT_GAME_COMPLETED
 };
 
 class Client
