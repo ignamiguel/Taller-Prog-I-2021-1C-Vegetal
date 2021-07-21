@@ -67,7 +67,13 @@ void Nivel2::addBarrel() {
 
 void Nivel2::updateBarrels() {
     for (auto it = barriles.begin(); it != barriles.end();) {
-        updateBarrelDirection(*it);
+        // updateBarrelDirection(*it);
+        bool isStanding = this->stage.collide(it->pos.x, it->pos.y, it->velX, it->velY);
+
+        if (isStanding) {
+            it->velX *= -1;
+        }
+
         (*it).mover();
         if (!it->estaEnNivel()) {
             it = this->barriles.erase(it);

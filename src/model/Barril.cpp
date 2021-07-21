@@ -1,18 +1,18 @@
 #include "Barril.h"
 #include <iostream>
 
-#define VELOCIDAD_BARRIL 1
+#define VELOCIDAD_BARRIL_X 1
 
 Barril::Barril(const float x, const float y)
-: Entidad(x, y, ANCHO_BARRIL, ALTO_BARRIL), velX{0}, velY{VELOCIDAD_BARRIL} {
-    velX = VELOCIDAD_BARRIL;
-    velY = 0;
+: Entidad(x, y, ANCHO_BARRIL, ALTO_BARRIL), velX{0}, velY{VELOCIDAD_BARRIL_X} {
+    velX = VELOCIDAD_BARRIL_X;
+    velY = -(2.f) / 16; // GRAVEDAD
 }
 
 void Barril::mover() {
     std::cout << "mueve " << pos.x << " + " << velX << " = " << pos.x + velX << std::endl;
     pos.x += velX;
-    pos.y += velY;
+    pos.y -= velY;
 }
 
 void Barril::updateDirection(float xDirection, float yDirection) {

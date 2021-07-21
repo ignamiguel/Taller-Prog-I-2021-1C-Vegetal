@@ -11,7 +11,8 @@ public:
     void updateDirection(float, float);
     bool estaEnNivel();
     bool isAt(float posX, float posY);
-private:
     float velX;
     float velY;
+
+private:
 };
