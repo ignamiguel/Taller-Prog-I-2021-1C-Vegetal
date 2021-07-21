@@ -18,18 +18,18 @@ void Nivel2::initPlatforms() {
     platforms.emplace_back(136.f, 84.5f, 208.f, 89.f);
     platforms.emplace_back(0.f, 84.f, 130.f, 84.f);
 
-    directionalPoints.push_front((directionalPoint_t){112 - ANCHO_BARRIL, 248 - ALTO_BARRIL, -1, 0});
-    directionalPoints.push_front((directionalPoint_t){208, 242 - ALTO_BARRIL, 0.767, 0.233});
-    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 209 - ALTO_BARRIL, 0.941, 0.059});
-    directionalPoints.push_front((directionalPoint_t){208, 221 - ALTO_BARRIL, 0, 1});
-    directionalPoints.push_front((directionalPoint_t){208, 176 - ALTO_BARRIL, -0.941, 0.059});
-    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 188 - ALTO_BARRIL, 0, 1});
-    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 143 - ALTO_BARRIL, 0.941, 0.059});
-    directionalPoints.push_front((directionalPoint_t){208, 155- ALTO_BARRIL, 0, 1});
-    directionalPoints.push_front((directionalPoint_t){208, 110 - ALTO_BARRIL, -0.941, 0.059});
-    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 122 - ALTO_BARRIL, 0, 1});
-    directionalPoints.push_front((directionalPoint_t){136, 84 - ALTO_BARRIL, 0.935, 0.065});
-    directionalPoints.push_front((directionalPoint_t){208, 89 - ALTO_BARRIL, 0, 1});
+    directionalPoints.push_front((directionalPoint_t){112 - ANCHO_BARRIL, 248 - ALTO_BARRIL, -1.f, 0.f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 242 - ALTO_BARRIL, (float)0.767, (float)0.233});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 209 - ALTO_BARRIL, (float)0.941, (float)0.059});
+    directionalPoints.push_front((directionalPoint_t){208.f, 221 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 176 - ALTO_BARRIL, (float)-0.941, (float)0.059});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 188 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 143 - ALTO_BARRIL, (float)0.941, (float)0.059});
+    directionalPoints.push_front((directionalPoint_t){208.f, 155- ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 110 - ALTO_BARRIL, (float)-0.941, (float)0.059});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 122 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){136.f, 84 - ALTO_BARRIL, (float)0.935, (float)0.065});
+    directionalPoints.push_front((directionalPoint_t){208.f, 89 - ALTO_BARRIL, 0.f, 1.f});
 
     for (auto &platform : platforms) stage.addPlatform(&platform);
 }
@@ -68,7 +68,7 @@ void Nivel2::addBarrel() {
 void Nivel2::updateBarrels() {
     for (auto it = barriles.begin(); it != barriles.end();) {
         updateBarrelDirection(*it);
-        it->mover();
+        (*it).mover();
         if (!it->estaEnNivel()) {
             it = this->barriles.erase(it);
         } else ++it;
@@ -77,7 +77,7 @@ void Nivel2::updateBarrels() {
 
 void Nivel2::updateBarrelDirection(Barril barril) {
     for (directionalPoint_t directionalPoint : directionalPoints) {
-        if (barril.isAt(directionalPoint.x, directionalPoint.y)) {
+        if (barril.pos.x == directionalPoint.x && barril.pos.y == directionalPoint.y) {
             std::cout << " punto en " << directionalPoint.x << " ; " << directionalPoint.y << std::endl;
             barril.updateDirection(directionalPoint.xDirection,directionalPoint.yDirection);
             break;
