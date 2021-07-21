@@ -59,6 +59,8 @@ int Client::startClient()
         this->showConnectedPage();
         ClientExitStatus exitStatus = this->startGame();
         processExit(exitStatus);
+    } else {
+        processExit(CLIENT_CONNECTION_CLOSED);
     }
 
     SDL_DestroyRenderer(renderer);
@@ -72,20 +74,19 @@ int Client::startClient()
 void Client::processExit(ClientExitStatus clientExitStatus) {
     switch (clientExitStatus) {
         case CLIENT_GAME_OVER:
-            logger::Logger::getInstance().logInformation(std::string("[") + std::to_string(this->clientSocket) + "] " + "GAME_OVER");
+            logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "GAME_OVER");
             this->showGameOverPage();
-            while (!SDL_QuitRequested()) { }
             break;
         case CLIENT_CONNECTION_CLOSED:
-            logger::Logger::getInstance().logInformation(std::string("[") + std::to_string(this->clientSocket) + "] " + "CONNECTION_CLOSED");
+            logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "CONNECTION_CLOSED");
             DesconexionVista::show(renderer);
-            while (!SDL_QuitRequested()) { };
             break;
         case CLIENT_QUIT_REQUESTED:
-            logger::Logger::getInstance().logInformation(std::string("[") + std::to_string(this->clientSocket) + "] " + "QUIT_REQUESTED");
+            logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "QUIT_REQUESTED");
         default:
             break;
     }
+    while (!SDL_QuitRequested()) { };
 }
 
 int Client::connectToServer()
