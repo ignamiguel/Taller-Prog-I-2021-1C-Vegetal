@@ -28,7 +28,6 @@ typedef struct handleLevelStateArgs
 
 pthread_mutex_t mutex;
 bool serverOpen = true;
-bool isGameCompleted = false;
 
 void *sendDataThread(void *args);
 void *receiveDataThread(void *args);
@@ -83,6 +82,7 @@ void Client::processExit(ClientExitStatus clientExitStatus) {
             break;
         case CLIENT_QUIT_REQUESTED:
             logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "QUIT_REQUESTED");
+            break;
         case CLIENT_GAME_COMPLETED:
             logger::Logger::getInstance().logInformation(std::string("[") + this->name + "] " + "CLIENT_GAME_COMPLETED");
             this->showGameCompletedPage();
@@ -141,6 +141,7 @@ ClientExitStatus Client::startGame()
 
     bool quitRequested = false;
     bool isGameOver = false;
+    bool isGameCompleted = false;
 
     while (!quitRequested && serverOpen && !isGameOver && !isGameCompleted) {
         if (estadoJuego != nullptr) {
