@@ -289,9 +289,9 @@ void Client::showGameCompletedPage()
     SDL_RenderClear(renderer);
 
     punto_t pos;
-    pos.x = (50 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
+    pos.x = (10 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
-    TextRenderer::getInstance(renderer)->renderText(pos, "Felicitaciones... Juego completado", 1);
+    TextRenderer::getInstance(renderer)->renderText(pos, "Juego completado...", 1);
 
     SDL_RenderPresent(renderer);
 }
