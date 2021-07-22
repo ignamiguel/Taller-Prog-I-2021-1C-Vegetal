@@ -3,7 +3,7 @@
 #include "../Mario.hpp"
 #include "../../utils/Constants.hpp"
 
-const Stage *MarioState::stage{nullptr};
+Stage *MarioState::stage{nullptr};
 
 const MarioState *MarioState::reset(Mario &mario) const {
     mario.pos = {MARIO_START_X, MARIO_START_Y};
@@ -11,6 +11,14 @@ const MarioState *MarioState::reset(Mario &mario) const {
     return SueloState::getInstance();
 }
 
-void MarioState::setStage(const Stage *stage_) {
+bool MarioState::getIsLevelCompleted() const {
+    return false;
+}
+
+bool MarioState::getIsGameOver() const {
+    return false;
+}
+
+void MarioState::setStage(Stage *stage_) {
     stage = stage_;
 }

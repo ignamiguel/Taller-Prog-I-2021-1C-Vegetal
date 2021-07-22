@@ -8,7 +8,7 @@
 #include "../logger.h"
 #include "../utils/Constants.hpp"
 
-NivelVista::NivelVista(SDL_Renderer *renderer, const char *clientUsername) : statsVista(renderer) {
+NivelVista::NivelVista(SDL_Renderer *renderer, const char *clientUsername) : statsVista(renderer), hammerVista(renderer) {
     this->renderer = renderer;
     strcpy(this->clientUsername, clientUsername);
 

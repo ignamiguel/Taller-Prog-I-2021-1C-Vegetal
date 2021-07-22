@@ -41,6 +41,11 @@ void Nivel1Vista::update(const estadoJuego_t &estadoJuego) {
 
     SDL_RenderCopy(renderer, texture, NULL, NULL);
 
+    for (auto &pos : estadoJuego.estadoNivel.hammers) {
+        if (pos.y == 0) break;
+        hammerVista.mostrar(pos, LEVANTADO);
+    }
+
     for (EntidadEstaticaVista *vista : entidadesVista) {
         vista->mostrar();
     }
@@ -63,8 +68,7 @@ void Nivel1Vista::update(const estadoJuego_t &estadoJuego) {
         player.setColor((i + 1) * estadoJuego.estadoNivel.players[i].isEnabled);
         if (strcmp(estadoJuego.players[i].name, clientUsername) != 0) {
             player.mostrar(estadoJuego.estadoNivel.players[i]);
-        }
-        else {
+        } else {
             vistaMarioCliente = &player;
             estadoMarioCliente = &(estadoJuego.estadoNivel.players[i]);
         }

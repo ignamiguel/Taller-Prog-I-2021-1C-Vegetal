@@ -1,11 +1,33 @@
 #include <unordered_set>
 #include "Stage.h"
+#include <stack>
 
 #define ANCHO_HITBOX 8
 #define STAGE_WIDTH (ANCHO_NIVEL / ANCHO_TILE)
 #define STAGE_HEIGHT (ALTO_NIVEL / ALTO_TILE)
 #define GRID_COLUMNS (STAGE_WIDTH + 1)
 #define SLOPE 0.03125f
+
+Stage::Stage() {
+    // Al finalizar cada nivel se otorgan los siguientes puntajes según el orden de llegada
+    // 1° 2000 puntos
+    // 2° 1500 puntos
+    // 3° 1000 puntos 
+    // 4° 500 puntos
+    // Dividimos todo por 100 para usar menos espacio
+    this->points.push(5);
+    this->points.push(10);
+    this->points.push(15);
+    this->points.push(20);
+}
+
+ unsigned int Stage::getPointsForCompletingLevel() {
+    if (this->points.empty()) return 0;
+
+    auto pts = this->points.top();
+    this->points.pop();
+    return pts;
+ }
 
 void Stage::addLadder(const Ladder &ladder_) {
     const int x = ((int)ladder_.x + ANCHO_MARIO / 2) / STAGE_WIDTH;

@@ -5,6 +5,7 @@
 #include "../utils/estadoJuego.h"
 #include "MarioVista.h"
 #include "EntidadEstaticaVista.h"
+#include "HammerVista.h"
 #include "StatsVista.h"
 
 class NivelVista
@@ -19,6 +20,7 @@ protected:
     SDL_Renderer *renderer;
     SDL_Texture *texture;
     StatsVista statsVista;
+    HammerVista hammerVista;
     std::vector<MarioVista> jugadoresVista;
     std::vector<EntidadEstaticaVista *> entidadesVista;
     char clientUsername[4];

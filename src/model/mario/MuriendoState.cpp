@@ -4,7 +4,7 @@
 #include "../Mario.hpp"
 
 #define TIEMPO_MURIENDO 96
-#define TIEMPO_RESPAWN 128
+#define TIEMPO_RESPAWN 180
 
 const MuriendoState MuriendoState::instance{};
 

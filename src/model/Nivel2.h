@@ -12,7 +12,7 @@ public:
     void update();
     void updateBarrelDirection(Barril* barril);
     const estadoNivel_t &getEstado();
-    ~Nivel2();
+    void checkCollisions() const;
 
 private:
     std::list<Barril> barriles;
@@ -22,4 +22,5 @@ private:
     void updateBarrels();
     void initPlatforms();
     void initLadders();
+    void initHammers();
 };

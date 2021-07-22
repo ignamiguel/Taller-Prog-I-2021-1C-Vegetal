@@ -30,6 +30,11 @@ void Nivel2Vista::update(const estadoJuego_t &estadoJuego) {
 
     SDL_RenderCopy(renderer, texture, NULL, NULL);
 
+    for (auto &pos : estadoJuego.estadoNivel.hammers) {
+        if (pos.y == 0) break;
+        hammerVista.mostrar(pos, LEVANTADO);
+    }
+
     for (EntidadEstaticaVista *vista : entidadesVista) {
         vista->mostrar();
     }

@@ -24,3 +24,7 @@ directionalPoint_t Barril::getDirectionalPos () {
 bool Barril::estaEnNivel() {
     return (pos.x > 0 && pos.x < ANCHO_NIVEL);
 }
+
+dimensiones_t Barril::dimensions() const {
+    return {pos.x, pos.y, pos.x + ANCHO_BARRIL, pos.y + ALTO_BARRIL};
+ }

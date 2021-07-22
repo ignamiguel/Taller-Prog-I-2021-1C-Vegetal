@@ -9,6 +9,7 @@
 #define MAX_PLATFORMS 12
 #define MAX_ENEMIES 3
 #define MAX_BARRELS 8
+#define MAX_HAMMERS 2
 #define DEFAULT_MAX_PLAYERS 2 //en caso de que la cant max de jugadores sea negativa en el json
 
 
@@ -71,6 +72,10 @@
 #define MARIO_START_X 0
 #define MARIO_START_Y 232
 
+// Remplazar esta coordenadas iniciales para debug
+// #define MARIO_START_X 208
+// #define MARIO_START_Y 72
+
 #define DONKEYKONG_POS_X 24
 #define DONKEYKONG_POS_Y 50
 
@@ -79,6 +84,9 @@
 
 #define DEFAULT_CONFIG_X 56
 #define DEFAULT_CONFIG_Y 20
+
+#define MARIO_LIVES 3
+#define TOP_LEVEL 40
 
 // Login
 #define LOGIN_OK 0
