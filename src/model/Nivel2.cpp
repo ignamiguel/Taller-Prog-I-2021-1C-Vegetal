@@ -54,7 +54,7 @@ void Nivel2::addPlayers(std::vector<Mario> &players) {
 }
 
 void Nivel2::update() {
-    if (++tick % 128 == 0) addBarrel();
+    if (++tick % 200 == 0) addBarrel();
 
     this->updateBarrels();
     for (auto &mario : *players) mario.mover();

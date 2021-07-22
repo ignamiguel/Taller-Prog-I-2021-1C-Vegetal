@@ -22,5 +22,5 @@ directionalPoint_t Barril::getDirectionalPos () {
 
 
 bool Barril::estaEnNivel() {
-    return (pos.y < ALTO_NIVEL && pos.x > 0 && pos.x < ANCHO_NIVEL);
+    return (pos.x > 0 && pos.x < ANCHO_NIVEL);
 }
