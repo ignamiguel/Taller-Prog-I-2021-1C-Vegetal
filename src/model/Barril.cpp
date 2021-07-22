@@ -16,6 +16,10 @@ void Barril::updateDirection(float xDirection, float yDirection) {
     velY = yDirection;
 }
 
+directionalPoint_t Barril::getDirectionalPos () {
+    return (directionalPoint_t){pos.x, pos.y, velX, velY};
+}
+
 
 bool Barril::estaEnNivel() {
     return (pos.y < ALTO_NIVEL && pos.x > 0 && pos.x < ANCHO_NIVEL);

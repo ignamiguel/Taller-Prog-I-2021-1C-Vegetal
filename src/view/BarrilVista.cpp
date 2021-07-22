@@ -36,7 +36,9 @@ void BarrilVista::startRender() {
     updated = 0;
 }
 
-void BarrilVista::mover(punto_t pos) {
+void BarrilVista::mover(directionalPoint_t pos) {
+    if (pos.xDirection < 0) reverse = true;
+    else reverse = false;
     dstRect.x = round(pos.x * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     dstRect.y = round(pos.y * ALTO_PANTALLA / (float)ALTO_NIVEL);
 }
@@ -44,8 +46,8 @@ void BarrilVista::mover(punto_t pos) {
 void BarrilVista::mostrar() {
     tiempo = (tiempo + (updated == 0)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
     srcRect.x = (tiempo / TIEMPO_POR_FRAME) * SPRITE_INDEX_SIZE;
-
-    SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+    if(reverse) SDL_RenderCopyEx(renderer, texture, &srcRect, &dstRect, 0., NULL, flip);
+    else SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
     updated = 1;
 }
 

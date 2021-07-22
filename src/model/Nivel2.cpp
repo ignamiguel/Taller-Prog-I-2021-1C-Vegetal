@@ -86,9 +86,9 @@ void Nivel2::updateBarrelDirection(Barril* barril) {
 const estadoNivel_t &Nivel2::getEstado() {
     size_t i = 0;
     for (auto &barril : barriles) {
-        estadoNivel.barrels[i++] = barril.pos;
+        estadoNivel.barrels[i++] = barril.getDirectionalPos();
     }
-    estadoNivel.barrels[i] = {0, 0};
+    estadoNivel.barrels[i] = {0, 0, 0, 0};
     i = 0;
     for (auto &player : *players) {
         estadoNivel.players[i++] = player.getEstado();
