@@ -10,7 +10,7 @@ public:
     Nivel2();
     void addPlayers(std::vector<Mario> &players);
     void update();
-    void updateBarrelDirection(Barril barril);
+    void updateBarrelDirection(Barril* barril);
     const estadoNivel_t &getEstado();
     ~Nivel2();
 
