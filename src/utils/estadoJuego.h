@@ -13,7 +13,7 @@ typedef struct estadoJugador
 
 struct estadoNivel
 {
-     union {
+    union {
         struct {
             punto_t platforms[MAX_PLATFORMS];
             punto_t enemies[MAX_ENEMIES];
