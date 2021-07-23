@@ -4,14 +4,14 @@
 #include "../utils/Constants.hpp"
 #include "../utils/directionalPoint.h"
 
-typedef struct estadoJugador 
+typedef struct estadoJugador
 {
     char name[4];
     char lives;
     unsigned char score;
 } estadoJugador_t;
 
-struct estadoNivel
+typedef struct estadoNivel
 {
     union {
         struct {
@@ -26,11 +26,9 @@ struct estadoNivel
     estadoMario_t players[MAX_PLAYERS];
     unsigned char level;
     bool isGameOver;
-};
+} estadoNivel_t;
 
-typedef struct estadoNivel estadoNivel_t;
-
-typedef struct estadoJuego 
+typedef struct estadoJuego
 {
     estadoJugador_t players[MAX_PLAYERS];
     estadoNivel_t estadoNivel;
