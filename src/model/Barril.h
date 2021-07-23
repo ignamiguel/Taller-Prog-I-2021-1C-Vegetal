@@ -1,6 +1,7 @@
 #pragma once
 #include "Entidad.h"
 #include "../utils/Constants.hpp"
+#include "../utils/directionalPoint.h"
 
 
 class Barril : public Entidad
@@ -8,7 +9,9 @@ class Barril : public Entidad
 public:
     Barril(float x, float y);
     void mover();
-    bool estaEnNivel() const { return pos.y < ALTO_NIVEL; }
+    void updateDirection(float, float);
+    bool estaEnNivel();
+    directionalPoint_t getDirectionalPos ();
     dimensiones_t dimensions() const;
 
 private:

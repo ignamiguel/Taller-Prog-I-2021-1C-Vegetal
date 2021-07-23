@@ -3,7 +3,7 @@
         "log": {
             "level": "DEBUG"
         },
-        "players": 2,
+        "players": 1,
         "game": {
             "enemies": [
                 {

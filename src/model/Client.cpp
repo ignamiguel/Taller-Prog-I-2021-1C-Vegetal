@@ -122,7 +122,7 @@ ClientExitStatus Client::startGame()
     auto log_level = configuration->getLogLevel();
     logger::Logger::getInstance().setLogLevel(log_level);
 
-    unsigned char currentLevel = 0;
+    unsigned char currentLevel = 1;
     NivelVista *vista{nullptr};
 
     pthread_t sendThread;

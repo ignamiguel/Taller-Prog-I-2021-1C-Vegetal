@@ -19,6 +19,19 @@ void Nivel2::initPlatforms() {
     platforms.emplace_back(0.f, 84.f, 130.f, 84.f);
     platforms.emplace_back(88.f, 56.f, 135.f, 56.f); // top
 
+    directionalPoints.push_front((directionalPoint_t){136.f, 84 - ALTO_BARRIL, 0.935f, 0.065f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 89 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 110 - ALTO_BARRIL, -0.941f, 0.059f});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 122 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 143 - ALTO_BARRIL, 0.941f, 0.059f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 156 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 176 - ALTO_BARRIL, -0.941f, 0.059f});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 189 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){16 - ANCHO_BARRIL, 209 - ALTO_BARRIL, 0.941f, 0.059f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 222 - ALTO_BARRIL, 0.f, 1.f});
+    directionalPoints.push_front((directionalPoint_t){208.f, 242 - ALTO_BARRIL, -0.941f, 0.059f});
+    directionalPoints.push_front((directionalPoint_t){112, 248 - ALTO_BARRIL, -1.f, 0.f});
+
     for (auto &platform : platforms) stage.addPlatform(&platform);
 }
 
@@ -44,7 +57,7 @@ void Nivel2::initHammers() {
 }
 
 void Nivel2::update() {
-    if (++tick % 128 == 0) addBarrel();
+    if (++tick % 200 == 0) addBarrel();
 
     this->updateBarrels();
     for (auto &mario : *players) mario.mover();
@@ -52,13 +65,13 @@ void Nivel2::update() {
 }
 
 void Nivel2::addBarrel() {
-    const float x = rand() % (ANCHO_NIVEL - ANCHO_BARRIL);
-    this->barriles.emplace_back(x, (float)N2_POS_Y_BARRIL);
+    this->barriles.emplace_back((float)N2_POS_X_BARRIL, (float)N2_POS_Y_BARRIL);
 }
-
+ 
 void Nivel2::updateBarrels() {
     for (auto it = barriles.begin(); it != barriles.end();) {
-        it->mover();
+        updateBarrelDirection(&(*it));
+        (*it).mover();
         if (it->estaEnNivel()) {
             ++it;
         } else {
@@ -67,12 +80,21 @@ void Nivel2::updateBarrels() {
     }
 }
 
+void Nivel2::updateBarrelDirection(Barril* barril) {
+    for (directionalPoint_t directionalPoint : directionalPoints) {
+        if ((int)barril->pos.x == (int)directionalPoint.x && (int)barril->pos.y == (int)directionalPoint.y) {
+            barril->updateDirection(directionalPoint.xDirection,directionalPoint.yDirection);
+            break;
+        }
+    }
+}
+
 const estadoNivel_t &Nivel2::getEstado() {
     size_t i = 0;
     for (auto &barril : barriles) {
-        estadoNivel.barrels[i++] = barril.pos;
+        estadoNivel.barrels[i++] = barril.getDirectionalPos();
     }
-    estadoNivel.barrels[i] = {0, 0};
+    estadoNivel.barrels[i] = {0, 0, 0, 0};
     i = 0;
     for (auto &hammer : hammers) {
         estadoNivel.hammers[i++] = hammer.pos;

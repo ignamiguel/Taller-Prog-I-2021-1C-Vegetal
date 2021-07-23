@@ -2,13 +2,14 @@
 
 #include <SDL2/SDL.h>
 #include "../utils/punto.h"
+#include "../utils/directionalPoint.h"
 
 class BarrilVista
 {
 public:
     BarrilVista(SDL_Renderer *renderer);
     void startRender();
-    void mover(punto_t pos);
+    void mover(directionalPoint_t pos);
     void mostrar();
     ~BarrilVista();
 
@@ -19,4 +20,6 @@ private:
     SDL_Rect dstRect;
     int tiempo;
     int updated;
+    bool reverse;
+    SDL_RendererFlip flip{SDL_FLIP_HORIZONTAL};
 };

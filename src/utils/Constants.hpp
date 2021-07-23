@@ -8,7 +8,7 @@
 //estadoNivel
 #define MAX_PLATFORMS 12
 #define MAX_ENEMIES 3
-#define MAX_BARRELS 10
+#define MAX_BARRELS 8
 #define MAX_HAMMERS 2
 #define DEFAULT_MAX_PLAYERS 2 //en caso de que la cant max de jugadores sea negativa en el json
 
@@ -62,10 +62,11 @@
 #define N1_POS_Y2_POLEA 168
 
 // Nivel 2
+#define N2_POS_Y_BARRIL 74
+#define N2_POS_X_BARRIL 20
+ 
 #define N2_POS_X_FUEGO 16
 #define N2_POS_Y_FUEGO 216
-
-#define N2_POS_Y_BARRIL 30
 
 // Common
 #define MARIO_START_X 0
