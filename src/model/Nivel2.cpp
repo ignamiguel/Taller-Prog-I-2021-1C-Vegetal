@@ -67,7 +67,7 @@ void Nivel2::update() {
 void Nivel2::addBarrel() {
     this->barriles.emplace_back((float)N2_POS_X_BARRIL, (float)N2_POS_Y_BARRIL);
 }
- 
+
 void Nivel2::updateBarrels() {
     for (auto it = barriles.begin(); it != barriles.end();) {
         updateBarrelDirection(&(*it));

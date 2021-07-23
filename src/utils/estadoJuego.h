@@ -13,9 +13,15 @@ typedef struct estadoJugador
 
 struct estadoNivel
 {
-    punto_t platforms[MAX_PLATFORMS];
-    punto_t enemies[MAX_ENEMIES];
-    directionalPoint_t barrels[MAX_BARRELS];
+     union {
+        struct {
+            punto_t platforms[MAX_PLATFORMS];
+            punto_t enemies[MAX_ENEMIES];
+        };
+        struct {
+            directionalPoint_t barrels[MAX_BARRELS];
+        };
+    };
     punto_t hammers[MAX_HAMMERS];
     estadoMario_t players[MAX_PLAYERS];
     unsigned char level;
