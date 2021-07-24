@@ -294,6 +294,9 @@ void *handleCommand(void *player) {
     while (clientOpen) {
         if (receiveData(clientSocket, &controls) == sizeof(controls_t)) {
             mario.controls = controls;
+            if(mario.controls.toggleTestMode == 1) {
+                mario.toggleTestMode();
+            } 
         } else {
             clientOpen = false;
         }

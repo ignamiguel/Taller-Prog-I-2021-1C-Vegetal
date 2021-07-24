@@ -7,10 +7,8 @@ class Nivel2 : public Nivel
 {
 public:
     Nivel2();
-    void addPlayers(std::vector<Mario> &players);
     void update();
     const estadoNivel_t &getEstado();
-    void checkCollisions() const;
 
 private:
     std::list<Barril> barriles;
@@ -20,6 +18,7 @@ private:
     void initLadders();
     void initHammers();
 
-    void addBarrel();
     void updateBarrels();
+    void checkCollisions();
+    void deleteDisabledBarrels();
 };

@@ -13,8 +13,8 @@ class HammerVista
 {
 public:
     HammerVista(SDL_Renderer *renderer);
-    void setFlip(SDL_RendererFlip flip);
-    void mostrar(punto_t pos, EstadoHammer estado);
+    void mostrar(int x, int y, EstadoHammer estado, SDL_RendererFlip flip);
+    void mostrar(punto_t pos);
     ~HammerVista();
 
 private:
@@ -22,5 +22,4 @@ private:
     static SDL_Texture *texture;
     SDL_Rect srcRect;
     SDL_Rect dstRect;
-    SDL_RendererFlip flip{SDL_FLIP_NONE};
 };

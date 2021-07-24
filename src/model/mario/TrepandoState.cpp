@@ -14,6 +14,7 @@ const MarioState *TrepandoState::update(Mario &mario) const {
     if (mario.climbMin < mario.pos.y || mario.pos.y < mario.climbMax)
     {
         if (mario.pos.y <= TOP_LEVEL) {
+            mario.audioObserver.update(FINISHED_LEVEL);
             mario.addPoints(this->stage->getPointsForCompletingLevel());
             return LevelCompletedState::getInstance();
         }

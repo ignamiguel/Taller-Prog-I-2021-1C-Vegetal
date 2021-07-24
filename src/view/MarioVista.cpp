@@ -10,20 +10,25 @@
 #define MARIO_SALTANDO_INDEX 14
 #define MARIO_MURIENDO_INDEX 16
 #define MARIO_MUERTO_INDEX 18
+#define MARIO_POSE_MARTILLO_INDEX 8
 
 #define TIEMPO_FRAME_MUERTO 16
 #define TIEMPO_POR_FRAME 2
+#define TIEMPO_FRAME_REPOSO_MARTILLO 8
+#define TIEMPO_FRAME_CORRIENDO_MARTILLO 4
 #define CANT_FRAMES 4
+#define CANT_FRAMES_REPOSO_MARTILLO 2
 #define MARIO_SPRITE_SIZE 24
 
 const std::string IMG_MARIO = "res/Mario.png";
+const std::string IMG_HAMMER = "res/Hammer.png";
 
 SDL_Renderer *MarioVista::renderer{nullptr};
 SDL_Texture *MarioVista::texture{nullptr};
 
 size_t MarioVista::totalJugadores = 0;
 
-MarioVista::MarioVista(SDL_Renderer *renderer) {
+MarioVista::MarioVista(SDL_Renderer *renderer, HammerVista* vistaMartillo) {
     if (texture == nullptr) {
         this->renderer = renderer;
         SDL_Surface* surface = IMG_Load(IMG_MARIO.c_str());
@@ -36,6 +41,7 @@ MarioVista::MarioVista(SDL_Renderer *renderer) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
     }
+    this->vistaMartillo = vistaMartillo;
     srcRect.y = 0;
     srcRect.w = ANCHO_MARIO;
     srcRect.h = ALTO_MARIO;
@@ -47,7 +53,7 @@ MarioVista::MarioVista(SDL_Renderer *renderer) {
 }
 
 MarioVista::MarioVista(const MarioVista &other)
-: srcRect{other.srcRect}, dstRect{other.dstRect}, flip{other.flip}, tiempo{other.tiempo} {
+: srcRect{other.srcRect}, dstRect{other.dstRect}, flip{other.flip}, tiempo{other.tiempo}, vistaMartillo{other.vistaMartillo} {
     ++totalJugadores;
 }
 
@@ -61,10 +67,10 @@ void MarioVista::mostrar(const estadoMario_t &estadoMario) {
     switch(estadoMario.estado) {
         case REPOSO:
         case DE_ESPALDAS:
-            updateReposo(estadoMario.estado);
+            updateReposo(estadoMario.estado, estadoMario.hasHammer);
             break;
         case CORRIENDO:
-            updateCorriendo(nextX);
+            updateCorriendo(nextX, estadoMario.hasHammer);
             break;
         case SALTANDO:
             updateSaltando(nextX);
@@ -83,19 +89,37 @@ void MarioVista::mostrar(const estadoMario_t &estadoMario) {
     }
     dstRect.x = nextX;
     dstRect.y = nextY;
-
     SDL_RenderCopyEx(renderer, texture, &srcRect, &dstRect, 0., NULL, flip);
 }
 
-void MarioVista::updateReposo(char estado) {
-    srcRect.x = (estado == DE_ESPALDAS) * (MARIO_DE_ESPALDAS_INDEX * MARIO_SPRITE_SIZE);
+void MarioVista::updateReposo(char estado, bool hasHammer) {
+    if(hasHammer) {
+        tiempoReposo = (tiempoReposo + 1) % (TIEMPO_FRAME_REPOSO_MARTILLO * CANT_FRAMES_REPOSO_MARTILLO);
+        int frameReposo = (tiempoReposo / TIEMPO_FRAME_REPOSO_MARTILLO);
+        srcRect.x = (MARIO_POSE_MARTILLO_INDEX * MARIO_SPRITE_SIZE) + frameReposo * MARIO_SPRITE_SIZE;  // 0, 1, 0, 1...
+        drawHammer(frameReposo);
+    } else {
+        srcRect.x = (estado == DE_ESPALDAS) * (MARIO_DE_ESPALDAS_INDEX * MARIO_SPRITE_SIZE);
+    }
+    
 }
 
-void MarioVista::updateCorriendo(int nextX) {
-    tiempo = (tiempo + (dstRect.x != nextX)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
-    flip = (SDL_RendererFlip)((dstRect.x < nextX) + (int)flip * (dstRect.x == nextX));
-    int frameActual = (tiempo / TIEMPO_POR_FRAME);
-    srcRect.x = ((frameActual & 1) << ((frameActual & 2) >> 1)) * MARIO_SPRITE_SIZE;  // 0, 1, 0, 2...
+void MarioVista::updateCorriendo(int nextX, bool hasHammer) {
+    int frameActual;
+    if(hasHammer) {
+        tiempoCorriendoConMartillo = (tiempoCorriendoConMartillo + (dstRect.x != nextX)) % (TIEMPO_FRAME_CORRIENDO_MARTILLO * CANT_FRAMES);
+        flip = (SDL_RendererFlip)((dstRect.x < nextX) + (int)flip * (dstRect.x == nextX));
+        frameActual = (tiempoCorriendoConMartillo / TIEMPO_FRAME_CORRIENDO_MARTILLO);
+        srcRect.x = (MARIO_POSE_MARTILLO_INDEX * MARIO_SPRITE_SIZE) + frameActual * MARIO_SPRITE_SIZE;  // 0, 1, 2, 3..
+        drawHammer(frameActual);
+    } 
+    else {
+        tiempo = (tiempo + (dstRect.x != nextX)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
+        flip = (SDL_RendererFlip)((dstRect.x < nextX) + (int)flip * (dstRect.x == nextX));
+        frameActual = (tiempo / TIEMPO_POR_FRAME);
+        srcRect.x = ((frameActual & 1) << ((frameActual & 2) >> 1)) * MARIO_SPRITE_SIZE;  // 0, 1, 0, 2...
+    }
+        
 }
 
 void MarioVista::updateSaltando(int nextX) {
@@ -128,4 +152,8 @@ MarioVista::~MarioVista() {
         SDL_DestroyTexture(texture);
         texture = nullptr;
     }
+}
+
+void MarioVista::drawHammer(int frame) {
+    vistaMartillo->mostrar(dstRect.x, dstRect.y, (EstadoHammer)(frame % 2), flip);
 }

@@ -36,6 +36,13 @@ const MarioState *SueloState::update(Mario &mario) const {
         mario.velY = 0;
         return AireState::getInstance();
     }
+    
+    if(mario.velX > 0) {
+        mario.direccion = DERECHA;
+    } else if (mario.velX < 0){
+        mario.direccion = IZQUIERDA;
+    }
+    
     mario.estado = (mario.estado == DE_ESPALDAS) + (mario.velX != 0) * (CORRIENDO - (mario.estado == DE_ESPALDAS));
     return this;
 }

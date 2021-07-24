@@ -17,4 +17,4 @@ void EnemigoFuego::mover() {
 
 dimensiones_t EnemigoFuego::dimensions() const {
     return {pos.x + FUEGO_X_DIF, pos.y + FUEGO_Y_DIF, pos.x + (ANCHO_ENEMIGO_FUEGO - FUEGO_X_DIF), pos.y + ALTO_ENEMIGO_FUEGO};
- }
+}

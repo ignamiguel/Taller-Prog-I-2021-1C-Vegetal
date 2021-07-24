@@ -5,7 +5,7 @@
 #include "../utils/Constants.hpp"
 #include "../utils/window.hpp"
 
-#define TIEMPO_POR_FRAME 3
+#define TIEMPO_POR_FRAME 4
 #define CANT_FRAMES 4
 #define SPRITE_INDEX_SIZE 24
 
@@ -39,13 +39,16 @@ void BarrilVista::startRender() {
 void BarrilVista::mover(punto_t pos) {
     dstRect.x = round(pos.x * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     dstRect.y = round(pos.y * ALTO_PANTALLA / (float)ALTO_NIVEL);
+    flip = (110 - ALTO_BARRIL < pos.y && pos.y < 142.75 - ALTO_BARRIL)
+        || (175.5 - ALTO_BARRIL < pos.y && pos.y < 208.25 - ALTO_BARRIL) ?
+        SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 }
 
 void BarrilVista::mostrar() {
     tiempo = (tiempo + (updated == 0)) % (TIEMPO_POR_FRAME * CANT_FRAMES);
     srcRect.x = (tiempo / TIEMPO_POR_FRAME) * SPRITE_INDEX_SIZE;
 
-    SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+    SDL_RenderCopyEx(renderer, texture, &srcRect, &dstRect, 0., NULL, flip);
     updated = 1;
 }
 

@@ -17,6 +17,7 @@ private:
     static SDL_Texture *texture;
     SDL_Rect srcRect;
     SDL_Rect dstRect;
-    int tiempo;
-    int updated;
+    int tiempo{};
+    int updated{};
+    SDL_RendererFlip flip{SDL_FLIP_NONE};
 };

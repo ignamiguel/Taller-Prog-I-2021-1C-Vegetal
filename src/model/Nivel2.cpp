@@ -1,6 +1,8 @@
 #include "Nivel2.h"
 #include "../utils/Constants.hpp"
 
+#define PERIODO_BARRILES 180
+
 Nivel2::Nivel2() : Nivel() {
     this->initPlatforms();
     this->initLadders();
@@ -44,22 +46,19 @@ void Nivel2::initHammers() {
 }
 
 void Nivel2::update() {
-    if (++tick % 128 == 0) addBarrel();
+    if (++tick % PERIODO_BARRILES == 1) // lo cambio a uno para que mande uno al principio
+        this->barriles.emplace_back();
 
     this->updateBarrels();
     for (auto &mario : *players) mario.mover();
     checkCollisions();
-}
-
-void Nivel2::addBarrel() {
-    const float x = rand() % (ANCHO_NIVEL - ANCHO_BARRIL);
-    this->barriles.emplace_back(x, (float)N2_POS_Y_BARRIL);
+    deleteDisabledBarrels();
 }
 
 void Nivel2::updateBarrels() {
     for (auto it = barriles.begin(); it != barriles.end();) {
         it->mover();
-        if (it->estaEnNivel()) {
+        if (it->estaEnNivel() && it->isEnabled) {
             ++it;
         } else {
             it = this->barriles.erase(it);
@@ -72,7 +71,7 @@ const estadoNivel_t &Nivel2::getEstado() {
     for (auto &barril : barriles) {
         estadoNivel.barrels[i++] = barril.pos;
     }
-    estadoNivel.barrels[i] = {0, 0};
+    if (i < MAX_BARRELS) estadoNivel.barrels[i] = {0, 0};
     i = 0;
     for (auto &hammer : hammers) {
         estadoNivel.hammers[i++] = hammer.pos;
@@ -89,13 +88,30 @@ const estadoNivel_t &Nivel2::getEstado() {
     return estadoNivel;
 }
 
-void Nivel2::checkCollisions() const {
+void Nivel2::checkCollisions() {
     for (Mario &player : *players) {
-        for (auto &enemy : this->barriles) {
-            if (collision(player.dimensions(), enemy.dimensions())) {
-                player.die();
+        for (auto &barril : this->barriles) {
+            if (collision(player.dimensions(), barril.dimensions())) {
+                player.collide(&barril);
                 break;
             }
+        }
+        
+        for(auto &hammer : this->hammers) {
+            if(collision(player.dimensions(), hammer.dimensions())) {
+                player.collide(&hammer);
+                break;
+            }
+        }
+    }
+}
+
+void Nivel2::deleteDisabledBarrels() {
+    for(auto it = barriles.begin(); it != barriles.end();) {
+        if(it->isEnabled) {
+            ++it;
+        } else {
+            it = barriles.erase(it);
         }
     }
 }

@@ -18,8 +18,14 @@ const MarioState *AireState::update(Mario &mario) const {
     mario.pos.y -= mario.velY;
     if (stage->collide(mario.pos.x, mario.pos.y, mario.velX, mario.velY)) return SueloState::getInstance();
     if (mario.pos.y > ALTO_NIVEL - ALTO_MARIO) {
-        mario.die();
-        return MuriendoState::getInstance();
+        if(mario.collider->getType() == TEST_MODE) {
+            mario.pos.y = ALTO_NIVEL - ALTO_MARIO;
+            mario.estado = CORRIENDO;
+            return SueloState::getInstance();
+        } else {
+            mario.die();
+            return MuriendoState::getInstance();
+        }
     }
     return this;
 }

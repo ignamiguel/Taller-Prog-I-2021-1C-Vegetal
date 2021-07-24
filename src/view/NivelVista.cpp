@@ -26,7 +26,7 @@ NivelVista::NivelVista(SDL_Renderer *renderer, const char *clientUsername) : sta
 
 void NivelVista::addPlayers(size_t n) {
     for (size_t i = 0; i < n; ++i) {
-        jugadoresVista.emplace_back(renderer);
+        jugadoresVista.emplace_back(renderer, &hammerVista);
     }
 }
 
