@@ -158,7 +158,7 @@ void Server::startGame() {
                 player.second.mario->audioObserver.reset();
             }
 
-            if (__builtin_expect(nivel->isComplete(), 0)) {
+            if (__builtin_expect(nivel->getIsGameCompleted(), 0)) {
 
                 if (nivel->getIsGameOver()) {
                     std::cout << "GAME OVER" << '\n';

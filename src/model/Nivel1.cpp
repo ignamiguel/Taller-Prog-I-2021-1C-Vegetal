@@ -99,7 +99,7 @@ const estadoNivel_t &Nivel1::getEstado() {
     }
 
     estadoNivel.isGameOver = this->getIsGameOver();
-    estadoNivel.isGameCompleted = this->isComplete();
+    estadoNivel.isGameCompleted = this->getIsGameCompleted();
 
     return estadoNivel;
 }

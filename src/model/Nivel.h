@@ -14,7 +14,7 @@ public:
     void addPlayers(std::vector<Mario> &players);
     virtual void update() = 0;
     virtual const estadoNivel_t &getEstado() = 0;
-    bool isComplete() const;
+    bool getIsGameCompleted() const;
     bool collision(dimensiones_t, dimensiones_t) const;
     bool getIsGameOver();
     virtual ~Nivel() = default;
