@@ -268,7 +268,7 @@ void Client::showConnectedPage()
     punto_t pos;
     pos.x = (10 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
-    TextRenderer::getInstance(renderer)->renderText(pos, MSG_ESPERANDO_JUGADORES.c_str(), 1);
+    TextRenderer::getInstance(renderer)->renderText(pos, MSG_ESPERANDO_JUGADORES, 1);
 
     SDL_RenderPresent(renderer);
 }
@@ -280,7 +280,7 @@ void Client::showGameOverPage()
     punto_t pos;
     pos.x = (30 + 2) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (110 + 2) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
-    TextRenderer::getInstance(renderer)->renderText(pos, MSG_GAME_OVER.c_str(), 2);
+    TextRenderer::getInstance(renderer)->renderText(pos, MSG_GAME_OVER, 2);
 
     SDL_RenderPresent(renderer);
 }
@@ -292,10 +292,10 @@ void Client::showGameCompletedPage()
     punto_t pos;
     pos.x = (42) * ANCHO_PANTALLA / (float)ANCHO_NIVEL;
     pos.y = 112 * ALTO_PANTALLA / (float)ALTO_NIVEL;
-    TextRenderer::getInstance(renderer)->renderText(pos, MSG_FELICITACIONES.c_str(), 1);
+    TextRenderer::getInstance(renderer)->renderText(pos, MSG_FELICITACIONES, 1);
     pos.x = (42) * (ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     pos.y = (122) * (ALTO_PANTALLA / (float)ALTO_NIVEL);
-    TextRenderer::getInstance(renderer)->renderText(pos, MSG_JUEGO_COMPLETADO.c_str(), 1);
+    TextRenderer::getInstance(renderer)->renderText(pos, MSG_JUEGO_COMPLETADO, 1);
 
     SDL_RenderPresent(renderer);
 }
