@@ -169,7 +169,7 @@ void Server::startGame() {
                 if (nivel != nullptr) {
                     nivel->addPlayers(marios);
                 } else {
-                    std::cout << "Congratulations! Ending the game..." << '\n';
+                    std::cout << "Congratulations! Game ended..." << '\n';
                 }
             }
 

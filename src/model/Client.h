@@ -4,7 +4,6 @@
 #include <arpa/inet.h>
 #include "../utils/user.h"
 #include "../view/NivelVista.h"
-#include "../utils/Constants.hpp"
 
 enum ClientExitStatus
 {
