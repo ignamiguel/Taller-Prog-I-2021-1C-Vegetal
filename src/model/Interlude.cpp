@@ -1,5 +1,5 @@
 #include "Interlude.h"
-#include "../utils/exitStatus.h"
+#include "../utils/ExitStatus.h"
 
 Interlude::Interlude(bool gameOver, int sceneNumber) : Scene() {
     estadoNivel.sceneNumber = sceneNumber;

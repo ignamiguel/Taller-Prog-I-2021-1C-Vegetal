@@ -6,7 +6,7 @@
 #include "EnemigoFuego.h"
 #include "Hammer.h"
 
-/* Representa un nivel del juego, contiene a Stage (plataformas y escaleras) */
+// Representa un nivel del juego, contiene a Stage (plataformas y escaleras)
 class Nivel : public Scene
 {
 public:

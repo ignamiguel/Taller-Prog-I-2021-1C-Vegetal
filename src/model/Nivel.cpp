@@ -12,10 +12,10 @@ bool Nivel::collision(dimensiones_t player, dimensiones_t enemy) const {
            enemy.y1 < player.y2 && player.y1 < enemy.y2;
 }
 
-bool Nivel::getIsGameCompleted() const {
-    bool allMariosHaveCompletedTheLevel = true;
-    for (auto &mario : *players) {
-        allMariosHaveCompletedTheLevel &= mario.getIsLevelCompletedOrDisabled();
-    }
-    return allMariosHaveCompletedTheLevel;
-}
+// bool Nivel::getIsGameCompleted() const {
+//     bool allMariosHaveCompletedTheLevel = true;
+//     for (auto &mario : *players) {
+//         allMariosHaveCompletedTheLevel &= mario.getIsLevelCompletedOrDisabled();
+//     }
+//     return allMariosHaveCompletedTheLevel;
+// }
