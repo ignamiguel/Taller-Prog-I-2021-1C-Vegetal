@@ -4,6 +4,8 @@
 #include <arpa/inet.h>
 #include "../utils/user.h"
 #include "../view/NivelVista.h"
+#include "../view/SceneVista.h"
+#include "../utils/exitStatus.h"
 
 enum ClientExitStatus
 {
@@ -17,6 +19,7 @@ class Client
 {
 public:
     Client(char *serverIp, char *port);
+    ~Client();
     int startClient();
     int showStartPage();
     int connectToServer();
@@ -35,5 +38,6 @@ private:
     void showGameOverPage();
     void showGameCompletedPage();
     void getNextLevelView(NivelVista *&vista, unsigned char currentLevel);
+    void getSceneView(SceneVista *&vista, unsigned char serverScene);
     void processExit(ClientExitStatus clientExitStatus);
 };

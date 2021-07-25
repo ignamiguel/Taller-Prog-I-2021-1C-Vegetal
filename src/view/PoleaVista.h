@@ -11,9 +11,9 @@ public:
 
 private:
     static SDL_Texture *texture;
-    SDL_RendererFlip flip;
     static SDL_Rect rectSrc;
     SDL_Rect rectDst;
+    SDL_RendererFlip flip;
     int tiempo;
     static int totalPoleas;
 };

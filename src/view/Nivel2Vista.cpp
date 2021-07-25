@@ -6,7 +6,7 @@
 #include "../utils/Constants.hpp"
 
 Nivel2Vista::Nivel2Vista(SDL_Renderer *renderer, const char* clientUsername)
-: NivelVista(renderer, clientUsername) {
+: NivelVista(renderer, clientUsername), barrilVista(renderer) {
 
     const auto &stages = configuration::GameConfiguration::getInstance(CONFIG_FILE)->getStages();
     if (stages.size() > 1)
@@ -16,15 +16,15 @@ Nivel2Vista::Nivel2Vista(SDL_Renderer *renderer, const char* clientUsername)
         this->setBackground(rutaImagen);
     }
 
-    barrilVista = new BarrilVista(renderer);
-
     entidadesVista.push_back(new FuegoVista(N2_POS_X_FUEGO, N2_POS_Y_FUEGO, renderer));
 }
 
 void Nivel2Vista::update(const estadoJuego_t &estadoJuego) {
-    for(unsigned int j = 0; j < this->jugadoresVista.size(); j++) {
+    size_t clientIndex = MAX_PLAYERS;
+    for(unsigned int j = 0; j < this->jugadoresVista.size(); ++j) {
         if(strcmp(estadoJuego.players[j].name, clientUsername) == 0) {
             AudioController::playSounds(estadoJuego.estadoNivel.players[j].sounds);
+            clientIndex = j;
         }
     }
 
@@ -40,32 +40,21 @@ void Nivel2Vista::update(const estadoJuego_t &estadoJuego) {
         vista->mostrar();
     }
 
-    barrilVista->startRender();
+    barrilVista.startRender();
     for (auto &pos : estadoJuego.estadoNivel.barrels) {
-        if(pos.y == 0) break; //No se muestran los enemigos muertos
-        barrilVista->mover(pos);
-        barrilVista->mostrar();
+        if (pos.y == 0) break;
+        barrilVista.mover(pos);
+        barrilVista.mostrar();
     }
 
     size_t i = 0;
-    MarioVista *vistaMarioCliente{nullptr};
-    const estadoMario_t *estadoMarioCliente{nullptr};
     for (auto &player : this->jugadoresVista) {
         player.setColor((i + 1) * estadoJuego.estadoNivel.players[i].isEnabled);
-        if (strcmp(estadoJuego.players[i].name, clientUsername) != 0) {
+        if (i != clientIndex) {
             player.mostrar(estadoJuego.estadoNivel.players[i]);
-        }
-        else {
-            vistaMarioCliente = &player;
-            estadoMarioCliente = &(estadoJuego.estadoNivel.players[i]);
         }
         statsVista.mostrar(estadoJuego.players[i], i);
         ++i;
     }
-    if(vistaMarioCliente != NULL && estadoMarioCliente != NULL)
-        vistaMarioCliente->mostrar(*estadoMarioCliente);
-}
-
-Nivel2Vista::~Nivel2Vista() {
-    delete barrilVista;
+    jugadoresVista[clientIndex].mostrar(estadoJuego.estadoNivel.players[clientIndex]); 
 }

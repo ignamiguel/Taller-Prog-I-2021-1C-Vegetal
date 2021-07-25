@@ -6,6 +6,7 @@
 
 #define MS_PER_UPDATE 50
 
+#define RESIZE 1.5f
 #define TEXT_BUTTON_X 28
 #define USER_BUTTON_Y 78
 #define PASS_BUTTON_Y 118
@@ -13,7 +14,6 @@
 #define DONE_BUTTON_WIDTH (((7 + 2) * 4 + 1) * RESIZE)
 #define DONE_BUTTON_Y 168
 
-#define RESIZE 1.5f
 #define TEXT_BUTTON_WIDTH (((7 + 2) * 10 + 2) * RESIZE)
 #define BUTTON_HEIGHT ((7 + 4) * RESIZE)
 

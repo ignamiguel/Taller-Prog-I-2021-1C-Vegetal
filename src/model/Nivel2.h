@@ -6,9 +6,9 @@
 class Nivel2 : public Nivel
 {
 public:
-    Nivel2();
-    void update();
-    const estadoNivel_t &getEstado();
+    Nivel2(std::vector<Mario> *players);
+    void update() override;
+    const estadoNivel_t &getEstado() override;
 
 private:
     std::list<Barril> barriles;

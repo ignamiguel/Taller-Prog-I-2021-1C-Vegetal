@@ -8,7 +8,7 @@
 #include "../utils/Constants.hpp"
 
 Nivel1Vista::Nivel1Vista(SDL_Renderer *renderer, const char* clientUsername)
-: NivelVista(renderer, clientUsername) {
+: NivelVista(renderer, clientUsername), plataformaVista(renderer), enemigoVista(renderer) {
 
     const auto &stages = configuration::GameConfiguration::getInstance(CONFIG_FILE)->getStages();
     if (stages.size() > 0)
@@ -17,9 +17,6 @@ Nivel1Vista::Nivel1Vista(SDL_Renderer *renderer, const char* clientUsername)
         logger::Logger::getInstance().logDebug("Stage 1 background img: " + rutaImagen);
         this->setBackground(rutaImagen);
     }
-
-    plataformaVista = new PlataformaMovilVista(renderer);
-    enemigoVista = new EnemigoFuegoVista(renderer);
 
     entidadesVista.push_back(new PoleaVista(N1_POS_X1_POLEA, N1_POS_Y1_POLEA, 0, 0, renderer));
     entidadesVista.push_back(new PoleaVista(N1_POS_X2_POLEA, N1_POS_Y1_POLEA, 1, 0, renderer));
@@ -33,9 +30,11 @@ Nivel1Vista::Nivel1Vista(SDL_Renderer *renderer, const char* clientUsername)
 }
 
 void Nivel1Vista::update(const estadoJuego_t &estadoJuego) {
-    for(unsigned int j = 0; j < this->jugadoresVista.size(); j++) {
+    size_t clientIndex = MAX_PLAYERS;
+    for(unsigned int j = 0; j < this->jugadoresVista.size(); ++j) {
         if(strcmp(estadoJuego.players[j].name, clientUsername) == 0) {
             AudioController::playSounds(estadoJuego.estadoNivel.players[j].sounds);
+            clientIndex = j;
         }
     }
 
@@ -52,36 +51,25 @@ void Nivel1Vista::update(const estadoJuego_t &estadoJuego) {
     }
 
     for (auto &pos : estadoJuego.estadoNivel.platforms) {
-        plataformaVista->mover(pos);
-        plataformaVista->mostrar();
+        plataformaVista.mover(pos);
+        plataformaVista.mostrar();
     }
 
-    enemigoVista->startRender();
+    enemigoVista.startRender();
     for (auto &pos : estadoJuego.estadoNivel.enemies) {
         if(pos.y == 0) break; //No se muestran los enemigos muertos
-        enemigoVista->mover(pos);
-        enemigoVista->mostrar();
+        enemigoVista.mover(pos);
+        enemigoVista.mostrar();
     }
 
     size_t i = 0;
-    MarioVista *vistaMarioCliente{nullptr};
-    const estadoMario_t *estadoMarioCliente{nullptr};
     for (auto &player : this->jugadoresVista) {
         player.setColor((i + 1) * estadoJuego.estadoNivel.players[i].isEnabled);
-        if (strcmp(estadoJuego.players[i].name, clientUsername) != 0) {
+        if (i != clientIndex) {
             player.mostrar(estadoJuego.estadoNivel.players[i]);
-        } else {
-            vistaMarioCliente = &player;
-            estadoMarioCliente = &(estadoJuego.estadoNivel.players[i]);
         }
         statsVista.mostrar(estadoJuego.players[i], i);
         ++i;
     }
-    if(vistaMarioCliente != NULL && estadoMarioCliente != NULL)
-        vistaMarioCliente->mostrar(*estadoMarioCliente); 
-}
-
-Nivel1Vista::~Nivel1Vista() {
-    delete plataformaVista;
-    delete enemigoVista;
+    jugadoresVista[clientIndex].mostrar(estadoJuego.estadoNivel.players[clientIndex]); 
 }

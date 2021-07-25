@@ -1,7 +1,8 @@
 #pragma once
-#include "marioStructs.h"
 #include "punto.h"
-#include "../utils/Constants.hpp"
+#include "marioStructs.h"
+#include "ExitStatus.h"
+#include "Constants.hpp"
 
 typedef struct estadoJugador
 {
@@ -26,6 +27,8 @@ typedef struct estadoNivel
     unsigned char level;
     bool isGameOver;
     bool isGameCompleted;
+    unsigned char sceneNumber;
+    char exitStatus{CLIENT_CONNECTION_CLOSED};
 } estadoNivel_t;
 
 typedef struct estadoJuego

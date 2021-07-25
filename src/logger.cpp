@@ -53,11 +53,21 @@ namespace logger {
     }
 
     void Logger::logNewGame(void) const {
-    std::ofstream file(filepath, std::ofstream::app);
-    file << '\n';
-    file << "-------------------------\n";
-    file << " STARTING DONKEY KONG II\n";
-    file << "-------------------------" << std::endl;
-    file.close();
+        std::ofstream file(filepath, std::ofstream::app);
+        file << '\n';
+        file << "-------------------------\n";
+        file << " STARTING DONKEY KONG II\n";
+        file << "-------------------------" << std::endl;
+        file.close();
     }
+
+    void Logger::logGameOver(void) const {
+        std::ofstream file(filepath, std::ofstream::app);
+        file << '\n';
+        file << "-------------------------\n";
+        file << " ENDING DONKEY KONG II\n";
+        file << "-------------------------" << std::endl;
+        file.close();
+    }
+
 }

@@ -19,6 +19,7 @@ namespace logger
         static Logger &getInstance();
         void setLogLevel(const std::string &);
         void logNewGame(void) const;
+        void logGameOver(void) const;
         void logError(const std::string &) const;
         void logInformation(const std::string &) const;
         void logDebug(const std::string &) const;

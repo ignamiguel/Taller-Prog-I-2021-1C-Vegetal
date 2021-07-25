@@ -7,10 +7,9 @@ class Nivel1Vista : public NivelVista
 {
 public:
     Nivel1Vista(SDL_Renderer *renderer, const char* clientUsername);
-    void update(const estadoJuego_t &estadoJuego);
-    ~Nivel1Vista();
+    void update(const estadoJuego_t &estadoJuego) override;
 
 private:
-    PlataformaMovilVista *plataformaVista;
-    EnemigoFuegoVista *enemigoVista;
+    PlataformaMovilVista plataformaVista;
+    EnemigoFuegoVista enemigoVista;
 };

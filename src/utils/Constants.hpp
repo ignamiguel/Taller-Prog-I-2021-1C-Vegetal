@@ -10,8 +10,7 @@
 #define MAX_ENEMIES 3
 #define MAX_BARRELS 8
 #define MAX_HAMMERS 2
-#define DEFAULT_MAX_PLAYERS 2 //en caso de que la cant max de jugadores sea negativa en el json
-
+#define DEFAULT_MAX_PLAYERS 2 //en caso de que la cant max de jugadores sea inválida en el json
 
 // Dimensiones
 #define ANCHO_NIVEL 224

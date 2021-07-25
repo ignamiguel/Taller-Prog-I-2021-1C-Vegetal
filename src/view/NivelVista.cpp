@@ -8,8 +8,8 @@
 #include "../logger.h"
 #include "../utils/Constants.hpp"
 
-NivelVista::NivelVista(SDL_Renderer *renderer, const char *clientUsername) : statsVista(renderer), hammerVista(renderer) {
-    this->renderer = renderer;
+NivelVista::NivelVista(SDL_Renderer *renderer, const char *clientUsername)
+: renderer{renderer}, statsVista(renderer), hammerVista(renderer) {
     strcpy(this->clientUsername, clientUsername);
 
     entidadesVista.push_back(new PaulineVista(renderer));
@@ -43,7 +43,5 @@ void NivelVista::setBackground(const std::string &rutaImagen) {
 
 NivelVista::~NivelVista() {
     SDL_DestroyTexture(texture);
-
-    jugadoresVista.clear();
-    entidadesVista.clear();
+    for (auto vista : entidadesVista) delete vista;
 }

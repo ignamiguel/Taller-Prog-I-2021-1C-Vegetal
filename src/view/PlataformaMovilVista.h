@@ -12,8 +12,7 @@ public:
     ~PlataformaMovilVista();
 
 private:
-    static SDL_Renderer *renderer;
-    static SDL_Texture *texture;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture;
     SDL_Rect dstRect;
-    static int totalPlataformas;
 };

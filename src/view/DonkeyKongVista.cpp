@@ -7,8 +7,6 @@
 
 const std::string IMG_DONKEY_KONG = "res/DonkeyKong.png";
 
-SDL_Texture *DonkeyKongVista::texture{nullptr};
-
 DonkeyKongVista::DonkeyKongVista(SDL_Renderer* renderer)
 : EntidadEstaticaVista() {
     this->renderer = renderer;

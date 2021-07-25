@@ -6,7 +6,7 @@ const int VELOCIDAD_INICIAL_Y = 0;
 constexpr std::array<std::pair<punto_t,punto_t>, 12> Barril::direcciones;
 
 Barril::Barril()
-: Entidad(N2_POS_X_BARRIL, N2_POS_Y_BARRIL, ANCHO_BARRIL, ALTO_BARRIL), vel{VELOCIDAD_INICIAL_X, VELOCIDAD_INICIAL_Y} {}
+: Entidad(N2_POS_X_BARRIL, N2_POS_Y_BARRIL), vel{VELOCIDAD_INICIAL_X, VELOCIDAD_INICIAL_Y} {}
 
 void Barril::mover() {
     pos.x += vel.x;

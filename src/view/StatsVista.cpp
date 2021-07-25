@@ -20,22 +20,18 @@
 
 const std::string IMG_ICONS{"res/PlayerIcon.png"};
 
-SDL_Renderer *StatsVista::renderer{nullptr};
-SDL_Texture *StatsVista::iconsTexture{nullptr};
-
 StatsVista::StatsVista(SDL_Renderer *renderer) {
-    if (iconsTexture == nullptr) {
-        this->renderer = renderer;
-        SDL_Surface* surface = IMG_Load(IMG_ICONS.c_str());
-        if (surface == NULL) {
-            logger::Logger::getInstance().logError("Image not found: " + IMG_ICONS);
-            logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
-            surface = IMG_Load(IMG_DEFAULT.c_str());
-        }
-        SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
-        iconsTexture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
+    this->renderer = renderer;
+    SDL_Surface* surface = IMG_Load(IMG_ICONS.c_str());
+    if (surface == NULL) {
+        logger::Logger::getInstance().logError("Image not found: " + IMG_ICONS);
+        logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
+        surface = IMG_Load(IMG_DEFAULT.c_str());
     }
+    SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
+    iconsTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
     auto maxPlayers = configuration::GameConfiguration::getInstance(CONFIG_FILE)->getMaxPlayers();
     if (maxPlayers < MIN_PLAYERS || MAX_PLAYERS < maxPlayers)
         maxPlayers = DEFAULT_MAX_PLAYERS;
@@ -58,8 +54,9 @@ StatsVista::StatsVista(SDL_Renderer *renderer) {
 
 void StatsVista::mostrar(const estadoJugador_t &estado, size_t nroJugador) {
     const punto_t top_left{posiciones.at(nroJugador), MARGEN};
-    const punto_t score_pos{top_left.x + OFFSET_SCORE_X, top_left.y + OFFSET_SCORE_Y};
-    const char score_str[6]{static_cast<char>('0' + (estado.score / 100) % 10),
+    const punto_t score_pos{top_left.x, top_left.y + OFFSET_SCORE_Y};
+    const char score_str[7]{'0',
+                            static_cast<char>('0' + (estado.score / 100) % 10),
                             static_cast<char>('0' + (estado.score / 10) % 10),
                             static_cast<char>('0' + estado.score % 10),
                             '0',

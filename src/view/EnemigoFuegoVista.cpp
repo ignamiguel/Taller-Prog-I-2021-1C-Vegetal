@@ -11,24 +11,17 @@
 
 const std::string IMG_ENEMIGO_FUEGO = "res/Enemy1.png";
 
-SDL_Renderer *EnemigoFuegoVista::renderer{nullptr};
-SDL_Texture *EnemigoFuegoVista::texture{nullptr};
-SDL_Rect EnemigoFuegoVista::srcRect, EnemigoFuegoVista::dstRect;
-
-EnemigoFuegoVista::EnemigoFuegoVista(SDL_Renderer *renderer) {
-    if (this->texture == nullptr) {
-        this->renderer = renderer;
-        SDL_Surface* surface = IMG_Load(IMG_ENEMIGO_FUEGO.c_str());
-        if (surface == NULL) {
-            logger::Logger::getInstance().logError("Image not found: " + IMG_ENEMIGO_FUEGO);
-            logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
-            surface = IMG_Load(IMG_DEFAULT.c_str());
-        }
-        SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 255, 0));
-        this->texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
+EnemigoFuegoVista::EnemigoFuegoVista(SDL_Renderer *renderer) : srcRect{0, 0, ANCHO_ENEMIGO_FUEGO, ALTO_ENEMIGO_FUEGO} {
+    this->renderer = renderer;
+    SDL_Surface* surface = IMG_Load(IMG_ENEMIGO_FUEGO.c_str());
+    if (surface == NULL) {
+        logger::Logger::getInstance().logError("Image not found: " + IMG_ENEMIGO_FUEGO);
+        logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
+        surface = IMG_Load(IMG_DEFAULT.c_str());
     }
-    srcRect = {0, 0, ANCHO_ENEMIGO_FUEGO, ALTO_ENEMIGO_FUEGO};
+    SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 255, 0));
+    this->texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
 
     dstRect.w = round(ANCHO_ENEMIGO_FUEGO * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     dstRect.h = round(ALTO_ENEMIGO_FUEGO * ALTO_PANTALLA / (float)ALTO_NIVEL);
@@ -53,5 +46,4 @@ void EnemigoFuegoVista::mostrar() {
 
 EnemigoFuegoVista::~EnemigoFuegoVista() {
     SDL_DestroyTexture(texture);
-    texture = nullptr;
 }

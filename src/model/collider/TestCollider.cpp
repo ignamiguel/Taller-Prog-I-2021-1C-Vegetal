@@ -1,5 +1,4 @@
 #include "TestCollider.h"
-#include "../Mario.hpp"
 
 void TestCollider::collide(Mario* , Entidad* ) { }
 

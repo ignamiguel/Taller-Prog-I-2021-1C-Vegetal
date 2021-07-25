@@ -13,6 +13,6 @@ public:
     };
 
 private:
-    static SDL_Texture *texture;
-    static SDL_Rect rect;
+    SDL_Texture *texture;
+    SDL_Rect rect;
 };

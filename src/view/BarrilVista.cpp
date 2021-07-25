@@ -11,22 +11,16 @@
 
 const std::string IMG_BARRIL = "res/Barril.png";
 
-SDL_Renderer *BarrilVista::renderer{nullptr};
-SDL_Texture *BarrilVista::texture{nullptr};
-
-BarrilVista::BarrilVista(SDL_Renderer *renderer) {
-    if (this->texture == nullptr) {
-        this->renderer = renderer;
-        SDL_Surface* surface = IMG_Load(IMG_BARRIL.c_str());
-        if (surface == NULL) {
-            logger::Logger::getInstance().logError("Image not found: " + IMG_BARRIL);
-            logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
-            surface = IMG_Load(IMG_DEFAULT.c_str());
-        } else SDL_SetColorKey(surface, SDL_TRUE, *(Uint32*)(surface->pixels));
-        this->texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
-    }
-    srcRect = {0, 0, ANCHO_BARRIL, ALTO_BARRIL};
+BarrilVista::BarrilVista(SDL_Renderer *renderer) : srcRect{0, 0, ANCHO_BARRIL, ALTO_BARRIL} {
+    this->renderer = renderer;
+    SDL_Surface* surface = IMG_Load(IMG_BARRIL.c_str());
+    if (surface == NULL) {
+        logger::Logger::getInstance().logError("Image not found: " + IMG_BARRIL);
+        logger::Logger::getInstance().logDebug("Loading default image: " + IMG_DEFAULT);
+        surface = IMG_Load(IMG_DEFAULT.c_str());
+    } else SDL_SetColorKey(surface, SDL_TRUE, *(Uint32*)(surface->pixels));
+    this->texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
 
     dstRect.w = round(ANCHO_BARRIL * ANCHO_PANTALLA / (float)ANCHO_NIVEL);
     dstRect.h = round(ALTO_BARRIL * ALTO_PANTALLA / (float)ALTO_NIVEL);
@@ -54,5 +48,4 @@ void BarrilVista::mostrar() {
 
 BarrilVista::~BarrilVista() {
     SDL_DestroyTexture(texture);
-    texture = nullptr;
 }

@@ -3,8 +3,8 @@
 #include "../Mario.hpp"
 
 void HammerCollider::collide(Mario* mario, Entidad* entidad) {
-    bool collidedWithHammer = ((mario->direccion == DERECHA) && (mario->pos.x < entidad->pos.x))
-    || ((mario->direccion == IZQUIERDA) && (mario->pos.x > entidad->pos.x));
+    const bool collidedWithHammer = ((mario->direccion == DERECHA) && (mario->pos.x < entidad->pos.x))
+                               || ((mario->direccion == IZQUIERDA) && (mario->pos.x > entidad->pos.x));
 
     if(collidedWithHammer && mario->estado <= CORRIENDO) {
         entidad->isEnabled = false;

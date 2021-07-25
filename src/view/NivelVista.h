@@ -2,21 +2,21 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
-#include "../utils/estadoJuego.h"
+#include "SceneVista.h"
 #include "MarioVista.h"
 #include "EntidadEstaticaVista.h"
 #include "HammerVista.h"
 #include "StatsVista.h"
 
-class NivelVista
+class NivelVista : public SceneVista
 {
 public:
     NivelVista(SDL_Renderer *renderer, const char *clientUsername);
-    void setBackground(const std::string &rutaImagen);
-    virtual void update(const estadoJuego_t &estadoJuego) = 0;
-    virtual ~NivelVista();
+    ~NivelVista();
 
 protected:
+    void setBackground(const std::string &rutaImagen);
+
     SDL_Renderer *renderer;
     SDL_Texture *texture;
     StatsVista statsVista;

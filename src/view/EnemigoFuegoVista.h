@@ -13,10 +13,10 @@ public:
     ~EnemigoFuegoVista();
 
 private:
-    static SDL_Renderer *renderer;
-    static SDL_Texture *texture;
-    static SDL_Rect srcRect;
-    static SDL_Rect dstRect;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture;
+    SDL_Rect srcRect;
+    SDL_Rect dstRect;
     int tiempo;
     int updated;
 };

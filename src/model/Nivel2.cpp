@@ -3,11 +3,11 @@
 
 #define PERIODO_BARRILES 180
 
-Nivel2::Nivel2() : Nivel() {
+Nivel2::Nivel2(std::vector<Mario> *players) : Nivel(players) {
     this->initPlatforms();
     this->initLadders();
     this->initHammers();
-    estadoNivel.level = 2;
+    estadoNivel.sceneNumber = 3;
 }
 
 void Nivel2::initPlatforms() {

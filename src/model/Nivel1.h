@@ -5,9 +5,10 @@
 class Nivel1 : public Nivel
 {
 public:
-    Nivel1();
-    void update();
-    const estadoNivel_t &getEstado();
+    Nivel1(std::vector<Mario> *players);
+    void update() override;
+    const estadoNivel_t &getEstado() override;
+
 private:
     std::array<MovingPlatform, 12> movingPlatforms {{{0, 0}, {1, 0}, {2, 0},
                                                      {0, 1}, {1, 1}, {2, 1},

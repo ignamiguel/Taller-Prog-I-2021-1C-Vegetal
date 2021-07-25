@@ -11,6 +11,7 @@
 #include "../logger.h"
 #include "Nivel1.h"
 #include "Nivel2.h"
+#include "Interlude.h"
 #include "Mario.hpp"
 #include "../logger.h"
 #include "../utils/Constants.hpp"
@@ -28,7 +29,7 @@ typedef struct handleLoginArgs {
     int clientSocket;
 } handleLoginArgs_t;
 
-void getNextLevel(Nivel *&nivel, unsigned char currentLevel);
+void getNextScene(Scene *&scene, std::vector<Mario> *marios);
 void getEstadoJugadores(estadoJuego_t &estado,  std::map<std::string, player_t> &connectedPlayers);
 
 void *acceptNewConnections(void *serverArg);
@@ -112,12 +113,10 @@ void Server::startGame() {
         marios.emplace_back();
     }
 
-    unsigned char currentLevel = 0;
-    Nivel *nivel{nullptr};
+    Scene *scene{nullptr};
     estadoJuego_t game;
 
-    getNextLevel(nivel, ++currentLevel);
-    nivel->addPlayers(marios);
+    getNextScene(scene, &marios);
 
     {
         size_t i = 0;
@@ -132,7 +131,7 @@ void Server::startGame() {
     std::chrono::milliseconds elapsed;
     std::chrono::milliseconds lag{0};
     bool isUpdated = false;
-    while (nivel != nullptr) {
+    while (scene != nullptr) {
         current = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now());
         elapsed = current - previous;
         previous = current;
@@ -141,14 +140,13 @@ void Server::startGame() {
         // Update Model
         isUpdated = false;
         while (lag >= MS_PER_UPDATE) {
-            nivel->update();
+            scene->update();
             lag -= MS_PER_UPDATE;
             isUpdated = true;
         }
 
         if (isUpdated) {
-            game.estadoNivel = nivel->getEstado();
-
+            game.estadoNivel = scene->getEstado();
             getEstadoJugadores(game, connectedPlayers);
 
             for(auto &player : connectedPlayers) {
@@ -157,22 +155,9 @@ void Server::startGame() {
                 }
                 player.second.mario->audioObserver.reset();
             }
-
-            if (__builtin_expect(nivel->getIsGameCompleted(), 0)) {
-
-                if (nivel->getIsGameOver()) {
-                    std::cout << "GAME OVER" << '\n';
-                    return;
-                }
-
-                getNextLevel(nivel, ++currentLevel);
-                if (nivel != nullptr) {
-                    nivel->addPlayers(marios);
-                } else {
-                    std::cout << "Congratulations! Game ended..." << '\n';
-                }
+            if (scene->isComplete()) {
+                getNextScene(scene, &marios);
             }
-
         }
     }
 }
@@ -306,20 +291,36 @@ void *handleCommand(void *player) {
     return nullptr;
 }
 
-void getNextLevel(Nivel *&nivel, unsigned char currentLevel) {
-    delete nivel;
-    if (currentLevel == NIVEL_1) {
-        logger::Logger::getInstance().logInformation("[server] Level 1 starts");
-        nivel = new Nivel1();
+void getNextScene(Scene *&scene, std::vector<Mario> *marios) {
+    bool gameOver = true;
+    for (auto &mario : *marios) {
+            gameOver &= mario.getIsGameOver() || !mario.isEnabled;
     }
-    else if (currentLevel == NIVEL_2) {
-        logger::Logger::getInstance().logInformation("[server] End of Level 1");
-        nivel = new Nivel2();
-        logger::Logger::getInstance().logInformation("[server] Level 2 starts");
+    delete scene;
+    static int currentScene = 0;
+    switch(++currentScene) {
+        case 1:
+            logger::Logger::getInstance().logInformation("[server] Level 1 starts");
+            scene = new Nivel1(marios);
+            break;
+        case 2:
+            logger::Logger::getInstance().logInformation("[server] End of Level 1");
+            scene = new Interlude(gameOver, currentScene);
+            break;
+        case 3:
+            logger::Logger::getInstance().logInformation("[server] Level 2 starts");
+            scene = new Nivel2(marios);
+            break;
+        case 4:
+            logger::Logger::getInstance().logInformation("[server] End of Level 2");
+            scene = new Interlude(gameOver, currentScene);
+            break;
+        default:
+            logger::Logger::getInstance().logGameOver();
+            scene = nullptr;
     }
-    else {
-        logger::Logger::getInstance().logInformation("[server] End of Level 2");
-        nivel = nullptr;
+    if (gameOver) {
+        currentScene = 5;
     }
 }
 

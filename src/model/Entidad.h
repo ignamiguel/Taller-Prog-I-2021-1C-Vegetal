@@ -5,14 +5,11 @@
 class Entidad
 {
 public:
-    Entidad(float posX, float posY, int ancho, int alto);
-    virtual void mover() = 0; //separar entidades en entidades estaticas y dinamicas
+    Entidad(float posX, float posY) : pos{posX, posY} {};
+    virtual void mover() = 0;
     virtual ~Entidad() = default;
-    punto_t pos;
     virtual dimensiones_t dimensions() const = 0;
-    bool isEnabled = true;
-protected:
-    int ancho;
-    int alto;
-    
+
+    punto_t pos;
+    bool isEnabled = true;   
 };

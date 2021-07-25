@@ -3,7 +3,7 @@
 #include "../logger.h"
 #include "../utils/Constants.hpp"
 
-Nivel1::Nivel1() : Nivel() {
+Nivel1::Nivel1(std::vector<Mario> *players) : Nivel(players) {
     this->initPlatforms();
     auto config = configuration::GameConfiguration::getInstance(CONFIG_FILE);
     auto configEnemies = config->getEnemies();
@@ -15,7 +15,7 @@ Nivel1::Nivel1() : Nivel() {
     }
     this->initLadders();
     this->initHammers();
-    estadoNivel.level = 1;
+    estadoNivel.sceneNumber = 1;
 }
 
 void Nivel1::initPlatforms() {

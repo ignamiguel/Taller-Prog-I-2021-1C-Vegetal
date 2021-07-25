@@ -1,0 +1,9 @@
+#pragma once
+
+enum ClientExitStatus
+{
+    CLIENT_CONNECTION_CLOSED,
+    CLIENT_GAME_OVER,
+    CLIENT_GAME_COMPLETE,
+    CLIENT_QUIT_REQUESTED
+};

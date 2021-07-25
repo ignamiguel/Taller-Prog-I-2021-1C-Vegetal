@@ -7,8 +7,6 @@
 
 const std::string IMG_PAULINE = "res/Pauline.png";
 
-SDL_Texture *PaulineVista::texture{nullptr};
-
 PaulineVista::PaulineVista(SDL_Renderer* renderer)
 : EntidadEstaticaVista() {
     this->renderer = renderer;

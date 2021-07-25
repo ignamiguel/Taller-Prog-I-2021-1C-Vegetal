@@ -1,27 +1,22 @@
 #pragma once
 #include <vector>
+#include "Scene.h"
 #include "stage/Stage.h"
 #include "Mario.hpp"
 #include "EnemigoFuego.h"
 #include "Hammer.h"
-#include "../utils/estadoJuego.h"
 
-// Representa el escenario del juego
-// contiene a Stage (plataformas y escaleras)
-class Nivel
+/* Representa un nivel del juego, contiene a Stage (plataformas y escaleras) */
+class Nivel : public Scene
 {
 public:
-    void addPlayers(std::vector<Mario> &players);
-    virtual void update() = 0;
-    virtual const estadoNivel_t &getEstado() = 0;
-    bool getIsGameCompleted() const;
-    bool collision(dimensiones_t, dimensiones_t) const;
-    bool getIsGameOver();
-    virtual ~Nivel() = default;
+    Nivel(std::vector<Mario> *players);
+    bool isComplete() const override;
 
 protected:
+    bool collision(dimensiones_t, dimensiones_t) const;
+
     Stage stage;
-    estadoNivel_t estadoNivel;
     std::vector<EnemigoFuego> enemies;
     std::vector<Hammer> hammers;
     std::vector<Platform> platforms;

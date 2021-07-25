@@ -14,6 +14,9 @@ const MarioState *TrepandoState::update(Mario &mario) const {
     if (mario.climbMin < mario.pos.y || mario.pos.y < mario.climbMax)
     {
         if (mario.pos.y <= TOP_LEVEL) {
+            if(mario.collider->getType() == HAMMER) { // para que no siga martillando cuando termina el nivel
+                mario.setCollider(NORMAL);
+            }
             mario.audioObserver.update(FINISHED_LEVEL);
             mario.addPoints(this->stage->getPointsForCompletingLevel());
             return LevelCompletedState::getInstance();

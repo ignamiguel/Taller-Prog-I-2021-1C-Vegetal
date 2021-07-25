@@ -7,9 +7,6 @@
 
 const std::string IMG_DEFAULT_CONFIG = "res/default-config.png";
 
-SDL_Texture *DefaultConfigVista::texture{nullptr};
-SDL_Rect DefaultConfigVista::rect;
-
 DefaultConfigVista::DefaultConfigVista(SDL_Renderer *renderer)
 : EntidadEstaticaVista() {
     this->renderer = renderer;
