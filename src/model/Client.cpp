@@ -147,17 +147,8 @@ ExitStatus Client::startGame()
 
     ExitStatus exitStatus = CLIENT_CONNECTION_CLOSED;
 
-    bool isGameOver = false;
-    bool isGameCompleted = false;
-
     while (!quitRequested && serverOpen) {
         if (estadoJuego != nullptr) {
-
-            isGameOver = estadoJuego->estadoNivel.isGameOver;
-            isGameCompleted = estadoJuego->estadoNivel.isGameCompleted 
-                && estadoJuego->estadoNivel.level == NIVEL_2;
-
-            std::cout << "PEPE" << isGameOver << isGameCompleted << "\n";
 
             if (currentScene == estadoJuego->estadoNivel.sceneNumber) {
                 SDL_RenderClear(renderer);

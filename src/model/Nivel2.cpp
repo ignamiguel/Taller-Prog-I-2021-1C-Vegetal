@@ -1,7 +1,7 @@
 #include "Nivel2.h"
 #include "../utils/Constants.hpp"
 
-#define PERIODO_BARRILES 180
+#define PERIODO_BARRILES 360
 
 Nivel2::Nivel2(std::vector<Mario> *players) : Nivel(players) {
     this->initPlatforms();
@@ -81,9 +81,6 @@ const estadoNivel_t &Nivel2::getEstado() {
     for (auto &player : *players) {
         estadoNivel.players[i++] = player.getEstado();
     }
-
-    // estadoNivel.isGameOver = this->getIsGameOver();
-    // estadoNivel.isGameCompleted = this->getIsGameCompleted();
 
     return estadoNivel;
 }
