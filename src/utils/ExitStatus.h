@@ -1,6 +1,6 @@
 #pragma once
 
-enum ClientExitStatus
+enum ExitStatus
 {
     CLIENT_CONNECTION_CLOSED,
     CLIENT_GAME_OVER,

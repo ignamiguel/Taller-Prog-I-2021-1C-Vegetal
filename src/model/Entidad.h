@@ -11,5 +11,5 @@ public:
     virtual dimensiones_t dimensions() const = 0;
 
     punto_t pos;
-    bool isEnabled = true;   
+    bool isEnabled = true;
 };

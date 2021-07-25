@@ -5,15 +5,7 @@
 #include "../utils/user.h"
 #include "../view/NivelVista.h"
 #include "../view/SceneVista.h"
-#include "../utils/exitStatus.h"
-
-enum ClientExitStatus
-{
-    CLIENT_QUIT_REQUESTED,
-    CLIENT_CONNECTION_CLOSED,
-    CLIENT_GAME_OVER,
-    CLIENT_GAME_COMPLETED
-};
+#include "../utils/ExitStatus.h"
 
 class Client
 {
@@ -23,7 +15,7 @@ public:
     int startClient();
     int showStartPage();
     int connectToServer();
-    ClientExitStatus startGame();
+    ExitStatus startGame();
     int login(user_t user);
 
 private:
@@ -39,5 +31,5 @@ private:
     void showGameCompletedPage();
     void getNextLevelView(NivelVista *&vista, unsigned char currentLevel);
     void getSceneView(SceneVista *&vista, unsigned char serverScene);
-    void processExit(ClientExitStatus clientExitStatus);
+    void processExit(ExitStatus clientExitStatus);
 };
