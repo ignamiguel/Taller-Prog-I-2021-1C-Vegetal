@@ -163,7 +163,8 @@ ExitStatus Client::startGame()
             } else {
                 currentScene = estadoJuego->estadoNivel.sceneNumber;
                 getSceneView(vista, estadoJuego->estadoNivel.sceneNumber);
-                exitStatus = static_cast<ExitStatus>(estadoJuego->estadoNivel.exitStatus);
+                exitStatus = estadoJuego->estadoNivel.gameOver ?
+                    (estadoJuego->players->lives == 0 ? CLIENT_GAME_OVER : CLIENT_GAME_COMPLETE) : CLIENT_CONNECTION_CLOSED;
             }
         }
 

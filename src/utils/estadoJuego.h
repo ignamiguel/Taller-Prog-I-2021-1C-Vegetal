@@ -25,7 +25,7 @@ typedef struct estadoNivel
     punto_t hammers[MAX_HAMMERS];
     estadoMario_t players[MAX_PLAYERS];
     unsigned char sceneNumber;
-    char exitStatus{CLIENT_CONNECTION_CLOSED};
+    bool gameOver{false};
 } estadoNivel_t;
 
 typedef struct estadoJuego
